@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Easy</string>
+    <string name="drawer_menu_setting">设置</string>
+    <string name="drawer_menu_about">关于</string>
+    <string name="drawer_menu_main">首页</string>
+    <string name="drawer_menu_activity">活动</string>
+    <string name="drawer_menu_order">预定商品</string>
+    <string name="drawer_menu_profile">个人信息</string>
+
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_reg">RegActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_search">search</string>
+    <string name="title_activity_user_profile">UserProfileActivity</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="user_profile_photo">http://igcdn-photos-f-a.akamaihd.net/hphotos-ak-xpa1/t51.2885-19/929118_455075441302693_1605108410_a.jpg</string>
+
+    <string-array name="user_photos">
+        <item>http://p2.gexing.com/G1/M00/CD/B4/rBABE1HflSKBZTcoAAAZ4VylSos137_200x200_3.jpg?recache=20131108</item>
+        <item>http://p4.gexing.com/G1/M00/CD/B4/rBABE1HflSKRUicIAAAYrgQtqPg663_200x200_3.jpg?recache=20131108</item>
+        <item>http://p4.gexing.com/G1/M00/CD/B4/rBABE1HflSLQ0PPsAACy2XLRHiQ139_200x200_3.png?recache=20131108</item>
+        <item>http://p2.gexing.com/G1/M00/CD/B4/rBABE1HflSKBZTcoAAAZ4VylSos137_200x200_3.jpg?recache=20131108</item>
+        <item>http://p4.gexing.com/G1/M00/CD/B4/rBABE1HflSLAv548AAAZQg9By4Q842_200x200_3.jpg?recache=20131108</item>
+        <item>http://p4.gexing.com/G1/M00/CD/B4/rBABE1HflSLQ0PPsAACy2XLRHiQ139_200x200_3.png?recache=20131108</item>
+        <item>http://p4.gexing.com/G1/M00/CD/B4/rBABE1HflSKQcqSjAAAgNDqq2JY563_200x200_3.jpg?recache=20131108</item>
+        <item>http://p4.gexing.com/G1/M00/CD/B4/rBABE1HflSKRUicIAAAYrgQtqPg663_200x200_3.jpg?recache=20131108</item>
+        <item>http://p4.gexing.com/G1/M00/CD/B4/rBABE1HflSLQ0PPsAACy2XLRHiQ139_200x200_3.png?recache=20131108</item>
+    </string-array>
+</resources>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_login"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/easy_background" >
+
+    <include
+        layout="@layout/back_toolbar"/>
+
+
+    <!-- 22 33娘 -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="106dp"
+        android:background="#f2f2f2">
+        
+        <ImageView 
+            android:id="@+id/iv_login_22"
+            android:layout_width="77dp"
+            android:layout_height="77dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:background="@mipmap/ic_22"/>
+        
+        <ImageView 
+            android:id="@+id/iv_login_33"
+            android:layout_width="77dp"
+            android:layout_height="77dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:background="@mipmap/ic_33" />
+        
+        <!-- LOGO -->
+        
+    </RelativeLayout>
+    
+    <!-- 账号 -->
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="28dp"
+        android:layout_marginRight="28dp"
+        android:background="#f2f2f2">
+        
+        <ImageView 
+            android:id="@+id/iv_login_username"
+            android:layout_width="19dp"
+            android:layout_height="23dp"
+            android:layout_marginLeft="8dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:background="@mipmap/ic_login_username_hover"/>
+        
+        <View 
+            android:id="@+id/view_login_login_username_line"
+            android:layout_width="match_parent"
+            android:layout_height="5px"
+            android:layout_alignParentBottom="true"
+            android:background="@color/easy_pink_light"/>
+
+        <EditText
+            android:id="@+id/et_login_username"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="16dp"
+            android:layout_toRightOf="@id/iv_login_username"
+            android:layout_above="@id/view_login_login_username_line"
+            android:gravity="center_vertical"
+            android:background="@null"
+            android:textSize="12sp"
+            android:textCursorDrawable="@color/easy_primary_text"
+            android:hint="你的账号"/>
+
+    </RelativeLayout>
+    
+	<!-- 密码 -->
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginLeft="28dp"
+        android:layout_marginRight="28dp"
+        android:background="#f2f2f2">
+        
+        <ImageView 
+            android:id="@+id/iv_login_password"
+            android:layout_width="19dp"
+            android:layout_height="23dp"
+            android:layout_marginLeft="8dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:background="@mipmap/ic_login_password_default"/>
+        
+        <View 
+            android:id="@+id/view_login_login_password_line"
+            android:layout_width="match_parent"
+            android:layout_height="5px"
+            android:layout_alignParentBottom="true"
+            android:background="@color/easy_dark"/>
+        
+        <EditText 
+            android:id="@+id/et_login_password"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="16dp"
+            android:layout_toRightOf="@id/iv_login_password"
+            android:layout_above="@id/view_login_login_password_line"
+            android:gravity="center_vertical"
+            android:background="@null"
+            android:inputType="textPassword"
+            android:textSize="12sp"
+            android:textCursorDrawable="@color/easy_primary_text"
+            android:hint="请输入密码"/>
+        
+    </RelativeLayout>
+    
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="28dp"
+        android:layout_marginRight="28dp"
+        android:layout_marginTop="14dp"
+        android:orientation="horizontal">
+        
+        <Button 
+	        android:id="@+id/btn_login_reg"
+	        android:layout_width="146dp"
+	        android:layout_height="43dp"
+	        android:layout_alignParentLeft="true"
+	        android:gravity="center"
+	        android:text="注册账号"
+	        android:textSize="12sp"
+	        android:textColor="@color/easy_pink_light"
+	        android:background="@drawable/reg_btn_selector" />
+        
+        <Button 
+	        android:id="@+id/btn_login"
+	        android:layout_width="146dp"
+	        android:layout_height="43dp"
+	        android:layout_alignParentRight="true"
+	        android:gravity="center"
+	        android:text="登陆"
+	        android:textSize="12sp"
+	        android:textColor="#fff"
+	        android:enabled="true"
+	        android:background="@drawable/pink_btn_pressed" />
+        
+    </RelativeLayout>
+
+    <include layout="@layout/snack_container"
+        android:id="@+id/cl_login_container" />
+</LinearLayout>
