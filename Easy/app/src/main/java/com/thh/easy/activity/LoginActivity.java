@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -149,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        if (Utils.checkNetConnection(getApplicationContext())) {
+        if (!Utils.checkNetConnection(getApplicationContext())) {
             Snackbar.make(clContainer, "少年呦 你联网了嘛?", Snackbar.LENGTH_LONG).show();
         }
 
@@ -192,7 +193,9 @@ public class LoginActivity extends AppCompatActivity {
     void onLogin() {
         // 隐藏软键盘
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+        //imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+        imm.hideSoftInputFromWindow(etUsername.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(etPassword.getWindowToken(), 0);
 
         if (TextUtils.isEmpty(etUsername.getText().toString()) || TextUtils.isEmpty(etPassword.getText().toString())) {
             Snackbar.make(clContainer, "少年呦 你是忘记写账号了还是密码呢?", Snackbar.LENGTH_LONG).show();

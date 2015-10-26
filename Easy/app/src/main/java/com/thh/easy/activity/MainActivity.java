@@ -3,6 +3,7 @@ package com.thh.easy.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.thh.easy.R;
 import com.thh.easy.adapter.PostRVAdapter;
@@ -55,6 +57,10 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
         }
        // setupToolbar();
         setupPost();
+
+        if (!Utils.checkNetConnection(getApplicationContext())) {
+            Toast.makeText(MainActivity.this, "少年呦 你联网了嘛", Toast.LENGTH_SHORT).show();
+        }
     }
 /*
     private void setupToolbar() {
