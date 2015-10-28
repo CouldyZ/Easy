@@ -220,6 +220,7 @@
             android:src="@mipmap/ic_add_white_48dp"
             app:borderWidth="0dp"
             app:elevation="6dp"
+            app:fabSize="normal"
             app:pressedTranslationZ="12dp" />
     </android.support.design.widget.CoordinatorLayout>
 </RelativeLayout>

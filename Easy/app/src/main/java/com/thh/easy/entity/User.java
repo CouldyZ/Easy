@@ -40,6 +40,8 @@ public class User implements Serializable{
 
     private int jiecao;
 
+    private String avatarFilePath;
+
     public User() {
     }
 
@@ -55,6 +57,21 @@ public class User implements Serializable{
         this.nickname = nickname;
         this.gender = gender;
         this.jiecao = jiecao;
+    }
+
+    public User(int id, String username, String password, String icon, String email, String number, String depart, String tname, String nickname, String gender, int jiecao, String avatar) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.icon = icon;
+        this.email = email;
+        this.number = number;
+        this.depart = depart;
+        this.tname = tname;
+        this.nickname = nickname;
+        this.gender = gender;
+        this.jiecao = jiecao;
+        this.avatarFilePath = avatar;
     }
 
     /**
@@ -201,5 +218,13 @@ public class User implements Serializable{
 
     public void setJiecao(int jiecao) {
         this.jiecao = jiecao;
+    }
+
+    public String getAvatarFilePath() {
+        return avatarFilePath;
+    }
+
+    public void setAvatarFilePath(String avatarFilePath) {
+        this.avatarFilePath = avatarFilePath;
     }
 }

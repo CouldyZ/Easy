@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.android.volley.ext.HttpCallback;
 import com.android.volley.ext.RequestInfo;
 import com.android.volley.ext.tools.HttpTools;
+import com.squareup.picasso.Picasso;
 import com.thh.easy.Constant.StringConstant;
 import com.thh.easy.R;
 import com.thh.easy.entity.User;
@@ -108,6 +109,10 @@ public class LoginActivity extends AppCompatActivity {
 
     final int REQUEST_CODE = 666;
 
+    String filePath = null;
+
+    String avatarFileName = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,15 +159,12 @@ public class LoginActivity extends AppCompatActivity {
             Snackbar.make(clContainer, "少年呦 你联网了嘛?", Snackbar.LENGTH_LONG).show();
         }
 
-        if (getIntent().getBooleanExtra("register", false)) {
-            etUsername.setText(getIntent().getStringExtra("username"));
-            Snackbar.make(clContainer, "注册成功 和我们签订契约吧", Snackbar.LENGTH_LONG).show();
-        }
-
-
         // 初始化Volley
         HttpTools.init(getApplicationContext());
         httpTools = new HttpTools(getApplicationContext());
+
+        // 创建头像缓存文件夹
+        filePath = getExternalFilesDir(null).getPath();
     }
 
     @Override
@@ -171,6 +173,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
             etUsername.setText(data.getStringExtra("username"));
+            Snackbar.make(clContainer, "注册成功 和我们签订契约吧", Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -223,11 +226,12 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResult(String s) {
                         // 服务端返回Json
-                        System.out.println(s);
+                        Log.i(TAG, s);
                         if ("null".equals(s)) {
                             Snackbar.make(clContainer, "少年呦 账号或密码不对", Snackbar.LENGTH_LONG).show();
                             return;
                         }
+
                         onReadJson(s);
                     }
 
@@ -260,29 +264,94 @@ public class LoginActivity extends AppCompatActivity {
 
 
             String iconUrl = null;
+
             JSONObject jsonObject = new JSONObject(jsonResult);
-            if (!jsonObject.isNull("image") && jsonObject.getJSONObject("image") != null)
-                iconUrl = jsonObject.getJSONObject("image").getString("urls");
+            if (!jsonObject.isNull("image"))
+                iconUrl = jsonObject.getString("image");
+
+            String email = null;
+            if (!jsonObject.isNull("email"))
+                email = jsonObject.getString("email");
+
+            String gender = null;
+            if (!jsonObject.isNull("gender"))
+                gender = jsonObject.getString("gender");
+
+            String unmber = null;
+            if (!jsonObject.isNull("numbers"))
+                unmber = jsonObject.getString("numbers");
+
+            String depart = null;
+            if (!jsonObject.isNull("depart"))
+                depart = jsonObject.getString("depart");
+
+            String tname = null;
+            if (!jsonObject.isNull("tname"))
+                tname = jsonObject.getString("tname");
+
+            String avatar = null;
+            if (!jsonObject.isNull("image")) {
+                avatar = jsonObject.getString("image");
+                avatarFileName = jsonObject.getString("name") + jsonObject.getInt("id") + ".png";
+                System.out.println("头像路径 - " + filePath + "/" + avatarFileName);
+                // TODO 存储用户头像
+                httpTools.download(avatar, filePath + "/" + avatarFileName, false, new HttpCallback() {
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        httpTools.quitDownloadQueue();
+                    }
+
+                    @Override
+                    public void onResult(String s) {
+
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+
+                    }
+
+                    @Override
+                    public void onCancelled() {
+
+                    }
+
+                    @Override
+                    public void onLoading(long l, long l1) {
+
+                    }
+                });
+            }
 
             User user = new User (jsonObject.getInt("id"),
                     jsonObject.getString("name"),
                     jsonObject.getString("pwd"),
                     iconUrl,
-                    jsonObject.getString("email"),
-                    jsonObject.getString("numbers"),
-                    jsonObject.getString("depart"),
-                    jsonObject.getString("tname"),
+                    email,
+                    unmber,
+                    depart,
+                    tname,
                     jsonObject.getString("nickname"),
-                    jsonObject.getString("gender"),
-                    jsonObject.getInt("rp"));
+                    gender,
+                    jsonObject.getInt("rp"),
+                    avatarFileName);
 
             user.writeToCache(getApplicationContext());
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("login", true);
+            editor.putBoolean("user_login", true);
+            editor.commit();
 
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            intent.putExtra("login", true);
+            intent.putExtra("login_success", true);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("user", user);
+            intent.putExtra("user", bundle);
             startActivity(intent);
 
             finish();

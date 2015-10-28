@@ -41,6 +41,14 @@
             android:label="BaseDrawerActivity">
 
         </activity>
+        <activity android:name=".activity.NewPostActivity"
+            android:label="NewPostActivity">
+
+        </activity>
+        <activity android:name=".activity.ActActivity"
+            android:label="ActActivity">
+
+        </activity>
     </application>
 
 </manifest>

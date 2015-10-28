@@ -2,21 +2,18 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="com.thh.easy.activity.NewPostActivity">
 
     <include
-        android:id="@+id/main_toolbar"
-        layout="@layout/easytoolbar" />
+        layout="@layout/back_toolbar" />
 
 
     <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/cl_main_container"
+        android:id="@+id/cl_main_more_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,21 +21,18 @@
             android:layout_marginTop="?attr/actionBarSize"
             android:orientation="vertical">
 
-            <include
-                android:id="@+id/head_main_hot"
-                layout="@layout/main_new_header" />
+            <include layout="@layout/main_hot_header" />
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_post"
+                android:id="@+id/rv_back_post"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:scrollbars="none" />
-
         </LinearLayout>
 
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/ib_new_post"
+            android:id="@+id/ib_back_post"
             android:layout_width="@dimen/btn_fab_size"
             android:layout_height="@dimen/btn_fab_size"
             android:layout_gravity="bottom|right"

@@ -7,6 +7,10 @@
     <string name="drawer_menu_order">预定商品</string>
     <string name="drawer_menu_profile">个人信息</string>
 
+    <string name="activity_main_newest_title">大家在都在看</string>
+    <string name="activity_main_small_button_text">进去看看</string>
+    <string name="activity_main_hotest_title">最热的帖子</string>
+
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_reg">RegActivity</string>

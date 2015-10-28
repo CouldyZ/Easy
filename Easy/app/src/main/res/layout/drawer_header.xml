@@ -13,8 +13,9 @@
 
         <ImageView
             android:id="@+id/ivMenuUserProfilePhoto"
-            android:layout_width="@dimen/global_menu_avatar_size"
-            android:layout_height="@dimen/global_menu_avatar_size"
+            android:layout_width="@dimen/user_profile_avatar_size"
+            android:layout_height="@dimen/user_profile_avatar_size"
+            android:background="@drawable/bg_comment_avatar"
             android:src="@mipmap/bili_default_avatar"
             android:layout_margin="12dp" />
 
@@ -25,15 +26,16 @@
             android:layout_weight="1"
             >
             <TextView
+                android:id="@+id/tv_drawer_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="froger_mcs"
+                android:text="点击头像登陆"
                 android:textColor="@color/colorPrimary"
                 android:textSize="16sp"
                 android:layout_marginTop="30dp"
                 android:textStyle="bold" />
-            <ImageSwitcher
-                android:id="@+id/drawer_sex"
+            <ImageView
+                android:id="@+id/iv_drawer_sex"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:background="@mipmap/ic_user_sox"/>
