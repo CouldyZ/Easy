@@ -2,14 +2,12 @@ package com.thh.easy.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextSwitcher;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -18,9 +16,6 @@ import com.thh.easy.entity.Post;
 import com.thh.easy.util.RoundedTransformation;
 import com.thh.easy.util.Utils;
 import com.thh.easy.view.SquaredFrameLayout;
-import com.thh.easy.view.SquaredImageView;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -35,7 +30,7 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private Context context;
     private int lastAnimatedPosition = -1;
 
-    private OnFeedItemClickListener onPostItemClickListener;
+    private OnPostItemClickListener onPostItemClickListener;
 
     private List<Post> posts;
 
@@ -215,14 +210,14 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    public interface OnFeedItemClickListener {
+    public interface OnPostItemClickListener {
         void onCommentsClick(View v, int position); // 点击评论按钮
         void onProfileClick(View v, int position);  // 点击头像
         void onLikeClick(View v, int position);     // 点赞
         void onMoreClick(View v, int position);     // 更多
     }
 
-    public void setOnPostItemClickListener(OnFeedItemClickListener onPostItemClickListener) {
+    public void setOnPostItemClickListener(OnPostItemClickListener onPostItemClickListener) {
         this.onPostItemClickListener = onPostItemClickListener;
     }
 }

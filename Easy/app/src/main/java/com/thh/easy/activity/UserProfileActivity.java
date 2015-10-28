@@ -41,7 +41,6 @@ public class UserProfileActivity extends AppCompatActivity implements RevealBack
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
         ButterKnife.bind(UserProfileActivity.this);
-        //setProfileToolbar();
         setupUserProfileGrid();
         setupRevealBackground(savedInstanceState);
     }
@@ -119,10 +118,4 @@ public class UserProfileActivity extends AppCompatActivity implements RevealBack
         startingActivity.startActivity(intent);
     }
 
- /*   @Bind(R.id.tb_user_profile)
-    Toolbar profileToolbar;
-    private void setProfileToolbar() {
-        profileToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
-    }
-*/
 }

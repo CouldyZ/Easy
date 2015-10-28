@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -18,35 +20,42 @@ import butterknife.Bind;
 import butterknife.OnClick;
 
 
-/**
- * Created by Miroslaw Stanek on 15.07.15.
- */
-public class BaseDrawerActivity extends BaseActivity {
+public class BaseDrawerActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     @Bind(R.id.drawerLayout)
-    DrawerLayout drawerLayout;
+    DrawerLayout drawerLayout;            // 侧滑栏根布局
 
     @Bind(R.id.ivMenuUserProfilePhoto)
-    ImageView ivMenuUserProfilePhoto;
+    ImageView ivMenuUserProfilePhoto;     // 侧滑栏中的用户头像
+
+    @Bind(R.id.vNavigation)
+    NavigationView navigationView;        //  侧滑栏内容
 
     @Bind(R.id.tv_drawer_name)
-    TextView username;
+    TextView username;                    // 侧滑栏头部 用户名
 
     @Bind(R.id.iv_drawer_sex)
-    ImageView gender;
+    ImageView gender;                    // 侧滑栏头部 用户性别
 
-    int avatarSize;
+
+    int avatarSize;                      // 用户头像的大小
 
     @Override
     public void setContentView(int layoutResID) {
         super.setContentViewWithoutInject(R.layout.drawer_view);
         ViewGroup viewGroup = (ViewGroup) findViewById(R.id.flContentRoot);
         LayoutInflater.from(this).inflate(layoutResID, viewGroup, true);
-        injectViews();
+
+        injectViews(); // 绑定view
+
         avatarSize = getResources().getDimensionPixelSize(R.dimen.user_profile_avatar_size);
-       // setupHeader();
+        navigationView.setNavigationItemSelectedListener(this);  // 设置侧滑栏菜单点击事件
     }
 
+
+    /**
+     *  点击toolbar最左边的menu，打开侧滑栏
+     */
     @Override
     protected void setupToolbar() {
         super.setupToolbar();
@@ -60,11 +69,10 @@ public class BaseDrawerActivity extends BaseActivity {
         }
     }
 
-    @OnClick(R.id.vGlobalMenuHeader)
-    public void onGlobalMenuHeaderClick(final View v) {
-    }
 
-    // 点击用户头像
+    /**
+     *  点击用户头像
+     */
     @OnClick(R.id.ivMenuUserProfilePhoto)
     void onPhotoClick(final View v) {
         SharedPreferences sp = getSharedPreferences("user_sp", Context.MODE_PRIVATE);
@@ -85,5 +93,48 @@ public class BaseDrawerActivity extends BaseActivity {
             startActivity(new Intent(BaseDrawerActivity.this, LoginActivity.class));
     }
 
+
+    /**
+     * 侧滑栏菜单点击跳转相应Activity
+     * @param menuItem
+     * @return
+     */
+    @Override
+    public boolean onNavigationItemSelected(final MenuItem menuItem) {
+
+        int menuItemId = menuItem.getItemId();
+
+        switch (menuItemId) {
+            case R.id.menu_main:           // 跳转到首页
+                drawerLayout.closeDrawer(Gravity.LEFT);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(new Intent(BaseDrawerActivity.this, MainActivity.class));
+                    }
+                }, 10);
+                break;
+            case R.id.menu_order:           // 跳转到商品页面
+                drawerLayout.closeDrawer(Gravity.LEFT);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(new Intent(BaseDrawerActivity.this, ShopActivity.class));
+                    }
+                }, 10);
+                break;
+            case R.id.menu_act:           // 跳转到活动页面
+                drawerLayout.closeDrawer(Gravity.LEFT);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(new Intent(BaseDrawerActivity.this, ActActivity.class));
+                    }
+                }, 10);
+                break;
+        }
+
+        return  true;
+    }
 
 }

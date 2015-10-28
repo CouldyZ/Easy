@@ -31,7 +31,7 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class NewPostActivity extends AppCompatActivity implements PostRVAdapter.OnFeedItemClickListener {
+public class NewPostActivity extends AppCompatActivity implements PostRVAdapter.OnPostItemClickListener {
 
     private static final String TAG = "MainActivity";
 
@@ -82,11 +82,6 @@ public class NewPostActivity extends AppCompatActivity implements PostRVAdapter.
         rvPost.setLayoutManager(linearLayoutManager);
 
         postRVAdapter = new PostRVAdapter(this, postList);
-        postRVAdapter.setOnPostItemClickListener(this);
-//        rvPost.setAdapter(postRVAdapter);
-
-
-        //postRVAdapter.notifyItemChanged(postList.size());
         postRVAdapter.setOnPostItemClickListener(this);
 
         rvPost.addOnScrollListener(new RecyclerView.OnScrollListener() {

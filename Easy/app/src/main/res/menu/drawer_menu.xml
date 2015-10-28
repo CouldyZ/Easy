@@ -6,11 +6,11 @@
             android:icon="@mipmap/ic_global_menu_feed"
             android:title="@string/drawer_menu_main" />
         <item
-            android:id="@+id/menu_news"
+            android:id="@+id/menu_order"
             android:icon="@mipmap/ic_global_menu_news"
             android:title="@string/drawer_menu_order" />
         <item
-            android:id="@+id/menu_popular"
+            android:id="@+id/menu_act"
             android:icon="@mipmap/ic_global_menu_popular"
             android:title="@string/drawer_menu_activity" />
     </group>

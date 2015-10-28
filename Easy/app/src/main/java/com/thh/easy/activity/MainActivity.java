@@ -6,20 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -53,42 +49,40 @@ import butterknife.OnClick;
 /**
  *   主界面:
  *         显示帖子
- *  @author cloud
- *  @time 2015 10 24
  */
-public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.OnFeedItemClickListener {
+public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.OnPostItemClickListener {
 
     private static final String TAG = "MainActivity";
 
-    private boolean pendingIntroAnimation;// 是否开始进入动画
-    private MenuItem inboxMenuItem;
-    private PostRVAdapter postRVAdapter;
+    private boolean pendingIntroAnimation;      // 是否开始进入动画
+    private MenuItem inboxMenuItem;             // toolbar上的meun
+    private PostRVAdapter postRVAdapter;        // rvPost的适配器
 
     @Bind(R.id.rv_post)
-    public RecyclerView rvPost;     // 主界面帖子列表
+    public RecyclerView rvPost;                // 主界面帖子列表
 
     @Bind(R.id.iv_logo)
-    public ImageView ivLogo;        // toolbar的logo
+    public ImageView ivLogo;                   // toolbar的logo
 
     @Bind(R.id.ib_new_post)
-    public FloatingActionButton btnCreate;   // floating action button
+    public FloatingActionButton btnCreate;     // floating action button
 
     @Bind(R.id.cl_main_container)
-    CoordinatorLayout clContainer;
+    CoordinatorLayout clContainer;             // snakebar的根布局
 
-    List<Post> postList = new ArrayList<Post>();
+    List<Post> postList = new ArrayList<Post>();  // 最热帖子的数据集合
 
-    LinearLayoutManager linearLayoutManager;
+    LinearLayoutManager linearLayoutManager;    // recyclerview的布局方式-线性
 
     boolean isLoading = false;
 
-    int currentPage = 1;   // 当前页
+    int currentPage = 1;                        // 当前页
 
-    HttpTools httpTools;
+    HttpTools httpTools;                        // 网络操作工具
 
-    SharedPreferences sp;
+    SharedPreferences sp;                       // 写入登陆信息，部分用户信息
 
-    User u = null;
+    User u = null;                               // 进入此app的用户
 
 
     @Override
@@ -125,6 +119,7 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
             u = (User)FileUtil.readObject(this, "user");
             setUserInfo(u);
         }
+
     }
 
     private void setUserInfo (User u) {
@@ -149,6 +144,7 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
                 .into(ivMenuUserProfilePhoto);
     }
 
+
     /**
      * 设置帖子recyclerview的相应初始数据
      */
@@ -158,10 +154,7 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
 
         postRVAdapter = new PostRVAdapter(this, postList);
         postRVAdapter.setOnPostItemClickListener(this);
-//        rvPost.setAdapter(postRVAdapter);
 
-
-        //postRVAdapter.notifyItemChanged(postList.size());
         postRVAdapter.setOnPostItemClickListener(this);
 
         rvPost.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -179,12 +172,12 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
 
                 //Log.i (TAG, "last - " + lastVisibleItems + " totle - " + totalItemCount);
 
-                if (lastVisibleItems == totalItemCount-1 && dy > 0) {
+                if (lastVisibleItems == totalItemCount - 1 && dy > 0) {
                     if (isLoading) {
                         Log.d(TAG, "ignore manually update!");
                     } else {
                         // loadPosts中控制isLoading
-                         loadPosts();
+                        loadPosts();
                         Log.i(TAG, "new data");
                         isLoading = false;
                     }
@@ -194,6 +187,7 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
 
 
     }
+
 
     /**
      * 请求帖子数据
@@ -400,19 +394,38 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
 
     }
 
+    /**
+     * 点赞
+     * @param v
+     * @param position
+     */
     @Override
     public void onLikeClick(View v, int position) {
+        // TODO 动画。
         Toast.makeText(MainActivity.this, "赞一下~(≧▽≦)~啦啦啦", Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * 更多（menu）
+     * @param v
+     * @param position
+     */
     @Override
     public void onMoreClick(View v, int position) {
+        // TODO 弹出menu
         Toast.makeText(MainActivity.this, "更多", Toast.LENGTH_LONG).show();
     }
 
-    // 点击更多跳转到更多界面
+
+    /**
+     *  点击更多跳转到更多帖子界面
+     */
     @OnClick(R.id.more_new_post)
     void morePost() {
+        // TODO 考虑是否加入动画
         startActivity(new Intent(MainActivity.this, NewPostActivity.class));
     }
+
+
+
 }
