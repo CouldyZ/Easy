@@ -1,0 +1,145 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.thh.easy.activity.SetActivity">
+
+
+    <include
+        android:id="@+id/main_toolbar"
+        layout="@layout/easytoolbar" />
+
+    <LinearLayout
+        android:id="@+id/ll_set_backup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dp"
+            android:text="设置备份"/>
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="200dp"
+            />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/devider_1"
+        android:layout_width="350dp"
+        android:layout_height="1dp"
+        android:background="#7b7070"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/ll_set_backup" />
+
+    <LinearLayout
+        android:id="@+id/ll_set_update"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/devider_1"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dp"
+            android:text="自动更新版本"/>
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="172dp"
+            />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/devider_2"
+        android:layout_width="350dp"
+        android:layout_height="1dp"
+        android:background="#7b7070"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/ll_set_update"
+        android:layout_alignParentStart="true" />
+
+
+    <LinearLayout
+        android:id="@+id/ll_set_push"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:orientation="horizontal"
+        android:layout_below="@+id/devider_2"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dp"
+            android:text="推送消息"/>
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="200dp"
+            />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/devider_3"
+        android:layout_width="350dp"
+        android:layout_height="1dp"
+        android:background="#7b7070"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/ll_set_push" />
+
+    <LinearLayout
+        android:id="@+id/ll_set_clear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/devider_3">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dp"
+            android:layout_marginTop="8dp"
+            android:text="清除缓存"/>
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="200dp"
+            android:layout_marginTop="8dp"
+            />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/devider_4"
+        android:layout_width="350dp"
+        android:layout_height="1dp"
+        android:background="#7b7070"
+        android:layout_marginLeft="16dp"
+        android:layout_below="@+id/ll_set_clear"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:id="@+id/btn_set_comfirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/pink_btn_pressed"
+        android:text="退出"
+        android:textColor="#fff"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_below="@+id/devider_4"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp" />
+</RelativeLayout>

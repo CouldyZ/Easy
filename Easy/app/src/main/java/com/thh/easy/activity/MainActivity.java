@@ -9,11 +9,13 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
@@ -23,7 +25,7 @@ import com.android.volley.ext.HttpCallback;
 import com.android.volley.ext.RequestInfo;
 import com.android.volley.ext.tools.HttpTools;
 import com.squareup.picasso.Picasso;
-import com.thh.easy.Constant.StringConstant;
+import com.thh.easy.constant.StringConstant;
 import com.thh.easy.R;
 import com.thh.easy.adapter.PostRVAdapter;
 import com.thh.easy.entity.Post;
@@ -50,12 +52,13 @@ import butterknife.OnClick;
  *   主界面:
  *         显示帖子
  */
-public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.OnPostItemClickListener {
+public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.OnPostItemClickListener, BaseDrawerActivity.OnStartActivityListener {
 
     private static final String TAG = "MainActivity";
 
     private boolean pendingIntroAnimation;      // 是否开始进入动画
     private MenuItem inboxMenuItem;             // toolbar上的meun
+
     private PostRVAdapter postRVAdapter;        // rvPost的适配器
 
     @Bind(R.id.rv_post)
@@ -70,7 +73,10 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
     @Bind(R.id.cl_main_container)
     CoordinatorLayout clContainer;             // snakebar的根布局
 
-    List<Post> postList = new ArrayList<Post>();  // 最热帖子的数据集合
+    @Bind(R.id.sr_main_container)
+    SwipeRefreshLayout srContainer;
+
+    List<Post> postList = new ArrayList<Post>();  // 最新帖子的数据集合
 
     LinearLayoutManager linearLayoutManager;    // recyclerview的布局方式-线性
 
@@ -82,13 +88,15 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
 
     SharedPreferences sp;                       // 写入登陆信息，部分用户信息
 
-    User u = null;                               // 进入此app的用户
+    User u = null;                              // 进入此app的用户
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setOnStartActivityListener(this);
 
         ButterKnife.bind(this);
 
@@ -101,8 +109,49 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
         }
 
         loadPosts();
-       // 设置RecycleView
+        // 设置RecycleView
         setupPost();
+
+        srContainer.setColorSchemeResources(R.color.easy_primary_light, R.color.easy_primary, R.color.easy_primary_dark);
+        srContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (srContainer.isRefreshing()) {
+                    Log.d(TAG, "刷新请求");
+                    // 网络检查
+                    if (Utils.checkNetConnection(getApplicationContext())) {
+                        Log.d(TAG, "我联网啦");
+                        currentPage = 1;
+                        rvPost.removeAllViews();
+                        postRVAdapter.notifyItemRangeRemoved(0, postList.size());
+                        postList.clear();
+                        loadPosts();
+                        rvPost.scrollToPosition(0);
+                    }
+                    else {
+                        Snackbar.make(clContainer, "少年呦 你联网了嘛", Snackbar.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+        rvPost.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_MOVE:
+                        srContainer.setEnabled(false);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        srContainer.setEnabled(true);
+                        break;
+
+                }
+                return false;
+            }
+        });
 
         Intent intent = getIntent();
         if (intent.getBooleanExtra("login_success", false)) {
@@ -117,11 +166,18 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
         sp = getSharedPreferences("user_sp", Context.MODE_PRIVATE);
         if (sp.getBoolean("user_login", false)) {
             u = (User)FileUtil.readObject(this, "user");
+
+            if (u == null)
+                return;
+
             setUserInfo(u);
         }
-
     }
 
+    /**
+     * 设置用户信息
+     * @param u
+     */
     private void setUserInfo (User u) {
         username.setText(u.getUsername());
 
@@ -135,13 +191,15 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
             gender.setBackgroundResource(R.mipmap.ic_user_sox);
         }
 
-        File avatar = new File (u.getAvatarFilePath());
-        Picasso.with(getApplicationContext())
-                .load(avatar)
-                .centerCrop()
-                .resize(avatarSize, avatarSize)
-                .transform(new RoundedTransformation())
-                .into(ivMenuUserProfilePhoto);
+        if (u.getAvatarFilePath() != null) {
+            File avatar = new File (u.getAvatarFilePath());
+            Picasso.with(getApplicationContext())
+                    .load(avatar)
+                    .centerCrop()
+                    .resize(avatarSize, avatarSize)
+                    .transform(new RoundedTransformation())
+                    .into(ivMenuUserProfilePhoto);
+        }
     }
 
 
@@ -151,11 +209,6 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
     private void setupPost() {
         linearLayoutManager = new LinearLayoutManager(this);
         rvPost.setLayoutManager(linearLayoutManager);
-
-        postRVAdapter = new PostRVAdapter(this, postList);
-        postRVAdapter.setOnPostItemClickListener(this);
-
-        postRVAdapter.setOnPostItemClickListener(this);
 
         rvPost.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -184,8 +237,6 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
                 }
             }
         });
-
-
     }
 
 
@@ -193,26 +244,38 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
      * 请求帖子数据
      */
     private void loadPosts() {
+        if (postRVAdapter == null) {
+            postRVAdapter = new PostRVAdapter(MainActivity.this, postList);
+            postRVAdapter.setOnPostItemClickListener(MainActivity.this);
+        }
+
+        // 向服务器发送数据
         Map<String, String> params = new HashMap<String, String>(2);
         params.put(StringConstant.CURRENT_PAGE_KEY, currentPage+"");
         params.put(StringConstant.PER_PAGE_KEY, StringConstant.PER_PAGE_COUNT + "");
+
+        // 如果登陆了，就把数据设置进去
+        if(u!= null){
+            params.put(StringConstant.USER_ID, u.getId()+"");
+        }
         RequestInfo info = new RequestInfo(StringConstant.SERVER_NEWPOST_URL, params);
         httpTools.post(info, new HttpCallback() {
             @Override
             public void onStart() {
                 isLoading = true;
-                Log.i(TAG, "当前页" + currentPage);
+                Log.i("New - HttpCallback", "当前页" + currentPage);
             }
 
             @Override
             public void onFinish() {
                 // 一共加载多少条
                 isLoading = false;
+                srContainer.setRefreshing(false);
             }
 
             @Override
             public void onResult(String s) {
-                Log.i(TAG, s);
+                Log.i("New - HttpCallback", s);
 
                 if (StringConstant.NULL_VALUE.equals(s)) {
                     Snackbar.make(clContainer, "网络貌似粗错了", Snackbar.LENGTH_SHORT).show();
@@ -220,11 +283,11 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
                 }
 
                 if ("[]".equals(s)) {
-                   // Snackbar.make(clContainer, "什么帖子都没有呦", Snackbar.LENGTH_SHORT).show();
+                    // Snackbar.make(clContainer, "什么帖子都没有呦", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-
                 onReadJson(s);
+                Log.d("New - HttpCallback", postRVAdapter.getItemCount() + " loadPost");
 
                 currentPage++;
             }
@@ -235,6 +298,7 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
 
             @Override
             public void onCancelled() {
+                srContainer.setRefreshing(false);
             }
 
             @Override
@@ -242,44 +306,49 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
 
             }
         });
-
-
     }
 
-    private void onReadJson(String json) {
+    public void onReadJson(String json) {
+        int insertPos = postRVAdapter.getItemCount();
         try {
             JSONArray jsonArray = new JSONArray(json);
 
-            Log.i(TAG, jsonArray.length()+"");
+            Log.i(TAG, jsonArray.length()+" onReadJson");
 
             for (int i = 0 ; i < jsonArray.length() ; i ++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
+                JSONObject postObj = jsonObject.getJSONObject("posts");
+                JSONObject userObj = postObj.getJSONObject("users");
+
                 Post post = null;
 
                 String imageUrl = null;
-                if (!jsonObject.isNull("image")) {
-                    imageUrl = jsonObject.getString("image");
-                    Log.i(TAG, "装逼如风 常伴吾身"+i);
+                if (!postObj.isNull("image")) {
+                    imageUrl = postObj.getJSONObject("image").getString("urls");
+//                    Log.i(TAG, "装逼如风 常伴吾身"+i);
                 }
 
                 String avatar = null;
-                if (!jsonObject.isNull("avatar"))
-                    avatar = jsonObject.getString("avatar");
+                if (!postObj.getJSONObject("users").isNull("image"))
+                    avatar = postObj.getJSONObject("users").getString("image");
 
-                post = new Post(jsonObject.getInt("id"),
-                        jsonObject.getInt("user.id"),
-                        jsonObject.getString("user.name"),
-                        jsonObject.getString("contents"),
-                        jsonObject.getString("dates"),
+                post = new Post(postObj.getInt("id"),
+                        userObj.getInt("id"),
+                        userObj.getString("name"),
+                        postObj.getString("contents"),
+                        postObj.getString("dates"),
                         imageUrl,
                         avatar,
-                        jsonObject.getInt("likes"));
+                        jsonObject.getInt("likes"),
+                        jsonObject.getInt("isLike"));
 
                 postList.add(post);
             }
 
+            postRVAdapter.notifyItemRangeInserted(insertPos, postList.size() - insertPos);
+            postRVAdapter.notifyItemRangeChanged(insertPos, postList.size() - insertPos);
 
-            postRVAdapter.notifyItemChanged(postList.size());
+            currentPage++;
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -358,8 +427,9 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
             Snackbar.make(clContainer, "少年呦 你联网了嘛", Snackbar.LENGTH_SHORT).show();
         }
 
-        //loadPosts();
+//        loadPosts();
         rvPost.setAdapter(postRVAdapter);
+        rvPost.scrollToPosition(0);
         isLoading = false;
     }
 
@@ -389,9 +459,13 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
      */
     @Override
     public void onCommentsClick(View v, int position) {
-
-        Toast.makeText(MainActivity.this, "点击了评论", Toast.LENGTH_LONG).show();
-
+        final Intent intent = new Intent(this, CommentsActivity.class);
+        int[] startingLocation = new int[2];
+        v.getLocationOnScreen(startingLocation);
+        intent.putExtra(CommentsActivity.COMMENT_DRAWING_START_LOCATION, startingLocation[1]);
+        intent.putExtra("postID", postList.get(position).getId());
+        startActivity(intent);
+        overridePendingTransition(0, 0);
     }
 
     /**
@@ -400,9 +474,46 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
      * @param position
      */
     @Override
-    public void onLikeClick(View v, int position) {
-        // TODO 动画。
-        Toast.makeText(MainActivity.this, "赞一下~(≧▽≦)~啦啦啦", Toast.LENGTH_LONG).show();
+    public void onLikeClick(View v, final int position) {
+        User u = (User) FileUtil.readObject(getApplicationContext(), "user");
+        if (u == null) {
+            Snackbar.make(clContainer, "岂可修!要先登陆啊", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+
+        Map<String, String> params = new HashMap<>(2);
+        params.put(StringConstant.LIKE_UID, u.getId()+"");
+        params.put(StringConstant.LIKE_POST_ID, postList.get(position).getId() + "");
+        RequestInfo info = new RequestInfo(StringConstant.SERVER_LIKE_URL, params);
+        httpTools.post(info, new HttpCallback() {
+            @Override
+            public void onStart() {
+            }
+
+            @Override
+            public void onFinish() {
+            }
+
+            @Override
+            public void onResult(String s) {
+                if ("1".equals(s))
+                    postRVAdapter.onClickLike(position, PostRVAdapter.LIKE);
+                else if ("0".equals(s))
+                    postRVAdapter.onClickLike(position, PostRVAdapter.CANCEL_LIKE);
+            }
+
+            @Override
+            public void onError(Exception e) {
+            }
+
+            @Override
+            public void onCancelled() {
+            }
+
+            @Override
+            public void onLoading(long l, long l1) {
+            }
+        });
     }
 
     /**
@@ -420,12 +531,33 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
     /**
      *  点击更多跳转到更多帖子界面
      */
-    @OnClick(R.id.more_new_post)
+    @OnClick(R.id.more_hot_post)
     void morePost() {
         // TODO 考虑是否加入动画
-        startActivity(new Intent(MainActivity.this, NewPostActivity.class));
+        Intent intent = new Intent(MainActivity.this, HotPostActivity.class);
+
+        if(u!= null){
+            intent.putExtra(StringConstant.USER_ID, u.getId());
+        }
+
+        startActivity(intent);
     }
 
 
+    @Override
+    public void onStartActivity(Class targetActivity) {
+        if (MainActivity.class == targetActivity)
+            return;
 
+        startActivity(new Intent(MainActivity.this, targetActivity));
+        overridePendingTransition(0, 0);
+    }
+
+    /**
+     * 点击主界面fab 进入发帖界面
+     */
+    @OnClick(R.id.ib_new_post)
+    void onClickPostFAB(){
+        startActivity(new Intent(MainActivity.this, AddPostActivity.class));
+    }
 }

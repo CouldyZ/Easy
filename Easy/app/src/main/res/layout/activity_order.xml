@@ -1,0 +1,93 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#d4d3d3"
+    tools:context="com.thh.easy.activity.OrderActivity">
+
+    <!-- 顶部toolbar -->
+    <include
+        android:id="@+id/main_toolbar"
+        layout="@layout/easytoolbar" />
+
+    <!-- 选择拿货时间项 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:id="@+id/ll_choose_time">
+
+        <TextView
+            android:layout_marginTop="16dp"
+            android:text="拿货时间"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"/>
+
+        <!-- 选择拿货时间 -->
+        <TextView
+            android:id="@+id/tv_order_take_time"
+            android:text="请选择拿货时间"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="150dp"
+            android:layout_marginTop="16dp"/>
+
+        <!-- 选择拿货时间的按钮 -->
+        <ImageView
+            android:id="@+id/iv_order_take_time_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="6dp"
+            android:background="@mipmap/arrow_right_blue"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ll_choose_time">
+
+        <!-- 订单项 -->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_order"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="16dp"/>
+
+        <!-- 底部布局 -->
+        <LinearLayout
+            android:id="@+id/ll_order_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:background="#a3a0a0"
+            android:layout_gravity="center_horizontal|bottom">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:text="总计 ¥ "/>
+
+            <!-- 每项商品价格的总和 -->
+            <TextView
+                android:id="@+id/tv_order_sum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="28"/>
+
+            <!-- 确定预定的按钮 -->
+            <Button
+                android:id="@+id/btn_order_ensure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="确定预定"
+                android:background="#06b34f"
+                android:textColor="#fff"
+                android:layout_marginLeft="218dp"/>
+        </LinearLayout>
+    </FrameLayout>
+</RelativeLayout>

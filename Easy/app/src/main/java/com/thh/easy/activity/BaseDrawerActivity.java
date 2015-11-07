@@ -1,11 +1,14 @@
 package com.thh.easy.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -38,7 +41,12 @@ public class BaseDrawerActivity extends BaseActivity implements NavigationView.O
     ImageView gender;                    // 侧滑栏头部 用户性别
 
 
+    ActionBarDrawerToggle mDrawerToggle; // 处理点击按钮打开或者关闭menu
+
     int avatarSize;                      // 用户头像的大小
+
+    OnStartActivityListener onStartActivityListener;
+
 
     @Override
     public void setContentView(int layoutResID) {
@@ -49,6 +57,12 @@ public class BaseDrawerActivity extends BaseActivity implements NavigationView.O
         injectViews(); // 绑定view
 
         avatarSize = getResources().getDimensionPixelSize(R.dimen.user_profile_avatar_size);
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, getToolbar(), R.string.open,
+                R.string.close);
+        drawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
+
         navigationView.setNavigationItemSelectedListener(this);  // 设置侧滑栏菜单点击事件
     }
 
@@ -110,7 +124,9 @@ public class BaseDrawerActivity extends BaseActivity implements NavigationView.O
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        startActivity(new Intent(BaseDrawerActivity.this, MainActivity.class));
+//                        startActivity(new Intent(BaseDrawerActivity.this, MainActivity.class));
+//                        overridePendingTransition(0, 0);
+                        onStartActivityListener.onStartActivity(MainActivity.class);
                     }
                 }, 10);
                 break;
@@ -119,16 +135,36 @@ public class BaseDrawerActivity extends BaseActivity implements NavigationView.O
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        startActivity(new Intent(BaseDrawerActivity.this, ShopActivity.class));
+//                        startActivity(new Intent(BaseDrawerActivity.this, ShopActivity.class));
+//                        overridePendingTransition(0, 0);
+                        onStartActivityListener.onStartActivity(ShopActivity.class);
                     }
                 }, 10);
                 break;
-            case R.id.menu_act:           // 跳转到活动页面
+            case R.id.menu_act:             // 跳转到活动页面
                 drawerLayout.closeDrawer(Gravity.LEFT);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        startActivity(new Intent(BaseDrawerActivity.this, ActActivity.class));
+                        onStartActivityListener.onStartActivity(ActActivity.class);
+                    }
+                }, 10);
+                break;
+            case R.id.menu_about:             // 跳转到关于页面
+                drawerLayout.closeDrawer(Gravity.LEFT);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        onStartActivityListener.onStartActivity(InfoActivity.class);
+                    }
+                }, 10);
+                break;
+            case R.id.menu_settings:           // 跳转到设置页面
+                drawerLayout.closeDrawer(Gravity.LEFT);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        onStartActivityListener.onStartActivity(SetActivity.class);
                     }
                 }, 10);
                 break;
@@ -137,4 +173,30 @@ public class BaseDrawerActivity extends BaseActivity implements NavigationView.O
         return  true;
     }
 
+    public void setOnStartActivityListener (Activity activity) {
+        onStartActivityListener = (OnStartActivityListener) activity;
+    }
+
+    public interface OnStartActivityListener {
+        void onStartActivity(Class<?> targetActivity);
+    }
+
+
+    @Override
+    public void onConfigurationChanged(final Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        if (item.getItemId() == android.support.v7.appcompat.R.id.home) {
+            return mDrawerToggle.onOptionsItemSelected(item);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public static void exit() {
+        System.exit(0);
+    }
 }

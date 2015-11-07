@@ -15,27 +15,32 @@
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/cl_main_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="56dp">
 
-
-        <LinearLayout
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/sr_main_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="?attr/actionBarSize"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <include
-                android:id="@+id/head_main_hot"
-                layout="@layout/main_new_header" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_post"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbars="none" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        </LinearLayout>
+                <include
+                    android:id="@+id/head_main_hot"
+                    layout="@layout/main_hot_header" />
 
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_post"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scrollbars="none" />
+
+            </LinearLayout>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/ib_new_post"

@@ -55,6 +55,7 @@ public class UserProfileActivity extends AppCompatActivity implements RevealBack
         if (savedInstanceState == null) {
             final int[] startingLocation =
                     getIntent().getIntArrayExtra(ARG_REVEAL_START_LOCATION);
+            System.out.println("startLocation-------->" + startingLocation[0] +"----------"+ startingLocation[0]);
             vRevealBackground.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {

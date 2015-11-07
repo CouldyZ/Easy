@@ -23,7 +23,19 @@ public class Post {
 
     private int like;
 
+    private int likeflag;
+
     public Post() {
+    }
+
+    public Post(int id, int uid, String username, String content, String date, String imageUrl, String avatar) {
+        this.id = id;
+        this.uid = uid;
+        this.username = username;
+        this.content = content;
+        this.date = date;
+        this.imageUrl = imageUrl;
+        this.avatar = avatar;
     }
 
     public Post(int id, int uid, String username, String content, String date, String imageUrl, String avatar, int like) {
@@ -35,6 +47,18 @@ public class Post {
         this.imageUrl = imageUrl;
         this.avatar = avatar;
         this.like = like;
+    }
+
+    public Post(int id, int uid, String username, String content, String date, String imageUrl, String avatar, int like, int likeflag) {
+        this.id = id;
+        this.uid = uid;
+        this.username = username;
+        this.content = content;
+        this.date = date;
+        this.imageUrl = imageUrl;
+        this.avatar = avatar;
+        this.like = like;
+        this.likeflag = likeflag;
     }
 
     public int getId() {
@@ -99,5 +123,13 @@ public class Post {
 
     public void setLike(int like) {
         this.like = like;
+    }
+
+    public int getLikeflag() {
+        return likeflag;
+    }
+
+    public void setLikeflag(int likeflag) {
+        this.likeflag = likeflag;
     }
 }

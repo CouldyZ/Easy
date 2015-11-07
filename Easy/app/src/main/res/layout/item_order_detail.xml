@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="46dp">
+
+    <!-- 商品名 -->
+    <TextView
+        android:id="@+id/tv_order_goods_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:text="茉莉鲜奶茶"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="X"
+        android:textSize="12sp"
+        android:layout_marginLeft="116dp"/>
+
+    <!-- 商品数量 -->
+    <TextView
+        android:id="@+id/tv_order_goods_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3"
+       />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="¥"
+        android:textSize="12sp"
+        android:layout_marginLeft="100dp"/>
+
+    <!-- 商品项小节-->
+    <TextView
+        android:id="@+id/tv_order_goods_sum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3"/>
+
+</LinearLayout>

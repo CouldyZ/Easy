@@ -63,7 +63,7 @@ public class FileUtil {
             return ois.readObject();
         }
         catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         finally {
             if (ois != null) {

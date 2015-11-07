@@ -12,11 +12,16 @@
 
     <color name="btn_light_normal">#00000000</color>
     <color name="btn_light_pressed">#7e7d7d</color>
+    <color name="tab_indicator_color">#1f4668</color>
+    <color name="tab_selected_textColor">#303F9F</color>
 
     <color name="bg_comments">#40c9b5b5</color>
     <color name="text_like_counter">#2b5a83</color>
 
     <color name="btn_context_menu_normal">#ffffff</color>
     <color name="btn_context_menu_pressed">#40000000</color>
+
+    <color name="btn_send_normal">#02c754</color>
+    <color name="btn_send_pressed">#006633</color>
 
 </resources>

@@ -17,6 +17,8 @@ import com.thh.easy.util.RoundedTransformation;
 import com.thh.easy.util.Utils;
 import com.thh.easy.view.SquaredFrameLayout;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -25,16 +27,27 @@ import java.util.List;
  */
 public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener{
 
-    private static final int ANIMATED_ITEMS_COUNT = 2;
+    public static final int LIKE = 0;
+    public static final int CANCEL_LIKE = 1;
+
+    private boolean animationsLocked = true;
 
     private Context context;
+
+    private static final String TAG = "PostRVAdapter";
+
+    private static final int ANIMATED_ITEMS_COUNT = 2;
     private int lastAnimatedPosition = -1;
 
     private OnPostItemClickListener onPostItemClickListener;
 
     private List<Post> posts;
 
+    private List<CellPostViewHolder> holderList = new ArrayList<>();
+
     private int avatarSize;
+
+    boolean b = true;
 
 
     public PostRVAdapter(Context context, List<Post> posts) {
@@ -51,28 +64,33 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            final View view = LayoutInflater.from(context)
-                    .inflate(R.layout.item_post, parent, false);
-            return new CellPostViewHolder(view);
+        final View view = LayoutInflater.from(context)
+                .inflate(R.layout.item_post, parent, false);
+        return new CellPostViewHolder(view);
     }
 
 
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-
-        runEnterAnimation(viewHolder.itemView, position);
-
+        System.out.println(Calendar.getInstance().getTime().toString());
+        animationsLocked = true;
         CellPostViewHolder holder = (CellPostViewHolder) viewHolder;
 
         // 从List中获取数据 填充View
         ((CellPostViewHolder) viewHolder).tvUserName.setText(posts.get(position).getUsername());
-        ((CellPostViewHolder) viewHolder).tvPostTime.setText(posts.get(position).getDate());
         ((CellPostViewHolder) viewHolder).tvPostContent.setText(posts.get(position).getContent());
-        ((CellPostViewHolder) viewHolder).tsLikesCounter.setText(""+posts.get(position).getLike());
+        ((CellPostViewHolder) viewHolder).tsLikesCounter.setText("" + posts.get(position).getLike());
+        ((CellPostViewHolder) viewHolder).tvPostTime.setText(posts.get(position).getDate());
+
+        if (posts.get(position).getLikeflag() == 1)
+            ((CellPostViewHolder) viewHolder).ibLike.setImageResource(R.mipmap.ic_heart_red);
+        else if (posts.get(position).getLikeflag() == 0)
+            ((CellPostViewHolder) viewHolder).ibLike.setImageResource(R.mipmap.ic_like_grey);
 
         // 加载头像
         if (posts.get(position).getAvatar() != null && posts.get(position).getAvatar().contains("http://"))
+        {
             Picasso.with(context)
                     .load(posts.get(position).getAvatar())
                     .centerCrop()
@@ -80,10 +98,16 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     .transform(new RoundedTransformation())
                     .placeholder(R.mipmap.bili_default_avatar)
                     .into(((CellPostViewHolder) viewHolder).ibUserProtrait);
+        }
+
+
+        System.out.println(posts.get(position).getImageUrl());
 
         // 加载图片
         if (posts.get(position).getImageUrl() != null && posts.get(position).getImageUrl().contains("http://"))
         {
+            ((CellPostViewHolder) viewHolder).frameLayout.setVisibility(View.VISIBLE);
+
             Picasso.with(context)
                     .load(posts.get(position).getImageUrl())
                     .placeholder(R.mipmap.search_loading_1)
@@ -93,11 +117,15 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         else
         {
             ((CellPostViewHolder) viewHolder).frameLayout.setVisibility(View.GONE);
-//            System.out.println(position);
         }
 
         // 设置item里各点击事件
         setItemClickListener(holder, position);
+
+        holderList.add(position, holder);
+
+        animationsLocked = false;
+        runEnterAnimation(viewHolder.itemView, position);
     }
 
     /**
@@ -130,6 +158,9 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
      * @param position
      */
     private void runEnterAnimation(View view, int position) {
+        if (animationsLocked)
+            return;
+
         if (position >= ANIMATED_ITEMS_COUNT - 1) {
             return;
         }
@@ -138,10 +169,13 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             lastAnimatedPosition = position;
             view.setTranslationY(Utils.getScreenHeight(context));
             view.animate()
-                    .translationY(0)
+                    .translationY(0f)
                     .setInterpolator(new DecelerateInterpolator(3.f))
                     .setDuration(700)
                     .start();
+
+//            if (position == 0)
+//                Log.d(TAG, view.getTranslationY()+" " + view.getY());
         }
     }
 
@@ -181,6 +215,20 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
+    public void onClickLike(int position, int flag) {
+        if (flag == LIKE) {
+            posts.get(position).setLike(posts.get(position).getLike() + 1);
+            holderList.get(position).ibLike.setImageResource(R.mipmap.ic_heart_red);
+
+        }
+        else if (flag == CANCEL_LIKE) {
+            posts.get(position).setLike(posts.get(position).getLike() - 1);
+            holderList.get(position).ibLike.setImageResource(R.mipmap.ic_like_grey);
+        }
+
+        notifyItemChanged(position);
+    }
+
     @Override
     public void onClick(View view) {
 
@@ -208,6 +256,10 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             }
         }
+    }
+
+    public List<Post> getPosts() {
+        return posts;
     }
 
     public interface OnPostItemClickListener {

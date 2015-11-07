@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.android.volley.ext.HttpCallback;
 import com.android.volley.ext.RequestInfo;
 import com.android.volley.ext.tools.HttpTools;
-import com.thh.easy.Constant.StringConstant;
+import com.thh.easy.constant.StringConstant;
 import com.thh.easy.R;
 import com.thh.easy.util.StringUtil;
 
@@ -72,7 +72,7 @@ public class RegActivity extends AppCompatActivity implements TextWatcher{
 
         ButterKnife.bind(RegActivity.this);
 
-        tvTitle.setText("登陆");
+        tvTitle.setText("注册");
         ivLogo.setVisibility(View.GONE);
 
         HttpTools.init(this);

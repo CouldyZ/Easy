@@ -6,6 +6,20 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <!-- 拍照 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -14,7 +28,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".activity.MainActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,7 +55,7 @@
             android:label="BaseDrawerActivity" >
         </activity>
         <activity
-            android:name=".activity.NewPostActivity"
+            android:name=".activity.HotPostActivity"
             android:label="NewPostActivity" >
         </activity>
         <activity
@@ -51,6 +65,44 @@
         <activity
             android:name=".activity.ShopActivity"
             android:label="@string/title_activity_shop" >
+        </activity>
+        <activity
+            android:name=".activity.CommentsActivity"
+            android:label="@string/title_activity_comments" >
+        </activity>
+        <activity
+            android:name=".activity.AddPostActivity"
+            android:label="@string/title_activity_add_post" >
+        </activity>
+        <activity
+            android:name=".activity.OrgActActivity"
+            android:label="@string/title_activity_org_act" >
+        </activity>
+        <activity
+            android:name=".activity.GoodsActivity"
+            android:label="@string/title_activity_shop_detail" >
+        </activity>
+        <activity
+            android:name=".activity.ActDetailActivity"
+            android:label="@string/title_activity_act_detail" >
+        </activity>
+        <activity
+            android:name=".activity.OrderActivity"
+            android:label="@string/title_activity_order" >
+        </activity>
+        <activity
+            android:name=".activity.SetActivity"
+            android:label="@string/title_activity_set" >
+        </activity>
+        <activity
+            android:name=".activity.InfoActivity"
+            android:label="@string/title_activity_info" >
+        </activity>
+        <activity
+            android:name=".activity.TakePhotoActivity"
+            android:label="@string/title_activity_take_photo"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.TransparentActivity.FullScreen">
         </activity>
     </application>
 

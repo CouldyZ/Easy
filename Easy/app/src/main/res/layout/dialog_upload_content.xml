@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:id="@+id/ll_dialog_picture"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/tv_take_photo"
+        android:layout_width="270dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="30dp"
+        android:text="拍照上传"/>
+
+    <TextView
+        android:id="@+id/tv_from_atlas"
+        android:layout_marginTop="18dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginBottom="30dp"
+        android:layout_width="270dp"
+        android:layout_height="wrap_content"
+        android:text="从手机相册选择"/>
+</LinearLayout>

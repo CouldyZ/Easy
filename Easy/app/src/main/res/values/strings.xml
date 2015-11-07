@@ -7,6 +7,9 @@
     <string name="drawer_menu_order">预定商品</string>
     <string name="drawer_menu_profile">个人信息</string>
 
+    <string name="open">打开</string>
+    <string name="close">关闭</string>
+
     <string name="activity_main_newest_title">大家在都在看</string>
     <string name="activity_main_small_button_text">进去看看</string>
     <string name="activity_main_hotest_title">最热的帖子</string>
@@ -14,6 +17,7 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_reg">RegActivity</string>
+    <string name="title_activity_org_act">OrgActActivity</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_search">search</string>
@@ -37,4 +41,14 @@
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_shop">ShopActivity</string>
+    <string name="title_activity_comments">CommentsActivity</string>
+    <string name="title_activity_publish">PublishActivity</string>
+    <string name="title_activity_add_post">AddPostActivity</string>
+    <string name="title_activity_shop_detail">ShopDetailActivity</string>
+    <string name="title_activity_act_detail">ActDetailActivity</string>
+    <string name="title_activity_order">OrderActivity</string>
+    <string name="title_activity_set">SetActivity</string>
+    <string name="title_activity_info">InfoActivity</string>
+    <string name="title_activity_take_photo">TakePhotoActivity</string>
+
 </resources>

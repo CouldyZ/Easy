@@ -19,7 +19,7 @@ import android.widget.TextView;
 import com.android.volley.ext.HttpCallback;
 import com.android.volley.ext.RequestInfo;
 import com.android.volley.ext.tools.HttpTools;
-import com.thh.easy.Constant.StringConstant;
+import com.thh.easy.constant.StringConstant;
 import com.thh.easy.R;
 import com.thh.easy.entity.User;
 import com.thh.easy.util.StringUtil;

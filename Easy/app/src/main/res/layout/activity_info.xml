@@ -1,0 +1,52 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.thh.easy.activity.InfoActivity">
+
+    <include
+        android:id="@+id/main_toolbar"
+        layout="@layout/easytoolbar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:background="@color/easy_primary">
+
+        <ImageView
+            android:id="@+id/iv_app_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/ic_launcher"
+            />
+        <TextView
+            android:id="@+id/tv_app_name"
+            android:text="悠哉"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_below="@+id/iv_app_icon"
+            android:layout_centerHorizontal="true"
+            />
+        <TextView
+            android:text="当前版本：1.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_marginTop="6dp"
+            android:layout_below="@+id/tv_app_name"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:text="开发人员：张仁礼、苏小红、徐薇、陈楷元、张云"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_marginTop="33dp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

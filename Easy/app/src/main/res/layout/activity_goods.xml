@@ -1,0 +1,86 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.thh.easy.activity.GoodsActivity">
+
+    <include
+        android:id="@+id/main_toolbar"
+        layout="@layout/easytoolbar" />
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/cl_goods_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="56dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- 商品列表头部 商家信息-->
+                <include
+                    android:id="@+id/cv_shop_detail"
+                    layout="@layout/item_shop"/>
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_goods"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="none" />
+
+                    <!-- 底部购物车布局 -->
+                    <LinearLayout
+                        android:layout_marginBottom="0dp"
+                        android:id="@+id/ll_add_goods"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="#89887e"
+                        android:elevation="@dimen/default_elevation"
+                        android:gravity="center_vertical"
+                        android:layout_gravity="center_horizontal|bottom">
+
+                        <!-- 购物车 -->
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_margin="16dp"
+                            android:background="@mipmap/icon_cart"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#fff"
+                            android:text="¥"/>
+
+                        <!-- 小计 总价 -->
+                        <TextView
+                            android:id="@+id/order_sum_price"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="3dp"
+                            android:text="12.0"
+                            android:textColor="#fff"/>
+
+                        <!-- 下订单按钮 -->
+                        <Button
+                            android:id="@+id/btn_new_order"
+                            android:layout_width="128dp"
+                            android:layout_height="match_parent"
+                            android:background="#06b34f"
+                            android:layout_marginLeft="146dp"
+                            android:layout_gravity="right"
+                            android:textColor="#fff"
+                            android:text="去订购"/>
+                    </LinearLayout>
+                </FrameLayout>
+
+            </LinearLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>

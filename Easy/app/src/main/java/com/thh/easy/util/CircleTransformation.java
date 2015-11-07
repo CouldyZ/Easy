@@ -8,9 +8,6 @@ import android.graphics.Paint;
 
 import com.squareup.picasso.Transformation;
 
-/**
- * Created by Miroslaw Stanek on 20.01.15.
- */
 public class CircleTransformation implements Transformation {
 
     private static final int STROKE_WIDTH = 6;
