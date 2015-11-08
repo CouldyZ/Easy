@@ -4,12 +4,12 @@ package com.thh.easy.entity;
  * Created by cloud on 2015/11/9.
  */
 public class OrderItem {
-    private Goods goods;
     private int count;
+    private int goodsId;
 
-    public OrderItem(int count, Goods goods) {
+    public OrderItem(int count, int goodsId) {
         this.count = count;
-        this.goods = goods;
+        this.goodsId = goodsId;
     }
 
     public int getCount() {
@@ -20,11 +20,11 @@ public class OrderItem {
         this.count = count;
     }
 
-    public Goods getGoods() {
-        return goods;
+    public int getGoodsId() {
+        return goodsId;
     }
 
-    public void setGoods(Goods goods) {
-        this.goods = goods;
+    public void setGoodsId(int goodsId) {
+        this.goodsId = goodsId;
     }
 }

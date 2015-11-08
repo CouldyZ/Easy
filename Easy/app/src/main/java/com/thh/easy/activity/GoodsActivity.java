@@ -31,10 +31,13 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.OnClick;
 
-public class GoodsActivity extends BaseDrawerActivity {
+public class GoodsActivity extends BaseDrawerActivity implements GoodsRVAdapter.OnItemCountChangedListener{
 
     @Bind(R.id.rv_goods)
     RecyclerView rvGoods;
+
+    @Bind(R.id.order_sum_price)
+    TextView tvSumPrice;
 
     GoodsRVAdapter goodsRVAdapter;
 
@@ -74,11 +77,12 @@ public class GoodsActivity extends BaseDrawerActivity {
 
 
     /**
-     * 请求帖子数据
+     * 请求商品数据
      */
     private void loadGoods() {
         if (goodsRVAdapter == null) {
             goodsRVAdapter = new GoodsRVAdapter(GoodsActivity.this, goodsList);
+
         }
 
         // 向服务器发送数据
@@ -180,6 +184,7 @@ public class GoodsActivity extends BaseDrawerActivity {
         rvGoods.setHasFixedSize(true);
         goodsRVAdapter = new GoodsRVAdapter(this, goodsList);
         rvGoods.setAdapter(goodsRVAdapter);
+        goodsRVAdapter.setChangedListener(this);
     }
 
     /**
@@ -221,6 +226,24 @@ public class GoodsActivity extends BaseDrawerActivity {
 
     }
 
+    private Map<Integer, Integer> itemList = new HashMap<>(); // 商品id，商品数量
+    private Map<Integer, Float> valueList = new HashMap<>(); // 商品id，商品单项总价格
 
+    @Override
+    public void onChanged(View view, int sum, int position, float sumPrices) {
+
+        itemList.put(goodsList.get(position).getId(), sum);
+        valueList.put(goodsList.get(position).getId(), sumPrices);
+        Log.e("values :" ,"sum :" +sum+ "  position: "+ position + "  sumPrices:"+sumPrices);
+        float sums = 0f;
+        for (Map.Entry<Integer, Float> entry : valueList.entrySet()) {
+            Log.e("entry key:", "" + entry.getKey());
+            Log.e("entry Value:", "" + entry.getValue());
+            sums +=  entry.getValue();
+        }
+
+        tvSumPrice.setText(""+sums);
+
+    }
 
 }
