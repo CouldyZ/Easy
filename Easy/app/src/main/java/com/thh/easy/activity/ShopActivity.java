@@ -287,7 +287,6 @@ public class ShopActivity extends BaseDrawerActivity implements
         Intent intent = new Intent(this, GoodsActivity.class);
         intent.putExtra("SHOP_ID", shop.getId());
 
-        System.out.println("ShopActivity--->"+"第"+shop.getId()+"商店被点击了！！！");
         intent.putExtra("SHOP_NAME", ""+shop.getName());
         intent.putExtra("SHOP_URL", ""+shop.getUrl());
 

@@ -17,7 +17,6 @@ import com.thh.easy.entity.Shop;
 import com.thh.easy.util.RoundedTransformation;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import butterknife.Bind;
@@ -63,13 +62,8 @@ public class ShopRVAdpter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        System.out.println("ShopRVAdapter-----> onBindViewHolder: start---" + Calendar.getInstance().getTime().toString());
         CellPostViewHolder holder = (CellPostViewHolder) viewHolder;
         Shop shop = shopList.get(position);
-
-        System.out.println("adapter ---> shop item :" +
-                shop.getUrl() + shop.getAddress() + shop.getPhone()
-                + shop.getId() + shop.getShortcut());
 
         holder.tvShopAdress.setText(shop.getAddress());
         holder.tvShopIntro.setText(shop.getShortcut());
@@ -79,14 +73,14 @@ public class ShopRVAdpter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (shop.getUrl() != null)
         {
             Picasso.with(context)
-                    .load(StringConstant.SERVER_IP+shop.getUrl())
+                    .load(StringConstant.SERVER_IP +"/"+ shop.getUrl())
                     .centerCrop()
                     .resize(avatarSize, avatarSize)
                     .transform(new RoundedTransformation())
                     .placeholder(R.mipmap.bili_default_avatar)
                     .into(((CellPostViewHolder) viewHolder).ivShopImage);
         }
-        System.out.println("ShopAdapter -----> url:"+shop.getUrl());
+
         // 根布局设置监听
         holder.viewRoot.setOnClickListener(this);
         holder.viewRoot.setTag(position);

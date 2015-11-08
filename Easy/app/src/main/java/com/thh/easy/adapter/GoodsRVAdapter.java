@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.thh.easy.R;
+import com.thh.easy.constant.StringConstant;
 import com.thh.easy.entity.Goods;
 import com.thh.easy.util.RoundedTransformation;
 
@@ -24,14 +25,13 @@ import butterknife.ButterKnife;
 /**
  * Created by cloud on 2015/11/2.
  */
-public class GoodsRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener{
+public class GoodsRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private static final int ANIMATED_ITEMS_COUNT = 2;
 
     private Context context;
     private int lastAnimatedPosition = -1;
     private int avatarSize;
-    private TextView count;
 
     private List<Goods> goodsList = new ArrayList<>();
 
@@ -58,16 +58,20 @@ public class GoodsRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
 
-        CellGoodsViewHolder holder = (CellGoodsViewHolder) viewHolder;
+        final CellGoodsViewHolder holder = (CellGoodsViewHolder) viewHolder;
         Goods goods = goodsList.get(position);
+      //  if("0".equals(holder.tvGoodsNum.getText().toString())){
+            holder.ibGoodsMinus.setVisibility(View.INVISIBLE);
+        //}
+
         holder.tvGoodsName.setText(goods.getName());
         holder.tvGoodsPrice.setText("" + goods.getPrice());
-        count = holder.tvGoodsNum;
+
         // 加载头像
         if (goods.getUrl().length() > 26)
         {
             Picasso.with(context)
-                    .load(goods.getUrl())
+                    .load(StringConstant.SERVER_IP+"/"+goods.getUrl())
                     .centerCrop()
                     .resize(avatarSize, avatarSize)
                     .transform(new RoundedTransformation())
@@ -75,9 +79,39 @@ public class GoodsRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     .into(((CellGoodsViewHolder) viewHolder).ivGoodsImage);
         }
 
-        holder.ibGoodsAdd.setOnClickListener(this);
+        holder.ibGoodsAdd.setOnClickListener(new View.OnClickListener(){
+            @Override
+        public void onClick(View view){
 
-        holder.ibGoodsMinus.setOnClickListener(this);
+                if("0".equals(holder.tvGoodsNum.getText().toString())){
+                    holder.ibGoodsMinus.setVisibility(View.VISIBLE);
+                }
+
+                Integer count = Integer.parseInt(holder.tvGoodsNum.getText().toString());
+                count +=1;
+                holder.tvGoodsNum.setText(""+count);
+
+            }
+        });
+
+        holder.ibGoodsMinus.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+
+
+
+                Integer count = Integer.parseInt(holder.tvGoodsNum.getText().toString());
+                if(count != 0){
+                    count -=1;
+                    holder.tvGoodsNum.setText("" + count);
+                }
+
+                if("0".equals(holder.tvGoodsNum.getText().toString())){
+                    holder.ibGoodsMinus.setVisibility(View.INVISIBLE);
+                }
+
+            }
+        });
 
       //  runEnterAnimation(viewHolder.itemView, position);
     }
@@ -129,36 +163,6 @@ public class GoodsRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ButterKnife.bind(this, view);
             count = 0;
         }
-    }
-
-    /**
-     * item 点击事件
-     * @param v
-     */
-    @Override
-    public void onClick(View v) {
-        // TODO 增加数量，减少数量的监听事件
-        int viewId = v.getId();
-
-        switch (viewId) {
-            case R.id.ib_goods_minus:
-                Integer integer1 = Integer.parseInt(count.getText().toString());
-                if(integer1!= 0){
-                    count.setText(""+(integer1-1));
-                }
-                break;
-            case R.id.ib_goods_add:
-                Integer integer2 = Integer.parseInt(count.getText().toString());
-                    count.setText(""+(integer2+1));
-                break;
-        }
-    }
-
-    OnCountListener onCountListener;
-    interface OnCountListener {
-        void onCount(View view, int position);
-        void onMinus(View view, int position);
-        void onadd(View view, int position);
     }
 
 }

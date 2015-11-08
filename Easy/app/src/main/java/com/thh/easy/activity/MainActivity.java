@@ -325,7 +325,6 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
                 String imageUrl = null;
                 if (!postObj.isNull("image")) {
                     imageUrl = postObj.getJSONObject("image").getString("urls");
-//                    Log.i(TAG, "装逼如风 常伴吾身"+i);
                 }
 
                 String avatar = null;

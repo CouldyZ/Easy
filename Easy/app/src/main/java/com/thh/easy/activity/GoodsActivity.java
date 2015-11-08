@@ -151,7 +151,7 @@ public class GoodsActivity extends BaseDrawerActivity {
                 goods = new Goods(
                         jsonObject.getInt("id"),
                         jsonObject.getString("name"),
-                        StringConstant.SERVER_IP + imageObj.getString("urls"),
+                        imageObj.getString("urls"),
                         Float.parseFloat(price),
                         Float.parseFloat(deposit)
                 );
@@ -195,9 +195,7 @@ public class GoodsActivity extends BaseDrawerActivity {
     /**
      * 获得shop信息
      */
-//    String img =  getIntent().getStringExtra("SHOP_URL");
     private void setShopDetail(){
-      //  System.out.println(TAG + "setShopDetail img url ---->"+img);
 
         View view = findViewById(R.id.cv_shop_detail);
         ImageView shopImage = (ImageView)view.findViewById(R.id.iv_shop_image);
@@ -209,7 +207,7 @@ public class GoodsActivity extends BaseDrawerActivity {
         if(getIntent().getStringExtra("SHOP_URL") != null){
 
             Picasso.with(GoodsActivity.this)
-                    .load(""+StringConstant.SERVER_IP + getIntent().getStringExtra("SHOP_URL"))
+                    .load(StringConstant.SERVER_IP + "/"+getIntent().getStringExtra("SHOP_URL"))
                     .centerCrop()
                     .resize(avatarSize, avatarSize)
                     .transform(new RoundedTransformation())
