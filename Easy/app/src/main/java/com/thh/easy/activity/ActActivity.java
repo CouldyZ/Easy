@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import com.thh.easy.R;
 import com.thh.easy.adapter.ActRVAdapter;
-import com.thh.easy.util.TabUtils;
+import com.thh.easy.adapter.MyPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,41 +29,84 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
 
     @Bind(R.id.vp_activity_views)
     ViewPager vpActViewPager;                    // activity内容
+    MyPagerAdapter myPagerAdapter;                  // viewpager 适配器
 
-    List<RecyclerView.Adapter> rvAdapterLists = new ArrayList<>();   // 适配器列表
+    LayoutInflater mInflater;                       // 视图加载
 
-    public static ViewPager viewPager;
+    String[] mTabTitles;                            // tabs上的文字
+    List<View> mViewList = new ArrayList<>();       // viewpager包括的两个view对象
+    View llOrgView,llJoinView;                      // viewPager中的两个view
+
+    RecyclerView rvOrgActivity,rvJoinActivity;      // view里面对应的列表
+    ActRVAdapter rvOrgActAdapter, rvJoinActAdapter; // viewpager两个view里面的recyclerview适配器
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_act);
         setOnStartActivityListener(this);
-        viewPager = vpActViewPager;
-        setUpData();
+
+        setUpPagerData();
+        setUpTabData();
+        setUpRecyclerViews();
+
+    }
+
+
+    /**
+     * 初始化viewpager数据
+     */
+    private void setUpPagerData() {
+        mInflater = LayoutInflater.from(this);
+        mTabTitles = new String[]{"正在组织","已经参加"}; // tab上的文字
+
+        // 正在组织
+        llOrgView = mInflater.inflate(R.layout.act_org_view, null);
+        rvOrgActivity = (RecyclerView)llOrgView.findViewById(R.id.rv_act_org);
+        mViewList.add(llOrgView);
+
+        // 已经参加
+        llJoinView = mInflater.inflate(R.layout.act_join_view, null);
+        rvJoinActivity = (RecyclerView)llJoinView.findViewById(R.id.rv_act_join);
+        mViewList.add(llJoinView);
+        myPagerAdapter = new MyPagerAdapter(mViewList, mTabTitles);
     }
 
     /**
-     * 初始化各种数据
+     * 设置Tab数据
      */
-    private void setUpData() {
-        TabUtils tabUtils = new TabUtils(this);
-        tabUtils.setViewListData(
-                new int[]{R.layout.act_org_view,R.layout.act_join_view},   // view根布局
-                new int[]{R.id.rv_act_org,R.id.rv_act_join},               // recyclerview布局
-                new String[]{"正在组织","已经参加"});                       // tab上的title
-        tabUtils.setTabPager(tlActTabs, vpActViewPager);                   // 绑定ViewPager
+    private void setUpTabData() {
 
-        // 添加adapter数据
-        ActRVAdapter actOrgAdapter = new ActRVAdapter(this);
-        ActRVAdapter actJoinAdapter = new ActRVAdapter(this);
+        tlActTabs.setTabMode(TabLayout.MODE_FIXED);                 //设置tab模式，当前为系统默认模式
+        tlActTabs.addTab(tlActTabs.newTab().setText(mTabTitles[0]));//添加tab选项卡
+        tlActTabs.addTab(tlActTabs.newTab().setText(mTabTitles[1]));
 
-        // 添加recycleview 的监听事件
-        actOrgAdapter.setOnActItemClickListener(this);
-        actJoinAdapter.setOnActItemClickListener(this);
+        vpActViewPager.setAdapter(myPagerAdapter);                  //给ViewPager设置适配器
+        tlActTabs.setupWithViewPager(vpActViewPager);               //将TabLayout和ViewPager关联起来。
+        tlActTabs.setTabsFromPagerAdapter(myPagerAdapter);          //给Tabs设置适配器
+    }
 
-        rvAdapterLists.add(actOrgAdapter);
-        rvAdapterLists.add(actJoinAdapter);
-        tabUtils.setViewsRVAdapter(rvAdapterLists);                                      // 绑定recyclerview
+
+    /**
+     * 初始化recyleview
+     *  数据需根据ActRVAdapter修改
+     */
+    public void setUpRecyclerViews() {
+
+        LinearLayoutManager orgLinearLayoutManager = new LinearLayoutManager(this);
+        rvOrgActivity.setLayoutManager(orgLinearLayoutManager);
+        rvOrgActivity.setHasFixedSize(true);
+
+        rvOrgActAdapter = new ActRVAdapter(this);
+        rvOrgActivity.setAdapter(rvOrgActAdapter);
+
+        LinearLayoutManager joinLinearLayoutManager = new LinearLayoutManager(this);
+        rvJoinActivity.setLayoutManager(joinLinearLayoutManager);
+        rvJoinActivity.setHasFixedSize(true);
+
+        rvJoinActAdapter = new ActRVAdapter(this);
+        rvJoinActivity.setAdapter(rvJoinActAdapter);
+
     }
 
 

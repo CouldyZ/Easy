@@ -9,7 +9,8 @@ public class StringConstant {
 
     public final static String NULL_VALUE = "null";
 
-    public final static String SERVER_IP = "http://172.27.35.1:8080";
+    //public final static String SERVER_IP = "http://172.27.35.1:8080";
+    public final static String SERVER_IP = "http://192.168.100.126:8080";
 
     // 用户登陆Action
     public final static String SERVER_LOGIN_URL = SERVER_IP + "/thhh/user/android_loginCheck.action";
