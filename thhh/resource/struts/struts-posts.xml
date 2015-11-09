@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+    <package name="struts-posts-default" extends="struts-default"
+    	 namespace="/posts">
+    	 
+    	 <!-- action配置示例 -->
+    	  <action name="android_posts_*" class="androidPostsAction" method="{1}">
+    	 	<result name="index">/WEB-INF/jsp/index.jsp</result>
+    	 </action>
+    	 
+    	 <action name="android_comments_*" class="androidCommentsAction" method="{1}">
+    	 </action>
+		
+	</package> 
+	
+	
+</struts>    

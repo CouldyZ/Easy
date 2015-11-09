@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+    <package name="struts-goods-default" extends="struts-default"
+    	 namespace="/goods">
+    	 
+    	 <action name="android_goods_*" class="goodsAction" method="{1}">
+    	 </action>
+    	 
+    	 <action name="android_order_*" class="ordersAction" method="{1}">
+    	 </action>
+		
+	</package> 
+	
+	
+</struts>    

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+    <package name="struts-act-default" extends="struts-default"
+    	 namespace="/act">
+    	 
+    	 <!--action配置示例
+    	  <action name="user_*" class="userAction" method="{1}">
+    	 	<result name="index">/WEB-INF/jsp/index.jsp</result>
+    	 </action> -->
+    	 <action name="act_*" class="actAction" method="{1}">
+    	 <result name="index">/WEB-INF/jsp/index.jsp</result>
+    	 </action>
+		
+	</package> 
+	
+	
+</struts>    
