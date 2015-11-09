@@ -379,7 +379,7 @@ public class HotPostActivity extends BaseActivity implements PostRVAdapter.OnPos
         startingLocation[0] += v.getWidth() / 2;
 
         // 进入用户信息界面时，设置进入动画
-        UserProfileActivity.startUserProfileFromLocation(startingLocation, this);
+        UserProfileActivity.startUserProfileFromLocation(postList.get(position).getUid(),startingLocation, this);
         overridePendingTransition(0, 0);
     }
 

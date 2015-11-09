@@ -2,7 +2,6 @@ package com.thh.easy.entity;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -32,7 +31,7 @@ public class User implements Serializable{
 
     private String depart;
 
-    private String tname;    // 真是姓名
+    private String tname;    // 真实姓名
 
     private String nickname;
 

@@ -4,6 +4,7 @@ package com.thh.easy.entity;
  * Created by cloud on 2015/11/6.
  */
 public class Goods {
+
     private int id;
     private String name;    // 商品名
     private float price;    // 商品价格

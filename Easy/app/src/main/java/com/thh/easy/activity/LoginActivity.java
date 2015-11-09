@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,8 +18,8 @@ import android.widget.TextView;
 import com.android.volley.ext.HttpCallback;
 import com.android.volley.ext.RequestInfo;
 import com.android.volley.ext.tools.HttpTools;
-import com.thh.easy.constant.StringConstant;
 import com.thh.easy.R;
+import com.thh.easy.constant.StringConstant;
 import com.thh.easy.entity.User;
 import com.thh.easy.util.StringUtil;
 import com.thh.easy.util.Utils;
@@ -39,6 +38,8 @@ import butterknife.OnClick;
  * 用户登录Activity
  *
  * @author cky
+ *
+ *  //TODO 将用户id全局化
  */
 public class LoginActivity extends AppCompatActivity {
 
@@ -78,15 +79,6 @@ public class LoginActivity extends AppCompatActivity {
 
     @Bind(R.id.et_login_password)
     EditText etPassword;
-
-    @Bind(R.id.iv_back)
-    ImageView ivBack;
-
-    @Bind(R.id.btn_login_reg)
-    Button btnReg;
-
-    @Bind(R.id.btn_login)
-    Button btnLogin;
 
     @Bind(R.id.cl_login_container)
     CoordinatorLayout clContainer;
@@ -190,13 +182,16 @@ public class LoginActivity extends AppCompatActivity {
     void onLogin() {
         // 隐藏软键盘
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
         //imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
         imm.hideSoftInputFromWindow(etUsername.getWindowToken(), 0);
         imm.hideSoftInputFromWindow(etPassword.getWindowToken(), 0);
 
         if (TextUtils.isEmpty(etUsername.getText().toString()) || TextUtils.isEmpty(etPassword.getText().toString())) {
             Snackbar.make(clContainer, "少年呦 你是忘记写账号了还是密码呢?", Snackbar.LENGTH_LONG).show();
+
         } else {
+
             String username = etUsername.getText().toString();
             String password = etPassword.getText().toString();
 
@@ -221,7 +216,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResult(String s) {
                         // 服务端返回Json
                         Log.i(TAG, s);
-                        if ("null".equals(s)) {
+                       if ("null".equals(s)) {
                             Snackbar.make(clContainer, "少年呦 账号或密码不对", Snackbar.LENGTH_LONG).show();
                             return;
                         }
@@ -256,12 +251,11 @@ public class LoginActivity extends AppCompatActivity {
     private void onReadJson(String jsonResult) {
         try {
 
-
             String iconUrl = null;
-
             JSONObject jsonObject = new JSONObject(jsonResult);
+
             if (!jsonObject.isNull("image"))
-                iconUrl = jsonObject.getString("image");
+                iconUrl = jsonObject.getJSONObject("image").getString("urls");
 
             String email = null;
             if (!jsonObject.isNull("email"))
@@ -288,6 +282,7 @@ public class LoginActivity extends AppCompatActivity {
                 avatar = jsonObject.getString("image");
                 avatarFileName = jsonObject.getString("name") + jsonObject.getInt("id") + ".png";
                 System.out.println("头像路径 - " + filePath + "/" + avatarFileName);
+
                 // TODO 存储用户头像
                 httpTools.download(avatar, filePath + "/" + avatarFileName, false, new HttpCallback() {
                     @Override
@@ -339,13 +334,16 @@ public class LoginActivity extends AppCompatActivity {
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("user_login", true);
+            editor.putInt("user_id",jsonObject.getInt("id"));
             editor.commit();
 
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra("login_success", true);
+
             Bundle bundle = new Bundle();
             bundle.putSerializable("user", user);
             intent.putExtra("user", bundle);
+
             startActivity(intent);
 
             finish();

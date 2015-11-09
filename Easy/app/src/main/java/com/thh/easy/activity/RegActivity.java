@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -85,19 +86,29 @@ public class RegActivity extends AppCompatActivity implements TextWatcher{
         etTname.addTextChangedListener(this);
     }
 
+    /**
+     * toolbar返回
+     */
     @OnClick(R.id.iv_back)
-    void onBack() {
-        finish();
+    void onToolbarBackPress() {
+        onBackPressed();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     @OnClick(R.id.btn_reg_comfirm)
     void onReg() {
+
         final String username = etUsername.getText().toString();
         String pwd = etPwd.getText().toString();
         String repwd = etRepwd.getText().toString();
         String nickname = etNickname.getText().toString();
         String tname = etTname.getText().toString();
 
+        System.out.println(pwd+repwd+nickname+tname+username);
         if (!pwd.equals(repwd)) {
             Snackbar.make(clContainer, "少年呦 两次密码不一样呦", Snackbar.LENGTH_SHORT).show();
             return;
@@ -123,9 +134,12 @@ public class RegActivity extends AppCompatActivity implements TextWatcher{
 
                 @Override
                 public void onResult(String s) {
+                    Log.e("RegAcitity---->注册结果", s);
+
                     if (StringConstant.FAIL.equals(s))
                         Snackbar.make(clContainer, "少年呦 注册失败了呢", Snackbar.LENGTH_SHORT).show();
                     else if (StringConstant.SUCCESS.equals(s)) {
+
                         // 将账号通过广播传给LoginActivity 并finish当前Activity
                         Intent intent = new Intent("REG_SUCCESS");
                         intent.putExtra("username", username);
@@ -163,10 +177,8 @@ public class RegActivity extends AppCompatActivity implements TextWatcher{
         String username = etUsername.getText().toString();
         String pwd = etPwd.getText().toString();
         String repwd = etRepwd.getText().toString();
-        String nickname = etNickname.getText().toString();
-        String tname = etTname.getText().toString();
 
-        if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(pwd) && !TextUtils.isEmpty(repwd) && !TextUtils.isEmpty(nickname) && !TextUtils.isEmpty(tname)) {
+        if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(pwd) && !TextUtils.isEmpty(repwd)) {
             btnComfirm.setEnabled(true);
         }
         else

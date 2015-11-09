@@ -6,15 +6,14 @@ package com.thh.easy.entity;
 public class Comment {
 
     private int uid;
-
     private String name;
-
     private String content;
-
     private String avatar;
+    private String date;
 
     public Comment() {
     }
+
 
     public Comment(int uid, String content, String avatar) {
         this.uid = uid;
@@ -23,20 +22,19 @@ public class Comment {
         this.avatar = avatar;
     }
 
-    public int getUid() {
-        return uid;
-    }
-
-    public void setUid(int uid) {
+    public Comment(String avatar, String content, String date, int uid) {
+        this.avatar = avatar;
+        this.content = content;
+        this.date = date;
         this.uid = uid;
     }
 
-    public String getName() {
-        return name;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getContent() {
@@ -47,11 +45,27 @@ public class Comment {
         this.content = content;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public String getDate() {
+        return date;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
     }
 }

@@ -10,7 +10,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.thh.easy.R;
+import com.thh.easy.constant.StringConstant;
+import com.thh.easy.entity.Activities;
+import com.thh.easy.util.RoundedTransformation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -26,16 +33,19 @@ public class ActRVAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         private Context context;
         private int lastAnimatedPosition = -1;
 
+        private List<Activities> actLists = new ArrayList<>();
+
         private int avatarSize;
 
-        public ActRVAdapter(Context context) {
+        public ActRVAdapter(Context context, List<Activities> actLists) {
                 this.context = context;
                 avatarSize = context.getResources().getDimensionPixelSize(R.dimen.comment_avatar_size);
+                this.actLists = actLists;
         }
 
         @Override
         public int getItemCount() {
-                return 5;
+                return actLists.size();
         }
 
         @Override
@@ -53,7 +63,27 @@ public class ActRVAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 CellActViewHolder holder = (CellActViewHolder) viewHolder;
                 holder.btnCheckAct.setOnClickListener(this);
                 holder.btnCheckAct.setTag(position);
-                runEnterAnimation(viewHolder.itemView, position);
+
+                Activities activities = actLists.get(position);
+                holder.tvActOrgTheme.setText(activities.getTheme());              // 设置主题
+                holder.tvOrgUserName.setText(activities.getUser().getUsername()); // 设置发起人名字
+                holder.tvOrgOserRP.setText(activities.getUser().getJiecao());     // 设置节操值
+                holder.tvActOrgTheme.setText(activities.getStartDay());           // 设置起始日期
+
+                // 加载头像
+                if (activities.getUser().getAvatarFilePath() != null)
+                {
+                        Picasso.with(context)
+                                .load(StringConstant.SERVER_IP +"/"+ activities.getUser().getAvatarFilePath())
+                                .centerCrop()
+                                .resize(avatarSize, avatarSize)
+                                .transform(new RoundedTransformation())
+                                .placeholder(R.mipmap.bili_default_avatar)
+                                .into(((CellActViewHolder) viewHolder).ivActOrgUserAvatar);
+                }
+
+
+                // runEnterAnimation(viewHolder.itemView, position);
         }
 
         /**

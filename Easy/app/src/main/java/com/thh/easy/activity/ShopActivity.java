@@ -49,18 +49,18 @@ public class ShopActivity extends BaseDrawerActivity implements
     CoordinatorLayout clContainer;
 
     @Bind(R.id.vp_shop_views)
-    ViewPager vpShopViewPager;                   // activity内容
-    MyPagerAdapter myPagerAdapter;              // adapter
+    ViewPager vpShopViewPager;                     // activity内容
+    MyPagerAdapter myPagerAdapter;                 // adapter
 
     String[] mTabTitles;                           // tab上的标题
-    List<View> mViewList = new ArrayList<>();   // tab对应的view
+    List<View> mViewList = new ArrayList<>();      // tab对应的view
 
-    LayoutInflater mInflater;                   // 视图加载
-    View llShopView,llOrderView;                  // viewPager中的两个view
+    LayoutInflater mInflater;                      // 视图加载
+    View llShopView,llOrderView;                   // viewPager中的两个view
 
-    RecyclerView rvShop, rvOrder;                 // 商店列表，我的订单列表
-    ShopRVAdpter shopRVAdpter;                    // rvShop的适配器
-    OrderRVAdapter orderRVAdapter;                //  rvOrder的适配器
+    RecyclerView rvShop, rvOrder;                  // 商店列表，我的订单列表
+    ShopRVAdpter shopRVAdpter;                     // rvShop的适配器
+    OrderRVAdapter orderRVAdapter;                 //  rvOrder的适配器
 
     boolean isLoading = false;
     private List<Shop> shopList = new ArrayList<>();
@@ -91,7 +91,7 @@ public class ShopActivity extends BaseDrawerActivity implements
 
 
     /**
-     * 请求帖子数据
+     * 请求商店数据
      */
     private void loadShops() {
         if (shopRVAdpter == null) {
@@ -130,6 +130,7 @@ public class ShopActivity extends BaseDrawerActivity implements
                     Snackbar.make(clContainer, "什么帖子都没有呦", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
+
                 onReadJson(s);
                 Log.d("New - HttpCallback", shopRVAdpter.getItemCount() + " loadPost");
 
@@ -166,7 +167,7 @@ public class ShopActivity extends BaseDrawerActivity implements
 
                 Log.e(TAG, imageObj.getString("urls"));
 
-                shop= new Shop(jsonObject.getInt("id"),
+                shop = new Shop(jsonObject.getInt("id"),
                         imageObj.getString("urls"),
                         jsonObject.getString("name"),
                         jsonObject.getString("address"),

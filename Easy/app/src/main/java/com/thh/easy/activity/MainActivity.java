@@ -223,12 +223,11 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
                 int lastVisibleItems = linearLayoutManager.findLastVisibleItemPosition();
                 int totalItemCount = linearLayoutManager.getItemCount();
 
-                //Log.i (TAG, "last - " + lastVisibleItems + " totle - " + totalItemCount);
-
                 if (lastVisibleItems == totalItemCount - 1 && dy > 0) {
                     if (isLoading) {
                         Log.d(TAG, "ignore manually update!");
                     } else {
+
                         // loadPosts中控制isLoading
                         loadPosts();
                         Log.i(TAG, "new data");
@@ -258,6 +257,7 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
         if(u!= null){
             params.put(StringConstant.USER_ID, u.getId()+"");
         }
+
         RequestInfo info = new RequestInfo(StringConstant.SERVER_NEWPOST_URL, params);
         httpTools.post(info, new HttpCallback() {
             @Override
@@ -283,7 +283,7 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
                 }
 
                 if ("[]".equals(s)) {
-                    // Snackbar.make(clContainer, "什么帖子都没有呦", Snackbar.LENGTH_SHORT).show();
+                     Snackbar.make(clContainer, "什么帖子都没有呦", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
                 onReadJson(s);
@@ -311,9 +311,8 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
     public void onReadJson(String json) {
         int insertPos = postRVAdapter.getItemCount();
         try {
-            JSONArray jsonArray = new JSONArray(json);
 
-            Log.i(TAG, jsonArray.length()+" onReadJson");
+            JSONArray jsonArray = new JSONArray(json);
 
             for (int i = 0 ; i < jsonArray.length() ; i ++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -340,7 +339,6 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
                         avatar,
                         jsonObject.getInt("likes"),
                         jsonObject.getInt("isLike"));
-
                 postList.add(post);
             }
 
@@ -446,7 +444,8 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
         startingLocation[0] += v.getWidth() / 2;
 
         // 进入用户信息界面时，设置进入动画
-        UserProfileActivity.startUserProfileFromLocation(startingLocation, this);
+        UserProfileActivity.startUserProfileFromLocation(postList.get(position).getUid(),
+                startingLocation, this);
         overridePendingTransition(0, 0);
     }
 

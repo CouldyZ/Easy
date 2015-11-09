@@ -12,13 +12,13 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.thh.easy.R;
+import com.thh.easy.constant.StringConstant;
 import com.thh.easy.entity.Post;
 import com.thh.easy.util.RoundedTransformation;
 import com.thh.easy.util.Utils;
 import com.thh.easy.view.SquaredFrameLayout;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -73,7 +73,7 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        System.out.println(Calendar.getInstance().getTime().toString());
+
         animationsLocked = true;
         CellPostViewHolder holder = (CellPostViewHolder) viewHolder;
 
@@ -89,10 +89,10 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             ((CellPostViewHolder) viewHolder).ibLike.setImageResource(R.mipmap.ic_like_grey);
 
         // 加载头像
-        if (posts.get(position).getAvatar() != null && posts.get(position).getAvatar().contains("http://"))
-        {
+        if (posts.get(position).getAvatar() != null) {
+
             Picasso.with(context)
-                    .load(posts.get(position).getAvatar())
+                    .load(StringConstant.SERVER_IP + posts.get(position).getImageUrl())
                     .centerCrop()
                     .resize(avatarSize, avatarSize)
                     .transform(new RoundedTransformation())
@@ -101,21 +101,16 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
 
 
-        System.out.println(posts.get(position).getImageUrl());
-
         // 加载图片
-        if (posts.get(position).getImageUrl() != null && posts.get(position).getImageUrl().contains("http://"))
-        {
+        if (posts.get(position).getImageUrl() != null) {
             ((CellPostViewHolder) viewHolder).frameLayout.setVisibility(View.VISIBLE);
 
             Picasso.with(context)
-                    .load(posts.get(position).getImageUrl())
+                    .load(StringConstant.SERVER_IP + posts.get(position).getImageUrl())
                     .placeholder(R.mipmap.search_loading_1)
                     .error(R.mipmap.search_failed)
                     .into(((CellPostViewHolder) viewHolder).ivPostCenter);
-        }
-        else
-        {
+        } else {
             ((CellPostViewHolder) viewHolder).frameLayout.setVisibility(View.GONE);
         }
 
@@ -173,9 +168,6 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     .setInterpolator(new DecelerateInterpolator(3.f))
                     .setDuration(700)
                     .start();
-
-//            if (position == 0)
-//                Log.d(TAG, view.getTranslationY()+" " + view.getY());
         }
     }
 

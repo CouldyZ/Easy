@@ -108,8 +108,6 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
         // TODO 发送、获得位置
         drawingStartLocation =  getIntent().getIntExtra(COMMENT_DRAWING_START_LOCATION, 0);
 
-
-
         if (savedInstanceState == null) {
             contentRoot.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -126,6 +124,7 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
 
     private void getComments () {
         if (commentsAdapter == null) {
+            Log.e(TAG, "127  commentList-> size :" + commentList.size());
             commentsAdapter = new CommentRVAdapter(this, commentList);
 //            rvComments.setAdapter(commentsAdapter);
         }
@@ -133,7 +132,7 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
         isLoading = true;
 
         Map<String, String> params = new HashMap<>(3);
-        params.put(StringConstant.POSTID, postID+"");
+        params.put(StringConstant.POSTID, postID + "");
         params.put(StringConstant.CURRENT_PAGE_KEY, currentPage+"");
         params.put(StringConstant.PER_PAGE_KEY, 10+"");
         RequestInfo info = new RequestInfo(StringConstant.SERVER_COMMENT_URL, params);
@@ -150,9 +149,6 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
 
             @Override
             public void onResult(String s) {
-                Log.d(TAG, s);
-
-
                 if ("0".equals(s)) {
                     Snackbar.make(rvComments, "还没有留言 你要抢个沙发嘛", Snackbar.LENGTH_SHORT).show();
                     return;
@@ -162,7 +158,6 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
                     return;
 
                 onReadJson(s);
-
             }
 
             @Override
@@ -182,8 +177,15 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
         });
     }
 
+    /**
+     * 读取json数据
+     * // TODO 精简数据
+     * @param json
+     */
     private void onReadJson(String json) {
+
         int insertPos = commentsAdapter.getItemCount();
+
         try {
             JSONArray jsonArray = new JSONArray(json);
 
@@ -195,27 +197,29 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
                 Comment comment = null;
 
                 String avatar = null;
-                if (jsonItem.getJSONObject("posts").getInt("id") == postID) {
-                    if (!jsonItem.isNull(jsonItem.getJSONObject("posts").getJSONObject("users").getJSONObject("image").getString("urls"))) {
-                        avatar = new StringBuffer(StringConstant.SERVER_IP).append(jsonItem.getJSONObject("posts").getJSONObject("users").getJSONObject("image").getString("urls")).toString();
-                    }
+
+                if (!jsonItem.isNull(jsonItem.getJSONObject("users").getJSONObject("image").getString("urls"))) {
+                    avatar = new StringBuffer(StringConstant.SERVER_IP).append(jsonItem.getJSONObject("users").getJSONObject("image").getString("urls")).toString();
                 }
 
-                comment = new Comment(jsonItem.getJSONObject("posts").getJSONObject("users").getInt("id"),
+                comment = new Comment(
+                        avatar,
+                        jsonItem.getString("dates"),
                         jsonItem.getString("contents"),
-                        avatar);
+                        jsonItem.getJSONObject("user").getInt("id"));
 
                 commentList.add(comment);
             }
 
             Log.i(TAG, "insert " + insertPos + " | size " + commentList.size());
+
 //            commentsAdapter.notifyItemChanged(0);
             commentsAdapter.notifyItemRangeInserted(insertPos, commentList.size() - insertPos);
             commentsAdapter.notifyItemRangeChanged(insertPos, commentList.size() - insertPos);
 
             currentPage ++;
 
-            Log.d(TAG, commentList.size()+" 2");
+            Log.d(TAG, commentList.size() + " 2");
 
         } catch (JSONException e) {
             e.printStackTrace();

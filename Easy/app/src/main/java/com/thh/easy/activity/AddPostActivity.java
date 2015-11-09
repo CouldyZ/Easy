@@ -1,6 +1,8 @@
 package com.thh.easy.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -10,10 +12,19 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.android.volley.ext.HttpCallback;
+import com.android.volley.ext.tools.HttpTools;
 import com.thh.easy.R;
 import com.thh.easy.view.ChoosePhotoTypeDialog;
 import com.thh.easy.view.SendCommentButton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -43,9 +54,13 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_post);
+        HttpTools.init(this);
+        httpTools = new HttpTools(this);
         setUpToolbar();
         mybtnSendPost.setOnSendClickListener(this);  // 绑定发送事件
-    } /**
+    }
+
+    /**
      * toolbar返回
      */
     @OnClick(R.id.iv_back)
@@ -68,14 +83,74 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
         }
     }
 
+    HttpTools httpTools;                        // 网络操作工具
+
     @Override
     public void onSendClickListener(View v) {
         // 如果帖子内容不为空，则添加一条新帖子
         if(validateComment()) {
             // TODO 发布新帖子
+            String postContent = etAddPostContent.getText().toString();
+            Bitmap postImage = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_22);
+            int useId = 0;
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("post.image", postImage);
+            params.put("user.id", useId);
+            params.put("post.contents", postContent);
+
+            httpTools.upload("upload_url", params, new HttpCallback() {
+                @Override
+                public void onStart() {
+
+                }
+
+                @Override
+                public void onFinish() {
+
+                }
+
+                @Override
+                public void onResult(String s) {
+                    readJson(s);
+                }
+
+                @Override
+                public void onError(Exception e) {
+
+                }
+
+                @Override
+                public void onCancelled() {
+
+                }
+
+                @Override
+                public void onLoading(long l, long l1) {
+
+                }
+            });
+
         }
     }
 
+
+    public void readJson(String s){
+        try {
+            JSONObject object = new JSONObject(s);
+            String state = object.getString("state");
+
+            // TODO 增加snakebar 显示提示信息。
+            if("1".equals(state)){
+                Toast.makeText(this, "添加成功", Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(this, "添加失败", Toast.LENGTH_LONG).show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     /**
      *  点击添加图片

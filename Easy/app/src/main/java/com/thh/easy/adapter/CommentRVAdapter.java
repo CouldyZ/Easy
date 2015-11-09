@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,6 @@ import butterknife.ButterKnife;
 public class CommentRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
-    private int itemsCount = 0;                     // 数据总数
     private int lastAnimatedPosition = -1;          // 最后动画的位置
     private int avatarSize;                          // 头像大小
 
@@ -45,8 +45,6 @@ public class CommentRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.context = context;
         this.commentList = commentList;
         avatarSize = context.getResources().getDimensionPixelSize(R.dimen.comment_avatar_size);
-
-        System.out.println(">>>>>>>>>>>>");
     }
 
     @Override
@@ -60,9 +58,10 @@ public class CommentRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         animationsLocked = true;
         CommentViewHolder holder = (CommentViewHolder) viewHolder;
 
+        Log.e("CommentRVAdapter", "评论内容："+ commentList.get(position).getContent());
+        Log.e("CommentRVAdapter", "评论头像："+ commentList.get(position).getAvatar());
         // 填充评论内容数据
         holder.tvComment.setText(commentList.get(position).getContent());
-        System.out.println(commentList.get(position).getContent() + ">>>>>>>>>>>>");
 
         if (commentList.get(position).getAvatar() != null && commentList.get(position).getAvatar().contains("http://"))
             Picasso.with(context)

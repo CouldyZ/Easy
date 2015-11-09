@@ -6,21 +6,30 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.android.volley.ext.HttpCallback;
+import com.android.volley.ext.RequestInfo;
+import com.android.volley.ext.tools.HttpTools;
 import com.thh.easy.R;
 import com.thh.easy.adapter.ActRVAdapter;
 import com.thh.easy.adapter.MyPagerAdapter;
+import com.thh.easy.constant.StringConstant;
+import com.thh.easy.entity.Activities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.OnClick;
 
 /**
  * 活动界面
+ * // TODO 添加下拉刷新
  */
 public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivity.OnStartActivityListener ,ActRVAdapter.OnActItemClickListener{
 
@@ -40,11 +49,18 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
     RecyclerView rvOrgActivity,rvJoinActivity;      // view里面对应的列表
     ActRVAdapter rvOrgActAdapter, rvJoinActAdapter; // viewpager两个view里面的recyclerview适配器
 
+    HttpTools httpTools;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_act);
         setOnStartActivityListener(this);
+
+        // 初始化Volley
+        HttpTools.init(getApplicationContext());
+        httpTools = new HttpTools(getApplicationContext());
 
         setUpPagerData();
         setUpTabData();
@@ -97,19 +113,86 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
         rvOrgActivity.setLayoutManager(orgLinearLayoutManager);
         rvOrgActivity.setHasFixedSize(true);
 
-        rvOrgActAdapter = new ActRVAdapter(this);
+        rvOrgActAdapter = new ActRVAdapter(this, actLists);
         rvOrgActivity.setAdapter(rvOrgActAdapter);
 
         LinearLayoutManager joinLinearLayoutManager = new LinearLayoutManager(this);
         rvJoinActivity.setLayoutManager(joinLinearLayoutManager);
         rvJoinActivity.setHasFixedSize(true);
 
-        rvJoinActAdapter = new ActRVAdapter(this);
+        rvJoinActAdapter = new ActRVAdapter(this, joinLists);
         rvJoinActivity.setAdapter(rvJoinActAdapter);
 
     }
 
+    /**
+     * http://localhost:8080/thhh/act/act_findAct.action?pageIndex=1&rowCount=6&users.id=1
+     */
 
+    int currentPage = 1;                        // 当前页
+    private List<Activities> actLists = new ArrayList<>(); //正在组织的活动
+
+    private List<Activities> joinLists = new ArrayList<>(); // 已经参加的活动柜
+    private void loadActivity() {
+        // 向服务器发送数据
+        Map<String, String> params = new HashMap<String, String>(3);
+        params.put(StringConstant.CURRENT_PAGE_KEY, currentPage+"");
+        params.put(StringConstant.PER_PAGE_KEY, StringConstant.PER_PAGE_COUNT + "");
+        // TODO 获得用户ID
+        params.put(StringConstant.COMMENT_UID,"0");
+        RequestInfo info = new RequestInfo(StringConstant.SERVER_NEWPOST_URL, params);
+        httpTools.post(info, new HttpCallback() {
+            @Override
+            public void onStart() {
+              //  isLoading = true;
+                Log.i("New - HttpCallback", "当前页" + currentPage);
+            }
+
+            @Override
+            public void onFinish() {
+                // 一共加载多少条
+//                isLoading = false;
+//                srContainer.setRefreshing(false);
+            }
+
+            @Override
+            public void onResult(String s) {
+                Log.i("New - HttpCallback", s);
+
+                if (StringConstant.NULL_VALUE.equals(s)) {
+                   // Snackbar.make(clContainer, "网络貌似粗错了", Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if ("[]".equals(s)) {
+                    // Snackbar.make(clContainer, "什么帖子都没有呦", Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+                onReadJson(s);
+               // Log.d("New - HttpCallback", postRVAdapter.getItemCount() + " loadPost");
+
+                currentPage++;
+            }
+
+            @Override
+            public void onError(Exception e) {
+            }
+
+            @Override
+            public void onCancelled() {
+               // srContainer.setRefreshing(false);
+            }
+
+            @Override
+            public void onLoading(long l, long l1) {
+
+            }
+        });
+    }
+
+    public void onReadJson(String json) {
+
+    }
     /**
      * 点击跳转到发起活动的界面
      */
@@ -126,6 +209,7 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
         finish();
         overridePendingTransition(0, 0);
     }
+
 
     @Override
     public void onStartActivity(Class<?> targetActivity) {

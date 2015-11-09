@@ -47,7 +47,6 @@ public class BaseDrawerActivity extends BaseActivity implements NavigationView.O
 
     OnStartActivityListener onStartActivityListener;
 
-
     @Override
     public void setContentView(int layoutResID) {
         super.setContentViewWithoutInject(R.layout.drawer_view);
@@ -92,13 +91,14 @@ public class BaseDrawerActivity extends BaseActivity implements NavigationView.O
         SharedPreferences sp = getSharedPreferences("user_sp", Context.MODE_PRIVATE);
         if (sp.getBoolean("user_login", false)) {
             drawerLayout.closeDrawer(Gravity.LEFT);
+            final int id = sp.getInt("user_id",1);
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     int[] pos = new int[2];
                     v.getLocationOnScreen(pos);
                     pos[0] += v.getWidth() / 2;
-                    UserProfileActivity.startUserProfileFromLocation(pos, BaseDrawerActivity.this);
+                    UserProfileActivity.startUserProfileFromLocation(id, pos, BaseDrawerActivity.this);
                     overridePendingTransition(0, 0);
                 }
             }, 200);
