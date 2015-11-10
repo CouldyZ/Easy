@@ -1,6 +1,7 @@
 package com.thh.easy.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,21 +36,16 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private int avatarSize;
 
     List<Order> ordersList = new ArrayList<>();
-    public OrderRVAdapter(Context context) {
-        this.context = context;
-        avatarSize = context.getResources().getDimensionPixelSize(R.dimen.comment_avatar_size);
-    }
 
     public OrderRVAdapter(Context context, List<Order> ordersList) {
         this.context = context;
         this.ordersList = ordersList;
-        size = ordersList.size();
         avatarSize = context.getResources().getDimensionPixelSize(R.dimen.comment_avatar_size);
     }
 
     @Override
     public int getItemCount() {
-        return size;
+        return ordersList.size();
     }
 
     @Override
@@ -62,14 +58,17 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+
         Order order = ordersList.get(position);
         CellOrderViewHolder holder = (CellOrderViewHolder) viewHolder;
         holder.ibOrderDelete.setOnClickListener(this);
         holder.ibOrderDelete.setTag(position);
 
-        String stateString = order.getState() == 0? "订单已完成":"订单未成功";
-        holder.tvOrderState.setText(stateString);                            // 订单状态
-
+        String stateString = order.getState() == 1 ? "订单已完成" : "订单未成功";
+        holder.tvOrderState.setTextColor(Color.parseColor("#727272"));
+        holder.tvOrderState.setText(stateString);
+                                 // 订单状态
+        holder.tvOrderCommTime.setTextColor(Color.parseColor("#727272"));
         holder.tvOrderCommTime.setText(order.getCompletedate());             // 订单完成时间
 
         // 加载商店头像
@@ -84,7 +83,9 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     .into(((CellOrderViewHolder) viewHolder).ivOrderShopImage);
         }
 
+        holder.tvOrderShopName.setTextColor(Color.parseColor("#727272"));
         holder.tvOrderShopName.setText(order.getShopName());                  // 商店名
+
         holder.tvOrderNum.setText(""+order.getCount());                       // 总计份数
         holder.orderSumPrice.setText(""+order.getSum());                      // 总计价格
 
@@ -114,9 +115,6 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public static class CellOrderViewHolder extends RecyclerView.ViewHolder {
 
-        // 订单状态， 订单完成时间，商店图片，商店名， 删除按钮， 总计份数， 总计金额
-
-
         @Bind(R.id.tv_order_state)
         TextView tvOrderState;                  // 订单状态
 
@@ -127,7 +125,7 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         ImageButton ibOrderDelete;                // 订单删除按钮
 
         @Bind(R.id.iv_order_shop_image)
-        ImageView ivOrderShopImage;             // 商店图片
+        ImageView ivOrderShopImage;               // 商店图片
 
         @Bind(R.id.tv_order_shop_name)
         TextView tvOrderShopName;                  // 商店名
@@ -155,8 +153,7 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         switch (viewId){
             // 删除订单项
             case R.id.ib_order_delete:
-                size -= 1;
-                notifyItemRemoved((int)v.getTag()-1);
+               // notifyItemRemoved((int)v.getTag()-1);
                 // TODO 从服务器中删除数据
                 break;
             default:

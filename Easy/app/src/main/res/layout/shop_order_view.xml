@@ -7,7 +7,9 @@
     <!-- 我的订单列表 -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_order"
+        android:layout_marginTop="-34dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none" />
+
 </LinearLayout>

@@ -12,8 +12,8 @@ public class StringConstant {
     public final static String FAIL = "0";
 
 
-    public final static String SERVER_IP = "http://172.27.35.1:8080";
-   // public final static String SERVER_IP = "http://192.168.1.112:8080";
+    //public final static String SERVER_IP = "http://172.27.35.1:8080";
+    public final static String SERVER_IP = "http://192.168.1.112:8080";
 
     // 发帖
     public final static String SERVER_POSTS_URL = SERVER_IP +

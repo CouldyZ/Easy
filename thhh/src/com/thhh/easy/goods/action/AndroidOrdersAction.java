@@ -24,37 +24,9 @@ public class AndroidOrdersAction {
 	 * 购买商品
 	 */
 	public void buy(){
-//		orders = new Orders() ;
-//		Users u = new Users() ;
-//		u.setId(1) ;
-//		orders.setUsers(u) ;
-//		orders.setDates(new Date()) ;
-//		orders.setStates("0") ;
-//		orders.setTake("18:00") ;
-//		orders.setAmount(100.0f) ;
-//		orders.setAllDeposit(200.0f) ;
-//		Shop shop = new Shop() ;
-//		shop.setId(1) ;
-//		orders.setShop(shop) ;
-//		
-//		listOrderdetail = new ArrayList<Orderdetail>() ;
-//		orderdetail = new Orderdetail() ;
-//		Goods g = new Goods();
-//		g.setId(1) ;
-//		orderdetail.setGoods(g) ;
-//		orderdetail.setAccount(2) ;
-//		orderdetail.setAmount(4.1f) ;
-//		orderdetail.setAllDeposit(0.3f) ;
-//		listOrderdetail.add(orderdetail) ;
-//		
-//		orderdetail = new Orderdetail() ;
-//		Goods g2 = new Goods();
-//		g2.setId(1) ;
-//		orderdetail.setGoods(g2) ;
-//		orderdetail.setAccount(1) ;
-//		orderdetail.setAmount(4.1f) ;	//拍下时的价格
-//		orderdetail.setAllDeposit(0.3f) ;
-//		listOrderdetail.add(orderdetail) ;
+		
+		System.out.println("shop_id"+ordersService.findShop(orders.getShop().getId()));
+		System.out.println("user_id"+ordersService.findUser(orders.getUsers().getId()));
 		
 		if(orders == null || orders.getUsers() == null || orders.getShop() == null ||
 				orders.getUsers().getId() == null || orders.getShop().getId() == null){

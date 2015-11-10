@@ -66,12 +66,10 @@ public class ShopActivity extends BaseDrawerActivity implements
 
     boolean isLoading = false;
     private List<Shop> shopList = new ArrayList<>();
-
+    private List<Order> ordersList = new ArrayList<>();
     int currentPage = 1;                        // 当前页
 
     HttpTools httpTools;                        // 网络操作工具
-
-    int currentViewPage = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +82,8 @@ public class ShopActivity extends BaseDrawerActivity implements
         setOnStartActivityListener(this);
 
         loadShops();
-
+        loadOrders();
+        Log.e("ordersList:", "size :" + ordersList.size());
         setUpPagerData();
         setUpTabData();
         setUpRecyclerViews();
@@ -241,12 +240,9 @@ public class ShopActivity extends BaseDrawerActivity implements
         LinearLayoutManager orderLinearLayoutManager = new LinearLayoutManager(this);
         rvOrder.setLayoutManager(orderLinearLayoutManager);
         rvOrder.setHasFixedSize(true);
-
         rvOrder.setAdapter(orderRVAdapter);
 
     }
-
-
 
 
     @Override
@@ -255,6 +251,7 @@ public class ShopActivity extends BaseDrawerActivity implements
         finish();
         overridePendingTransition(0, 0);
     }
+
 
     @Override
     public void onStartActivity(Class<?> targetActivity) {
@@ -287,7 +284,7 @@ public class ShopActivity extends BaseDrawerActivity implements
         Intent intent = new Intent(this, GoodsActivity.class);
         intent.putExtra("SHOP_ID", shop.getId());
 
-        intent.putExtra("SHOP_NAME", ""+shop.getName());
+        intent.putExtra("SHOP_NAME", "" + shop.getName());
         intent.putExtra("SHOP_URL", ""+shop.getUrl());
 
         intent.putExtra("SHOP_SHORTCUT", shop.getShortcut());
@@ -297,7 +294,7 @@ public class ShopActivity extends BaseDrawerActivity implements
     }
 
 
-    int userId = 2;  // TODO 将用户id设置为全局变量
+    int userId = 1;  // TODO 将用户id设置为全局变量
 
 
     /**
@@ -306,11 +303,11 @@ public class ShopActivity extends BaseDrawerActivity implements
     private void loadOrders() {
 
         if (orderRVAdapter == null) {
-            orderRVAdapter = new OrderRVAdapter(ShopActivity.this, ordersList);
+            orderRVAdapter = new OrderRVAdapter(getApplicationContext(), ordersList);
         }
         // 向服务器发送数据
         Map<String, String> params = new HashMap<String, String>();
-        params.put(StringConstant.ORDER_USER_ID, ""+userId);
+        params.put(StringConstant.ORDER_USER_ID, "" + userId);
         RequestInfo info = new RequestInfo(StringConstant.SERVER_ORDER_URL, params);
         httpTools.post(info, new HttpCallback() {
             @Override
@@ -323,7 +320,6 @@ public class ShopActivity extends BaseDrawerActivity implements
 
             @Override
             public void onResult(String s) {
-                Log.i("New - HttpCallback", s);
 
                 if (StringConstant.NULL_VALUE.equals(s)) {
                     Snackbar.make(clContainer, "网络貌似粗错了", Snackbar.LENGTH_SHORT).show();
@@ -331,7 +327,7 @@ public class ShopActivity extends BaseDrawerActivity implements
                 }
 
                 if ("[]".equals(s)) {
-                    Snackbar.make(clContainer, "什么帖子都没有呦", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(clContainer, "并没有订单呦", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -355,7 +351,7 @@ public class ShopActivity extends BaseDrawerActivity implements
         });
     }
 
-    List<Order> ordersList = new ArrayList<>();
+
 
     /**
      * 获得订单数据
@@ -363,35 +359,52 @@ public class ShopActivity extends BaseDrawerActivity implements
      */
     public void onReadOrderJson(String json) {
 
-        int insertPos = shopRVAdpter.getItemCount();
+        int insertPos = orderRVAdapter.getItemCount();
         try {
 
-            JSONArray jsonArray = new JSONArray(json);
-
-            Log.i(TAG, jsonArray.length()+" onReadJson");
             Order order = null;
+            JSONArray jsonArray = new JSONArray(json);
+            Log.e("jsonArray length-->", "" + jsonArray.length());
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                order = new Order(
+                        jsonObject.getString("dates"),// 下单时间
+                        8,
+                        jsonObject.getJSONObject("shop").getInt("id"),
+                        jsonObject.getJSONObject("shop")
+                                .getJSONObject("image").getString("urls"),
+                        jsonObject.getJSONObject("shop").getString("name"),
+                        jsonObject.getInt("states"),
+                        Float.parseFloat(""+jsonObject.getDouble("amount"))
+                );
+
+                ordersList.add(order);
+            }
+
+            /*
             for (int i = 0 ; i < jsonArray.length() ; i ++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 JSONObject imageObj = jsonObject.getJSONObject("image");
+                // "count":8,"sum":312.3,
                 order = new Order(jsonObject.getString("dates"),// 下单时间
-                          3,
+                        jsonObject.getInt("count"),
                           jsonObject.getInt("id"),
                           imageObj.getString("urls"),
                           jsonObject.getString("name"),
                           jsonObject.getInt("state"),
-                          45.4f
+                          Float.parseFloat(""+jsonObject.getDouble("sum"))
                         );
                 ordersList.add(order);
-            }
+            }*/
 
-              orderRVAdapter.notifyItemRangeInserted(insertPos, ordersList.size() - insertPos);
-              orderRVAdapter.notifyItemRangeChanged(insertPos, ordersList.size() - insertPos);
+            orderRVAdapter.notifyItemRangeInserted(insertPos, ordersList.size() - insertPos);
+            orderRVAdapter.notifyItemRangeChanged(insertPos, ordersList.size() - insertPos);
 
             currentPage++;
 
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.e(TAG, "解析Json出错");
+            Log.e(TAG, " 解析onReadOrderJson出错");
         }
     }
 

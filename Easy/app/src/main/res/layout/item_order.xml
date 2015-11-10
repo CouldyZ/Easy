@@ -38,7 +38,7 @@
                 android:id="@+id/tv_order_comm_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2015-10-31 15:43"
+                android:text="2015-10-31 15:43:00"
                 android:textSize="12sp"
                 android:layout_marginLeft="16dp"
                 android:layout_gravity="center_vertical"/>
@@ -46,9 +46,10 @@
             <!-- 订单删除按钮 -->
             <ImageButton
                 android:id="@+id/ib_order_delete"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="130dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="102dp"
                 android:layout_gravity="center_vertical"
                 android:background="@mipmap/icon_clean_up"/>
 

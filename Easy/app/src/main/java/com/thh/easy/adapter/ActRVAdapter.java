@@ -67,7 +67,7 @@ public class ActRVAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 Activities activities = actLists.get(position);
                 holder.tvActOrgTheme.setText(activities.getTheme());              // 设置主题
                 holder.tvOrgUserName.setText(activities.getUser().getUsername()); // 设置发起人名字
-                holder.tvOrgOserRP.setText(activities.getUser().getJiecao());     // 设置节操值
+                holder.tvOrgUserRP.setText(activities.getUser().getJiecao());     // 设置节操值
                 holder.tvActOrgTheme.setText(activities.getStartDay());           // 设置起始日期
 
                 // 加载头像
@@ -117,7 +117,7 @@ public class ActRVAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 ImageView ivActOrgUserAvatar;         // 发起人头像
 
                 @Bind(R.id.tv_org_user_rp)
-                TextView tvOrgOserRP;                 // 发起人RP值
+                TextView tvOrgUserRP;                 // 发起人RP值
 
                 @Bind(R.id.tv_org_user_name)
                 TextView tvOrgUserName;               // 发起人名字
