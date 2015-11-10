@@ -1,0 +1,81 @@
+package com.thhh.easy.user.service.imp;
+
+
+
+
+import java.util.List;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+
+import com.thhh.easy.dao.ICollectsDao;
+import com.thhh.easy.dao.IPostsDao;
+import com.thhh.easy.dao.IUsersDao;
+import com.thhh.easy.entity.Posts;
+import com.thhh.easy.entity.Users;
+import com.thhh.easy.user.service.IUserService;
+
+public class UserService implements IUserService {
+
+	private IUsersDao usersDao ;
+	private IPostsDao postsDao ;
+	private ICollectsDao collectsDao ;
+
+	public Users findUserById(int id) {
+		
+		return usersDao.findById(id) ;
+	}
+	//根据用户名查找用户
+	public Users findUserByName(String name) {
+		
+		return usersDao.findByName(name);
+	}
+	
+	//保存用户
+	public void save(Users user) {
+		usersDao.save(user) ;
+	}
+	//修改个人信息
+	public Users updateUsers(Users u) {
+		
+		return usersDao.merge(u);
+	}
+	//查找用户发帖数
+	public int findPostCount(Integer userId) {
+		String queryString ="select count(*) from posts p where p.users_id = ?" ;
+		Session session=postsDao.getHibernateTemplate().getSessionFactory().openSession();
+		Query query=session.createQuery(queryString);
+		List list =query.list();
+		int count =Integer.parseInt(list.get(0).toString());
+		return count;
+	}
+	//用户收藏的帖子数
+	public int findCollectCount(Integer userId) {
+		String queryString="select count(*) from collects c where c.users_id = ?";
+		Session session = collectsDao.getHibernateTemplate().getSessionFactory().openSession();
+		Query query = session.createQuery(queryString);
+		List list = query.list();
+		int count = Integer.parseInt(list.get(0).toString());
+		return count;
+	}
+	public IUsersDao getUsersDao() {
+		return usersDao;
+	}
+
+	public void setUsersDao(IUsersDao usersDao) {
+		this.usersDao = usersDao;
+	}
+	public IPostsDao getPostsDao() {
+		return postsDao;
+	}
+	public void setPostsDao(IPostsDao postsDao) {
+		this.postsDao = postsDao;
+	}
+	public ICollectsDao getCollectsDao() {
+		return collectsDao;
+	}
+	public void setCollectsDao(ICollectsDao collectsDao) {
+		this.collectsDao = collectsDao;
+	}
+	
+}

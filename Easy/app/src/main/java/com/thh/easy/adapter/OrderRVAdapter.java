@@ -10,7 +10,14 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.thh.easy.R;
+import com.thh.easy.constant.StringConstant;
+import com.thh.easy.entity.Order;
+import com.thh.easy.util.RoundedTransformation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -27,11 +34,17 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private int avatarSize;
 
-    private int size;
+    List<Order> ordersList = new ArrayList<>();
     public OrderRVAdapter(Context context) {
         this.context = context;
         avatarSize = context.getResources().getDimensionPixelSize(R.dimen.comment_avatar_size);
-        size = 8;
+    }
+
+    public OrderRVAdapter(Context context, List<Order> ordersList) {
+        this.context = context;
+        this.ordersList = ordersList;
+        size = ordersList.size();
+        avatarSize = context.getResources().getDimensionPixelSize(R.dimen.comment_avatar_size);
     }
 
     @Override
@@ -43,16 +56,38 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View view = LayoutInflater.from(context)
                 .inflate(R.layout.item_order, parent, false);
-        return new CellPostViewHolder(view);
+        return new CellOrderViewHolder(view);
     }
-
 
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        CellPostViewHolder holder = (CellPostViewHolder) viewHolder;
+        Order order = ordersList.get(position);
+        CellOrderViewHolder holder = (CellOrderViewHolder) viewHolder;
         holder.ibOrderDelete.setOnClickListener(this);
         holder.ibOrderDelete.setTag(position);
+
+        String stateString = order.getState() == 0? "订单已完成":"订单未成功";
+        holder.tvOrderState.setText(stateString);                            // 订单状态
+
+        holder.tvOrderCommTime.setText(order.getCompletedate());             // 订单完成时间
+
+        // 加载商店头像
+        if (order.getShopImgUrl().length() > 26)
+        {
+            Picasso.with(context)
+                    .load(StringConstant.SERVER_IP+"/"+order.getShopImgUrl())
+                    .centerCrop()
+                    .resize(avatarSize, avatarSize)
+                    .transform(new RoundedTransformation())
+                    .placeholder(R.mipmap.bili_default_avatar)
+                    .into(((CellOrderViewHolder) viewHolder).ivOrderShopImage);
+        }
+
+        holder.tvOrderShopName.setText(order.getShopName());                  // 商店名
+        holder.tvOrderNum.setText(""+order.getCount());                       // 总计份数
+        holder.orderSumPrice.setText(""+order.getSum());                      // 总计价格
+
         runEnterAnimation(viewHolder.itemView, position);
     }
 
@@ -77,7 +112,7 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public static class CellPostViewHolder extends RecyclerView.ViewHolder {
+    public static class CellOrderViewHolder extends RecyclerView.ViewHolder {
 
         // 订单状态， 订单完成时间，商店图片，商店名， 删除按钮， 总计份数， 总计金额
 
@@ -92,7 +127,7 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         ImageButton ibOrderDelete;                // 订单删除按钮
 
         @Bind(R.id.iv_order_shop_image)
-        ImageView iv_order_shop_image;             // 商店图片
+        ImageView ivOrderShopImage;             // 商店图片
 
         @Bind(R.id.tv_order_shop_name)
         TextView tvOrderShopName;                  // 商店名
@@ -103,12 +138,13 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         @Bind(R.id.order_sum_price)
         TextView orderSumPrice;                   // 总计价格
 
-        public CellPostViewHolder(View view) {
+        public CellOrderViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
     }
 
+    int size = 3;
     /**
      * item 点击事件
      * @param v

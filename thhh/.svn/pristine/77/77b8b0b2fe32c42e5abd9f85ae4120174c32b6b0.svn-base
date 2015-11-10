@@ -1,0 +1,119 @@
+package com.thhh.easy.act.service.imp;
+
+import java.util.List;
+
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+
+import com.thhh.easy.act.service.IActService;
+import com.thhh.easy.dao.IActDao;
+import com.thhh.easy.dao.IParticiDao;
+import com.thhh.easy.dao.IReportDao;
+import com.thhh.easy.entity.Act;
+
+public class ActService implements IActService {
+
+	private IActDao actDao;
+	private IParticiDao particiDao;
+	private IReportDao reportDao;
+
+	/**
+	 * 根据id查询活动
+	 */
+	public Act findActById(int id) {
+		// TODO Auto-generated method stub
+		return actDao.findActById(id);
+	}
+
+	/**
+	 * 查看活动 ,分页显示,id=user.id
+	 */
+	public List<Act> findAct(int id, int pageIndex, int rowCount) {
+
+		// List<Act> listAct = null;
+
+		DetachedCriteria criteria = DetachedCriteria.forClass(Act.class);
+		criteria.addOrder(Order.desc("create.date"));
+
+		// listAct = actDao.getHibernateTemplate().findByCriteria(criteria,
+		// (pageIndex - 1) * rowCount, rowCount);
+
+		return actDao.findAct(id, pageIndex, rowCount);
+	}
+
+	/**
+	 * 查看单个活动详情， id=act.id
+	 * 
+	 * @return
+	 */
+	public Act findActDetail(int id) {
+		// TODO Auto-generated method stub
+		return actDao.findActDetail(id);
+	}
+
+	/**
+	 * 参加活动，userid，actid
+	 * 
+	 * @return
+	 */
+	public void addAct(int userid, int actid) {
+		// TODO Auto-generated method stub
+
+		particiDao.insertPartici(userid, actid);
+	}
+
+	/**
+	 * 举报活动,举报人userid,举报的活动actid
+	 */
+	public void reportAct(int userid, int actid) {
+
+		reportDao.report(userid, actid);
+
+	}
+
+	/**
+	 * 查看举报记录，userid
+	 * 
+	 * @return
+	 */
+	public String findReportById(int userid) {
+
+		return reportDao.findReportById(userid);
+
+	}
+
+	/**
+	 * 查询已经参加的活动
+	 * 
+	 * @return
+	 */
+	public List<Act> allPartici(int userid, int pageIndex, int rowCount) {
+
+		return particiDao.allPartici(userid, pageIndex, rowCount);
+	}
+
+	public IActDao getActDao() {
+		return actDao;
+	}
+
+	public void setActDao(IActDao actDao) {
+		this.actDao = actDao;
+	}
+
+	public IParticiDao getParticiDao() {
+		return particiDao;
+	}
+
+	public void setParticiDao(IParticiDao particiDao) {
+		this.particiDao = particiDao;
+	}
+
+	public IReportDao getReportDao() {
+		return reportDao;
+	}
+
+	public void setReportDao(IReportDao reportDao) {
+		this.reportDao = reportDao;
+	}
+
+}

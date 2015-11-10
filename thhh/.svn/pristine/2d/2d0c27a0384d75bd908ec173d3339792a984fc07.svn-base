@@ -1,0 +1,237 @@
+package com.thhh.easy.entity;
+
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Users entity. @author MyEclipse Persistence Tools
+ */
+
+public class Users implements java.io.Serializable {
+
+	// Fields
+
+	private Integer id;
+	private Image image;
+	private String name;
+	private String pwd;
+	private String nickname;
+	private String email;
+	private String numbers;
+	private String depart;
+	private String tname;
+	private String gender;
+	private Integer rp;
+	private Set images = new HashSet(0);
+	private Set orderses = new HashSet(0);
+	private Set commentses = new HashSet(0);
+	private Set reports = new HashSet(0);
+	private Set likeses = new HashSet(0);
+	private Set collectses = new HashSet(0);
+	private Set postses = new HashSet(0);
+	private Set acts = new HashSet(0);
+	private Set particis = new HashSet(0);
+
+	// Constructors
+
+	/** default constructor */
+	public Users() {
+	}
+
+	/** minimal constructor */
+	public Users(String name, String pwd, Integer rp) {
+		this.name = name;
+		this.pwd = pwd;
+		this.rp = rp;
+	}
+
+	/** full constructor */
+	public Users(Image image, String name, String pwd, String nickname,
+			String email, String numbers, String depart, String tname,
+			String gender, Integer rp, Set images, Set orderses,
+			Set commentses, Set reports, Set likeses, Set collectses,
+			Set postses, Set acts, Set particis) {
+		this.image = image;
+		this.name = name;
+		this.pwd = pwd;
+		this.nickname = nickname;
+		this.email = email;
+		this.numbers = numbers;
+		this.depart = depart;
+		this.tname = tname;
+		this.gender = gender;
+		this.rp = rp;
+		this.images = images;
+		this.orderses = orderses;
+		this.commentses = commentses;
+		this.reports = reports;
+		this.likeses = likeses;
+		this.collectses = collectses;
+		this.postses = postses;
+		this.acts = acts;
+		this.particis = particis;
+	}
+
+	// Property accessors
+
+	public Integer getId() {
+		return this.id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Image getImage() {
+		return this.image;
+	}
+
+	public void setImage(Image image) {
+		this.image = image;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getPwd() {
+		return this.pwd;
+	}
+
+	public void setPwd(String pwd) {
+		this.pwd = pwd;
+	}
+
+	public String getNickname() {
+		return this.nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public String getEmail() {
+		return this.email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getNumbers() {
+		return this.numbers;
+	}
+
+	public void setNumbers(String numbers) {
+		this.numbers = numbers;
+	}
+
+	public String getDepart() {
+		return this.depart;
+	}
+
+	public void setDepart(String depart) {
+		this.depart = depart;
+	}
+
+	public String getTname() {
+		return this.tname;
+	}
+
+	public void setTname(String tname) {
+		this.tname = tname;
+	}
+
+	public String getGender() {
+		return this.gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public Integer getRp() {
+		return this.rp;
+	}
+
+	public void setRp(Integer rp) {
+		this.rp = rp;
+	}
+
+	public Set getImages() {
+		return this.images;
+	}
+
+	public void setImages(Set images) {
+		this.images = images;
+	}
+
+	public Set getOrderses() {
+		return this.orderses;
+	}
+
+	public void setOrderses(Set orderses) {
+		this.orderses = orderses;
+	}
+
+	public Set getCommentses() {
+		return this.commentses;
+	}
+
+	public void setCommentses(Set commentses) {
+		this.commentses = commentses;
+	}
+
+	public Set getReports() {
+		return this.reports;
+	}
+
+	public void setReports(Set reports) {
+		this.reports = reports;
+	}
+
+	public Set getLikeses() {
+		return this.likeses;
+	}
+
+	public void setLikeses(Set likeses) {
+		this.likeses = likeses;
+	}
+
+	public Set getCollectses() {
+		return this.collectses;
+	}
+
+	public void setCollectses(Set collectses) {
+		this.collectses = collectses;
+	}
+
+	public Set getPostses() {
+		return this.postses;
+	}
+
+	public void setPostses(Set postses) {
+		this.postses = postses;
+	}
+
+	public Set getActs() {
+		return this.acts;
+	}
+
+	public void setActs(Set acts) {
+		this.acts = acts;
+	}
+
+	public Set getParticis() {
+		return this.particis;
+	}
+
+	public void setParticis(Set particis) {
+		this.particis = particis;
+	}
+
+}

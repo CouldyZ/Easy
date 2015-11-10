@@ -1,0 +1,22 @@
+package com.thhh.easy.dao;
+
+import java.util.List;
+
+import org.springframework.orm.hibernate3.HibernateTemplate;
+
+import com.thhh.easy.entity.Act;
+
+public interface IActDao {
+
+	public abstract HibernateTemplate getHibernateTemplate();
+
+	// 查看活动
+	public List<Act> findAct(int id, int pageIndex, int rowCount);
+
+	// 查看活动详细
+	public Act findActDetail(int id);
+
+	// 根据id查询活动
+	public abstract Act findActById(java.lang.Integer id);
+
+}

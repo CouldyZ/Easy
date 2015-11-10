@@ -1,0 +1,30 @@
+package com.thhh.easy.act.service;
+
+import java.util.List;
+
+import com.thhh.easy.entity.Act;
+
+public interface IActService {
+
+	// 根据id查询活动
+	Act findActById(int id);
+
+	// 查看活动
+	public List<Act> findAct(int id, int pageIndex, int rowCount);
+
+	// 查看活动详细
+	public Act findActDetail(int id);
+
+	// 参加活动
+	public void addAct(int userid, int actid);
+
+	// 举报活动
+	public void reportAct(int userid, int actid);
+
+	// 查看举报记录，userid
+	public String findReportById(int userid);
+
+	// 查询该用户已经参加的活动
+	public List<Act> allPartici(int userid, int pageIndex, int rowCount);
+
+}

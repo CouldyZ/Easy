@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -17,12 +19,14 @@ import android.widget.Toast;
 import com.android.volley.ext.HttpCallback;
 import com.android.volley.ext.tools.HttpTools;
 import com.thh.easy.R;
+import com.thh.easy.constant.StringConstant;
 import com.thh.easy.view.ChoosePhotoTypeDialog;
 import com.thh.easy.view.SendCommentButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +36,7 @@ import butterknife.OnClick;
 
 /**
  * 发帖界面
+ * // TODO 将发送的图片改变文件名 : user.id.png/jpg
  */
 public class AddPostActivity extends AppCompatActivity implements  SendCommentButton.OnSendClickListener{
 
@@ -92,14 +97,20 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
             // TODO 发布新帖子
             String postContent = etAddPostContent.getText().toString();
             Bitmap postImage = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_22);
-            int useId = 0;
+            int userId = 1;
+
+            String s = Environment.getExternalStorageDirectory().getPath() ;
+            File f = new File(s+"/abc.jpg");
 
             Map<String, Object> params = new HashMap<>();
-            params.put("post.image", postImage);
-            params.put("user.id", useId);
-            params.put("post.contents", postContent);
+            params.put("postsImg", f);
+            params.put("posts.contents", postContent);
 
-            httpTools.upload("upload_url", params, new HttpCallback() {
+           // RequestInfo info = new RequestInfo()
+
+            String appendString = "?posts.users.id="+ userId;
+
+            httpTools.upload(StringConstant.SERVER_POSTS_URL + appendString,params, new HttpCallback() {
                 @Override
                 public void onStart() {
 
@@ -112,7 +123,8 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
 
                 @Override
                 public void onResult(String s) {
-                    readJson(s);
+                    Log.e("Result:::-->", s);
+                    // readJson(s);
                 }
 
                 @Override

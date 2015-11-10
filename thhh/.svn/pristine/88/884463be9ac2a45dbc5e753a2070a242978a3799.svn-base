@@ -1,0 +1,25 @@
+package com.thhh.easy.util;
+
+/**
+ * 字符串常量
+ * @author Administrator
+ *
+ */
+public class Constant {
+
+	public final static String STRING_1 = "1" ;
+	public final static String STRING_0 = "0" ;
+	
+	public final static Integer DATY_7 = 7 ;	//查询热帖是距离当前的天数
+	/**
+	 * 分页查询时默认当前页	1
+	 */
+	public final static Integer DEFAULT_PAGE = 1 ;	
+	/**
+	 * 分页查询时默认每页个数 	6
+	 */
+	public final static Integer DEFAULT_PAGE_SIZE = 6 ;	
+	
+	
+	
+}

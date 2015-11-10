@@ -15,6 +15,10 @@ public class StringConstant {
     public final static String SERVER_IP = "http://172.27.35.1:8080";
    // public final static String SERVER_IP = "http://192.168.1.112:8080";
 
+    // 发帖
+    public final static String SERVER_POSTS_URL = SERVER_IP +
+            "/thhh/posts/android_posts_addPosts.action";
+
     // 用户登陆Action
     public final static String SERVER_LOGIN_URL = SERVER_IP + "/thhh/user/android_loginCheck.action";
 
@@ -79,6 +83,28 @@ public class StringConstant {
     public final static String SERVER_GOODS_URL = SERVER_IP + "/thhh/goods/android_goods_seekGoods.action?";
 
     public final static String GOODS_ID = "goods.shop.id";
+
+    // 由选商品界面到订单界面Intent的KEY值
+    public final static String KEY_ORDER_ITEM_MAP ="ITEM_MAP";
+
+    public final static String KEY_ORDER_SUM ="ORDER_SUM_PRICE";
+
+
+
+    public final static String ORDER_USER_ID = "orders.users.id";
+
+    // 下订单
+    public final static String SERVER_CONFIRM_ORDER = SERVER_IP + "/thhh/goods/android_order_buy.action";
+
+    public final static String ORDER_SHOP_ID = "orders.shop.id";
+    public final static String ORDER_TAKE_TIME = "orders.take";
+    public final static String KEY_ORDER_ITEM = "orderItemJson";
+
+    // 查看订单
+    public final static String SERVER_ORDER_URL = SERVER_IP + "/thhh/goods/android_order_seeOrders.action";
+
+
+
 
     // 查看正在组织的活动
     public final static String SERVER_ACT_URL = SERVER_IP + "/thhh/goods/android_goods_seekShop.action";

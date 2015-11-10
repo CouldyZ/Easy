@@ -8,6 +8,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.thh.easy.R;
+import com.thh.easy.entity.OrderItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -19,22 +23,24 @@ import butterknife.ButterKnife;
 public class OrderItemRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private Context context;
-    private int size;
 
-    public OrderItemRVAdapter(Context context) {
+    List<OrderItem> orderItems = new ArrayList<>();
+
+    public OrderItemRVAdapter(Context context, List<OrderItem> orderItems) {
         this.context = context;
-        size = 8;
+        this.orderItems = orderItems;
     }
 
     @Override
     public int getItemCount() {
-        return size;
+        return orderItems.size();
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View view = LayoutInflater.from(context)
                 .inflate(R.layout.item_order_detail, parent, false);
+
         return new CellOrderItemViewHolder(view);
     }
 
@@ -43,6 +49,10 @@ public class OrderItemRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         CellOrderItemViewHolder holder = (CellOrderItemViewHolder) viewHolder;
+
+        holder.tvOrderGoodsName.setText(orderItems.get(position).getGoodsName());
+        holder.tvOrderGoodsNum.setText("" + orderItems.get(position).getGoodsNum());
+        holder.tvOrderGoodsSum.setText("" + orderItems.get(position).getGoodsPrice());
 
     }
 

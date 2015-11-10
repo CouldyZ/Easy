@@ -1,13 +1,11 @@
 package com.thhh.easy.util;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.struts2.ServletActionContext;
 
 import com.google.gson.Gson;
@@ -84,44 +82,6 @@ public class MyUtil {
 			simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		}
 		return simpleDateFormat.format(date);
-	}
-	
-	/**
-	 * 保存图片
-	 * @return
-	 */
-	public static boolean saveImage(File upFile , String uploadPath , String upFileFileName){
-		
-		if(upFile != null){
-		File saveFile = new File(new File(uploadPath), upFileFileName);
-		if (!saveFile.getParentFile().exists()){
-			saveFile.getParentFile().mkdirs();
-		}
-		 try {
-			FileUtils.copyFile(upFile, saveFile);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false ;
-		}
-		}else{
-			return false ;
-		}
-		return true ;
-	}
-	/**
-	 * 获取图片保存的绝对路径
-	 * @param relative 图片的相对路径
-	 * @return
-	 */
-	public static String imagePath(String relative){
-		String path = null ;
-		if(relative != null || ! "".equals(relative)){
-			String projectPath = ServletActionContext.getRequest().getSession().getServletContext().getRealPath("/");
-			path = new File(projectPath).getParentFile().getAbsolutePath()+relative ;
-			path = path.replaceAll("\\\\", "/") ;
-//			System.out.println(path);
-		}
-		return path ;
 	}
 	
 	/**

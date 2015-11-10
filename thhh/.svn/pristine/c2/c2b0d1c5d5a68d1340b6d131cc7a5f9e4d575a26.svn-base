@@ -1,0 +1,24 @@
+#MyEclipse Hibernate Properties
+#Sun Oct 25 16:11:37 CST 2015
+sessionFactoryName=com.thhh.easy.framework.HibernateSessionFactory
+genBasicCompId=false
+profile=
+daoSFId=sessionFactory
+version=3.3
+jndiPath=
+detectM2M=false
+reStrategyClass=
+detectO2O=false
+springDaoFile=resource/spring/applicationContext.xml
+useJavaTypes=true
+keyGenerator=
+libInstallFolder=WebRoot/WEB-INF/lib
+addLibs2Project=true
+genVersionTag=false
+sessionFactoryId=sessionFactory
+basePersistenceClass=
+genAnnotations=false
+reSettingsFile=/thhh/hibernate.reveng.xml
+configFile=/thhh/resource/spring/applicationContext.xml
+createConfigFile=false
+addLibs2Classpath=true

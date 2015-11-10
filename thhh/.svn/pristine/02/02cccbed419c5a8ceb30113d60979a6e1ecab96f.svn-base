@@ -1,0 +1,15 @@
+package com.thhh.easy.dao;
+
+import java.util.List;
+
+import com.thhh.easy.entity.Act;
+
+public interface IParticiDao {
+
+	// 参加活动
+	public void insertPartici(int userid, int actid);
+
+	// 根据id查找已参加的活动
+	public List<Act> allPartici(int userid, int pageIndex, int rowCount);
+
+}

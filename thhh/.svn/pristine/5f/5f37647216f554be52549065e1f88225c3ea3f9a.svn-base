@@ -1,0 +1,19 @@
+package com.thhh.easy.user.service;
+
+import com.thhh.easy.entity.Users;
+
+public interface IUserService {
+
+	Users findUserById(int id);
+
+	Users findUserByName(String name);
+
+	void save(Users user);
+
+	Users updateUsers(Users u);
+	
+	int findPostCount(Integer id);
+	
+	int findCollectCount(Integer id);
+
+}

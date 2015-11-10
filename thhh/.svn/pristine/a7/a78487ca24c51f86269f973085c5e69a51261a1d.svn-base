@@ -1,0 +1,242 @@
+package com.thhh.easy.posts.service.imp;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.hibernate.Hibernate;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+
+import com.thhh.easy.dao.ICollectsDao;
+import com.thhh.easy.dao.ILikesDao;
+import com.thhh.easy.dao.IPostsDao;
+import com.thhh.easy.dao.IUsersDao;
+import com.thhh.easy.entity.Collects;
+import com.thhh.easy.entity.Likes;
+import com.thhh.easy.entity.Posts;
+import com.thhh.easy.entity.Users;
+import com.thhh.easy.posts.service.IPostsService;
+import com.thhh.easy.util.Constant;
+import com.thhh.easy.util.MyUtil;
+
+public class PostsService implements IPostsService {
+
+	private IPostsDao postsDao ;
+	private ILikesDao likesDao ;
+	private IUsersDao usersDao ;
+	private ICollectsDao collectsDao ;
+
+	public IPostsDao getPostsDao() {
+		return postsDao;
+	}
+
+	public void setPostsDao(IPostsDao postsDao) {
+		this.postsDao = postsDao;
+	}
+
+	/**
+	 * 查找指定贴子的热度
+	 */
+	public int findPostsLikesCount(Integer postsId){
+		String queryString = "select count(li) from Likes li where li.posts.id=?" ;
+		List list = likesDao.getHibernateTemplate().find(queryString,postsId) ;
+		int count =  Integer.parseInt(list.get(0).toString()) ;
+		return count ;
+	}
+	
+	/**
+	 * 查找最新贴 
+	 * pageIndex 当前页，rowCount 每页条数
+	 */
+	public List<Posts> findNewPosts(int pageIndex, int rowCount) {
+		List<Posts> listPosts = null ;
+		DetachedCriteria criteria = DetachedCriteria.forClass(Posts.class) ;
+		criteria.addOrder(Order.desc("dates")) ;
+		listPosts = postsDao.getHibernateTemplate().findByCriteria(criteria, (pageIndex - 1) * rowCount, rowCount) ;
+		for (Posts posts : listPosts) {
+			Hibernate.initialize(posts.getUsers());
+			Hibernate.initialize(posts.getImage());
+		}
+		return listPosts;
+	}
+
+	/**
+	 * 查找最热贴
+	 *@param pageIndex 当前页，rowCount 每页条数
+	 *@return List<int[]> int[0]为贴子id，int[1]为贴子点赞数
+	 */
+	public List<int[]> findHotPosts(int pageIndex, int rowCount) {
+		
+		String queryString = "select li.posts.id ,count(li.posts.id) from Likes li " +
+				"where li.posts.id in (select p.id from Posts p where datediff(curdate(),p.dates)<?)"+
+				"group by li.posts.id order by count(li.posts.id) desc" ;
+		Session session = likesDao.getHibernateTemplate().getSessionFactory().openSession();
+		Query query = session.createQuery(queryString); 
+		query.setFirstResult((pageIndex-1)*rowCount); 
+		query.setMaxResults(rowCount); 
+		query.setInteger(0, Constant.DATY_7) ;
+		List<Object> list =(List<Object>)query.list();
+		session.close();
+		
+		List<int[]> listPostInfo = new ArrayList<int[]>() ;
+		for (int i = 0; i < list.size(); i++) {
+			Object[] obj=(Object[]) list.get(i);
+			int[] postInfo = new int[2] ;
+			postInfo[0] = Integer.parseInt(obj[0].toString()) ;
+			postInfo[1] = Integer.parseInt(obj[1].toString()) ;
+			listPostInfo.add(postInfo) ;
+		}
+		return listPostInfo;
+	}
+
+	/**
+	 * 根据贴子id查找贴子
+	 */
+	public Posts findPostsById(int id) {
+		return postsDao.findById(id);
+	}
+
+	/**
+	 * 根据id查找用户
+	 */
+	public Users findUserById(Integer id) {
+		// TODO Auto-generated method stub
+		return usersDao.findById(id);
+	}
+	/**
+	 * 保存点赞
+	 */
+	public void saveLikes(Likes likes) {
+		
+		likesDao.save(likes) ;
+	}
+	
+	/**
+	 * 判断用户是否已点赞某贴
+	 * @return true 用户已赞此贴  , false 用户没有赞此贴
+	 */
+	public boolean userIsLikes(Integer userId, Integer postsId) {
+		String queryString = "select count(li) from Likes li where li.posts.id=? and li.users.id=?" ;
+		List list = likesDao.getHibernateTemplate().find(queryString,postsId,userId) ;
+		int count =  Integer.parseInt(list.get(0).toString()) ;
+		if(count > 0){
+			return true ;
+		}
+		return false;
+	}
+	
+	/**
+	 * 删除点赞记录
+	 */
+	public void deleteLikes(Integer userId, Integer postsId) {
+		String hql = "delete from Likes li where li.posts.id=? and li.users.id=?" ;
+		Session session = likesDao.getHibernateTemplate().getSessionFactory().openSession();
+		Query query = session.createQuery(hql); 
+		query.setInteger(0, postsId) ;
+		query.setInteger(1, userId) ;
+		query.executeUpdate() ;
+		session.close();
+	}
+	/**
+	 * 添加收藏
+	 */
+	public void saveCollects(Collects collects) {
+		collectsDao.save(collects) ;
+	}
+	/**
+	 * 判断用户是否收藏过此贴
+	 */
+	public boolean userIsCollects(Integer userId, Integer postsId) {
+		String queryString = "select count(co) from Collects co where co.posts.id=? and co.users.id=?" ;
+		List list = collectsDao.getHibernateTemplate().find(queryString,postsId,userId) ;
+		int count =  Integer.parseInt(list.get(0).toString()) ;
+		if(count > 0){
+			return true ;
+		}
+		return false;
+	}
+	/**
+	 * 删除收藏记录
+	 */
+	public void deleteCollects(Integer userId, Integer postsId) {
+		String hql = "delete from Collects co where co.posts.id=? and co.users.id=?" ;
+		Session session = collectsDao.getHibernateTemplate().getSessionFactory().openSession();
+		Query query = session.createQuery(hql); 
+		query.setInteger(0, postsId) ;
+		query.setInteger(1, userId) ;
+		query.executeUpdate() ;
+		session.close();
+	}
+	
+	/**
+	 * 查看我的收藏
+	 */
+	public List<Collects> findCollects(int pageIndex, int rowCount,
+			Integer userId) {
+		List<Collects> listCollects = null ;
+		DetachedCriteria criteria = DetachedCriteria.forClass(Collects.class) ;
+		criteria.add(Restrictions.eq("users.id", userId));
+		criteria.addOrder(Order.desc("dates")) ;
+		listCollects = collectsDao.getHibernateTemplate().findByCriteria(criteria, (pageIndex - 1) * rowCount, rowCount);
+		for (Collects collects : listCollects) {
+			Hibernate.initialize(collects.getUsers()) ;
+		}
+		return listCollects;
+	}
+	/**
+	 * 查看指定用户发的帖
+	 */
+	public List<Posts> findUserPosts(int pageIndex, int rowCount, Integer userId) {
+		List<Posts> listPosts = null ;
+		DetachedCriteria criteria = DetachedCriteria.forClass(Posts.class) ;
+		criteria.add(Restrictions.eq("users.id", userId));
+		criteria.addOrder(Order.desc("dates")) ;
+		listPosts = postsDao.getHibernateTemplate().findByCriteria(criteria, (pageIndex - 1) * rowCount, rowCount);
+		for (Posts posts : listPosts) {
+			Hibernate.initialize(posts.getUsers()) ;
+		}
+		return listPosts;
+	}
+	
+	/**
+	 * 保存用户发帖
+	 */
+	public void savePosts(Posts posts) {
+		postsDao.save(posts) ;
+		
+	}
+	
+	public ILikesDao getLikesDao() {
+		return likesDao;
+	}
+
+	public void setLikesDao(ILikesDao likesDao) {
+		this.likesDao = likesDao;
+	}
+
+	public IUsersDao getUsersDao() {
+		return usersDao;
+	}
+
+	public void setUsersDao(IUsersDao usersDao) {
+		this.usersDao = usersDao;
+	}
+
+	public ICollectsDao getCollectsDao() {
+		return collectsDao;
+	}
+
+	public void setCollectsDao(ICollectsDao collectsDao) {
+		this.collectsDao = collectsDao;
+	}
+
+
+}

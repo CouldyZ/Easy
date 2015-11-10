@@ -1,0 +1,107 @@
+package com.thhh.easy.dao.imp;
+
+import java.util.List;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+
+import com.thhh.easy.act.service.IActService;
+import com.thhh.easy.dao.IReportDao;
+import com.thhh.easy.entity.Act;
+import com.thhh.easy.entity.Report;
+import com.thhh.easy.entity.Users;
+import com.thhh.easy.user.service.IUserService;
+import com.thhh.easy.util.Constant;
+
+/**
+ * A data access object (DAO) providing persistence and search support for
+ * Report entities. Transaction control of the save(), update() and delete()
+ * operations can directly support Spring container-managed transactions or they
+ * can be augmented to handle user-managed Spring transactions. Each of these
+ * methods provides additional information for how to configure it for the
+ * desired type of transaction control.
+ * 
+ * @see com.thhh.easy.entity.Report
+ * @author MyEclipse Persistence Tools
+ */
+public class ReportDAO extends HibernateDaoSupport implements IReportDao {
+	private static final Logger log = LoggerFactory.getLogger(ReportDAO.class);
+
+	// property constants
+	private IUserService userService;
+	private IActService actService;
+
+	protected void initDao() {
+		// do nothing
+	}
+
+	/**
+	 * 根据userid查询举报记录
+	 */
+	public String findReportById(int userid) {
+		Session session = getSession();
+		Report report = new Report();
+		Users users = userService.findUserById(userid);
+
+		Query query = session.createQuery("from report where users_id ?");
+		query.setParameter(0, userid);
+		query.executeUpdate();
+
+		List reportList = query.list();
+		if (reportList.size() != 0) {
+
+			session.close();
+			return Constant.STRING_1;
+
+		} else {
+
+			session.close();
+			return Constant.STRING_0;
+		}
+
+	}
+
+	/**
+	 * 举报活动
+	 */
+	public void report(int userid, int actid) {
+		// TODO Auto-generated method stub
+		Session session = getSession();
+		Report report = new Report();
+
+		Users users = userService.findUserById(userid);
+		Act act = actService.findActById(actid);
+
+		report.setUsers(users);
+		report.setAct(act);
+
+		session.save(report);
+		session.beginTransaction().commit();
+
+		session.close();
+
+	}
+
+	public IUserService getUserService() {
+		return userService;
+	}
+
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
+
+	public IActService getActService() {
+		return actService;
+	}
+
+	public void setActService(IActService actService) {
+		this.actService = actService;
+	}
+
+	public static Logger getLog() {
+		return log;
+	}
+}

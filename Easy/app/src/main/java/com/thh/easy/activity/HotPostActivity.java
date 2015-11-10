@@ -194,7 +194,7 @@ public class HotPostActivity extends BaseActivity implements PostRVAdapter.OnPos
         params.put(StringConstant.CURRENT_PAGE_KEY, currentPage+"");
         params.put(StringConstant.PER_PAGE_KEY, StringConstant.PER_PAGE_COUNT + "");
 
-        if(getIntent().getStringExtra(StringConstant.USER_ID) != null) {
+        if(getIntent().getIntExtra(StringConstant.USER_ID, 1) == 1) {
             params.put(StringConstant.USER_ID, getIntent().getStringExtra(StringConstant.USER_ID));
         }
         RequestInfo info = new RequestInfo(StringConstant.SERVER_NEWPOST_URL, params);

@@ -1,0 +1,133 @@
+package com.thhh.easy.dao.imp;
+
+import java.util.Date;
+import java.util.List;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+
+import com.thhh.easy.dao.IActDao;
+import com.thhh.easy.dao.IReportDao;
+import com.thhh.easy.dao.IUsersDao;
+import com.thhh.easy.entity.Act;
+import com.thhh.easy.entity.Report;
+import com.thhh.easy.entity.Users;
+import com.thhh.easy.util.Constant;
+
+/**
+ * A data access object (DAO) providing persistence and search support for
+ * Report entities. Transaction control of the save(), update() and delete()
+ * operations can directly support Spring container-managed transactions or they
+ * can be augmented to handle user-managed Spring transactions. Each of these
+ * methods provides additional information for how to configure it for the
+ * desired type of transaction control.
+ * 
+ * @see com.thhh.easy.entity.Report
+ * @author MyEclipse Persistence Tools
+ */
+public class ReportDAO extends HibernateDaoSupport implements IReportDao {
+	private static final Logger log = LoggerFactory.getLogger(ReportDAO.class);
+
+	// property constants
+	private IUsersDao usersDao;
+	private IActDao actDao;
+
+	protected void initDao() {
+		// do nothing
+	}
+
+	/**
+	 * 根据userid查询举报记录
+	 */
+	public String findReportById(int userid, int actid) {
+		Session session = this.getHibernateTemplate().getSessionFactory()
+				.openSession();
+		Report report = new Report();
+		// Users users = userService.findUserById(userid);
+		// Act act = actService.findActById(actid);
+
+		Query query = session
+				.createQuery("from Report where users_id = ? and act_id = ?");
+		query.setInteger(0, userid);
+		query.setInteger(1, actid);
+
+		// query.executeUpdate();
+
+		List<Report> reportList = query.list();
+		if (reportList.size() != 0) {
+
+			// session.close();
+			return Constant.STRING_1;
+
+		} else {
+
+			// session.close();
+			return Constant.STRING_0;
+		}
+
+	}
+
+	/**
+	 * 举报活动
+	 */
+	public void report(Users users, Act act) {
+
+		Session session = this.getHibernateTemplate().getSessionFactory()
+				.openSession();
+		Report report = new Report();
+
+		report.setUsers(users);
+		report.setAct(act);
+		report.setDates(new Date());
+
+		session.save(report);
+		session.beginTransaction().commit();
+
+		// session.close();
+
+	}
+
+	/**
+	 * 更新RP
+	 * 
+	 * @return
+	 */
+	public void updateRP(int userid, int userRP) {
+		Session session = this.getHibernateTemplate().getSessionFactory()
+				.openSession();
+		session.beginTransaction();
+
+		Query query = session
+				.createQuery("update Users set rp = ? where id = ?");
+
+		query.setInteger(0, userRP);
+		query.setInteger(1, userid);
+
+		query.executeUpdate();
+		session.getTransaction().commit();
+
+	}
+
+	public static Logger getLog() {
+		return log;
+	}
+
+	public IUsersDao getUsersDao() {
+		return usersDao;
+	}
+
+	public void setUsersDao(IUsersDao usersDao) {
+		this.usersDao = usersDao;
+	}
+
+	public IActDao getActDao() {
+		return actDao;
+	}
+
+	public void setActDao(IActDao actDao) {
+		this.actDao = actDao;
+	}
+}

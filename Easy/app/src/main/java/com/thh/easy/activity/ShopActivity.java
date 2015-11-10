@@ -20,6 +20,7 @@ import com.thh.easy.adapter.MyPagerAdapter;
 import com.thh.easy.adapter.OrderRVAdapter;
 import com.thh.easy.adapter.ShopRVAdpter;
 import com.thh.easy.constant.StringConstant;
+import com.thh.easy.entity.Order;
 import com.thh.easy.entity.Shop;
 
 import org.json.JSONArray;
@@ -35,6 +36,7 @@ import butterknife.Bind;
 
 /**
  * 浏览商店页面
+ * // TODO 测试订单页面
  */
 public class ShopActivity extends BaseDrawerActivity implements
         BaseDrawerActivity.OnStartActivityListener,
@@ -60,7 +62,7 @@ public class ShopActivity extends BaseDrawerActivity implements
 
     RecyclerView rvShop, rvOrder;                  // 商店列表，我的订单列表
     ShopRVAdpter shopRVAdpter;                     // rvShop的适配器
-    OrderRVAdapter orderRVAdapter;                 //  rvOrder的适配器
+    OrderRVAdapter orderRVAdapter;                 // rvOrder的适配器
 
     boolean isLoading = false;
     private List<Shop> shopList = new ArrayList<>();
@@ -127,11 +129,11 @@ public class ShopActivity extends BaseDrawerActivity implements
                 }
 
                 if ("[]".equals(s)) {
-                    Snackbar.make(clContainer, "什么帖子都没有呦", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(clContainer, "没有商店了呦", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
-                onReadJson(s);
+                onReadShopJson(s);
                 Log.d("New - HttpCallback", shopRVAdpter.getItemCount() + " loadPost");
 
                 currentPage++;
@@ -153,7 +155,7 @@ public class ShopActivity extends BaseDrawerActivity implements
         });
     }
 
-    public void onReadJson(String json) {
+    public void onReadShopJson(String json) {
 
         int insertPos = shopRVAdpter.getItemCount();
         try {
@@ -195,6 +197,7 @@ public class ShopActivity extends BaseDrawerActivity implements
     private void setUpPagerData() {
         mInflater = LayoutInflater.from(this);
         mTabTitles = new String[]{"商店","订单"}; // tab上的文字
+
         // 所有商店列表
         llShopView = mInflater.inflate(R.layout.shop_all_view, null);
         rvShop = (RecyclerView)llShopView.findViewById(R.id.rv_shop);
@@ -211,13 +214,13 @@ public class ShopActivity extends BaseDrawerActivity implements
      * 设置Tab数据
      */
     private void setUpTabData() {
-        tlShopTabs.setTabMode(TabLayout.MODE_FIXED);//设置tab模式，当前为系统默认模式
-        tlShopTabs.addTab(tlShopTabs.newTab().setText(mTabTitles[0]));//添加tab选项卡
+        tlShopTabs.setTabMode(TabLayout.MODE_FIXED);                   //设置tab模式，当前为系统默认模式
+        tlShopTabs.addTab(tlShopTabs.newTab().setText(mTabTitles[0])); //添加tab选项卡
         tlShopTabs.addTab(tlShopTabs.newTab().setText(mTabTitles[1]));
 
-        vpShopViewPager.setAdapter(myPagerAdapter);//给ViewPager设置适配器
-        tlShopTabs.setupWithViewPager(vpShopViewPager);//将TabLayout和ViewPager关联起来。
-        tlShopTabs.setTabsFromPagerAdapter(myPagerAdapter);//给Tabs设置适配器
+        vpShopViewPager.setAdapter(myPagerAdapter);                     //给ViewPager设置适配器
+        tlShopTabs.setupWithViewPager(vpShopViewPager);                 //将TabLayout和ViewPager关联起来。
+        tlShopTabs.setTabsFromPagerAdapter(myPagerAdapter);             //给Tabs设置适配器
 
     }
 
@@ -235,14 +238,10 @@ public class ShopActivity extends BaseDrawerActivity implements
         // 添加item点击事件
         shopRVAdpter.setOnPostItemClickListener(this);
 
-        if(rvOrder == null){
-            orderRVAdapter = new OrderRVAdapter(this);
-        }
-
         LinearLayoutManager orderLinearLayoutManager = new LinearLayoutManager(this);
         rvOrder.setLayoutManager(orderLinearLayoutManager);
         rvOrder.setHasFixedSize(true);
-        orderRVAdapter = new OrderRVAdapter(this);
+
         rvOrder.setAdapter(orderRVAdapter);
 
     }
@@ -291,11 +290,109 @@ public class ShopActivity extends BaseDrawerActivity implements
         intent.putExtra("SHOP_NAME", ""+shop.getName());
         intent.putExtra("SHOP_URL", ""+shop.getUrl());
 
-        intent.putExtra("SHOP_SHORTCUT",shop.getShortcut());
-        intent.putExtra("SHOP_ADDRESS",shop.getAddress());
+        intent.putExtra("SHOP_SHORTCUT", shop.getShortcut());
+        intent.putExtra("SHOP_ADDRESS", shop.getAddress());
 
         startActivity(intent);
     }
 
+
+    int userId = 2;  // TODO 将用户id设置为全局变量
+
+
+    /**
+     * 请求订单数据
+     */
+    private void loadOrders() {
+
+        if (orderRVAdapter == null) {
+            orderRVAdapter = new OrderRVAdapter(ShopActivity.this, ordersList);
+        }
+        // 向服务器发送数据
+        Map<String, String> params = new HashMap<String, String>();
+        params.put(StringConstant.ORDER_USER_ID, ""+userId);
+        RequestInfo info = new RequestInfo(StringConstant.SERVER_ORDER_URL, params);
+        httpTools.post(info, new HttpCallback() {
+            @Override
+            public void onStart() {
+            }
+
+            @Override
+            public void onFinish() {
+            }
+
+            @Override
+            public void onResult(String s) {
+                Log.i("New - HttpCallback", s);
+
+                if (StringConstant.NULL_VALUE.equals(s)) {
+                    Snackbar.make(clContainer, "网络貌似粗错了", Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if ("[]".equals(s)) {
+                    Snackbar.make(clContainer, "什么帖子都没有呦", Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+
+                onReadOrderJson(s);
+                currentPage++;
+            }
+
+            @Override
+            public void onError(Exception e) {
+            }
+
+            @Override
+            public void onCancelled() {
+
+            }
+
+            @Override
+            public void onLoading(long l, long l1) {
+
+            }
+        });
+    }
+
+    List<Order> ordersList = new ArrayList<>();
+
+    /**
+     * 获得订单数据
+     * @param json
+     */
+    public void onReadOrderJson(String json) {
+
+        int insertPos = shopRVAdpter.getItemCount();
+        try {
+
+            JSONArray jsonArray = new JSONArray(json);
+
+            Log.i(TAG, jsonArray.length()+" onReadJson");
+            Order order = null;
+            for (int i = 0 ; i < jsonArray.length() ; i ++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                JSONObject imageObj = jsonObject.getJSONObject("image");
+                order = new Order(jsonObject.getString("dates"),// 下单时间
+                          3,
+                          jsonObject.getInt("id"),
+                          imageObj.getString("urls"),
+                          jsonObject.getString("name"),
+                          jsonObject.getInt("state"),
+                          45.4f
+                        );
+                ordersList.add(order);
+            }
+
+              orderRVAdapter.notifyItemRangeInserted(insertPos, ordersList.size() - insertPos);
+              orderRVAdapter.notifyItemRangeChanged(insertPos, ordersList.size() - insertPos);
+
+            currentPage++;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e(TAG, "解析Json出错");
+        }
+    }
 
 }

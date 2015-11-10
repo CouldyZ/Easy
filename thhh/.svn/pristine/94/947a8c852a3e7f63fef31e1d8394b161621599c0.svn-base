@@ -1,0 +1,305 @@
+package com.thhh.easy.act.action;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.thhh.easy.act.service.IActService;
+import com.thhh.easy.entity.Act;
+import com.thhh.easy.entity.Partici;
+import com.thhh.easy.entity.Report;
+import com.thhh.easy.entity.Users;
+import com.thhh.easy.user.service.IUserService;
+import com.thhh.easy.util.Constant;
+import com.thhh.easy.util.MyUtil;
+
+public class ActAction {
+
+	private IUserService userService;
+	private IActService actService;
+	private int pageIndex = 1; // 当前页数
+	private int rowCount = 10; // 每页显示条数
+
+	private Act act; // 活动对象
+	private Users users; // 用户对象
+	private Partici partici; // 参与表对象
+	private Report report; // 举报表对象
+
+	/**
+	 * [查看]该用户未参加的正在发起的活动,按照发起活动的时间降序排序
+	 */
+	public void findAct() {
+
+		// if (pageIndex == 0 || rowCount == 0) {
+		// setPageIndex(Constant.DEFAULT_PAGE);
+		// setRowCount(Constant.DEFAULT_PAGE_SIZE);
+		// }
+		List<Act> listAct = actService.findAct(1, 1, 10);
+
+		// List<Act> listAct = actService.findAct(users.getId(), getPageIndex(),
+		// getRowCount());
+
+		// List<Map<String, Object>> listMap = new ArrayList<Map<String,
+		// Object>>();
+		//
+		// for (Act act : listAct) {
+		//
+		// Map<String, Object> map = new HashMap<String, Object>();
+		// // map.put("id", act.getId());
+		// // map.put("user.id", act.getUsers().getId());
+		// map.put("user.name", act.getUsers().getName());
+		// map.put("user_img", act.getUsers().getImage().getUrls());
+		// // map.put("create.date",
+		// // MyUtil.formatDate(act.getCreateDate(), "yyyy-MM-dd"));
+		// map.put("start_date",
+		// MyUtil.formatDate(act.getStartDate(), "yyyy-MM-dd"));
+		// map.put("days", act.getDays());
+		// map.put("theme", act.getTheme());
+		// // map.put("state", act.getStates());
+		// listMap.add(map);
+		// }
+		// System.out.println(listAct);
+		MyUtil.sendString(listAct);
+	}
+
+	/**
+	 * 查看单个活动详情
+	 * 
+	 * @return
+	 */
+	public void findActDetail() {
+
+		// 由前台传送的活动id查询该活动信息
+		Act act2 = actService.findActDetail(1);
+
+		// Map<String, Object> map = new HashMap<String, Object>();
+		// map.put("id", act2.getId());
+		// map.put("user.id", act2.getUsers().getId());
+		// map.put("user.name", act2.getUsers().getName());
+		// map.put("create.date",
+		// MyUtil.formatDate(act2.getCreateDate(), "yyyy-MM-dd"));
+		// map.put("theme", act2.getTheme());
+		// map.put("account", act2.getAccount());
+		// map.put("days", act2.getDays());
+		// map.put("pay", act2.getPay());
+		// map.put("state", act2.getStates());
+		// map.put("contents", act2.getContents());
+		// map.put("start.date",
+		// MyUtil.formatDate(act2.getStartDate(), "yyyy-MM--dd"));
+		// 将查询得到的数据传送到前台
+		MyUtil.sendString(act2);
+
+	}
+
+	/**
+	 * 参加活动
+	 * 
+	 * @return
+	 */
+	public void addAct() {
+
+		// 当前是否有用户登录
+		if (users.getId() == 0) {
+
+			// 未登录
+			MyUtil.sendString(Constant.STRING_0);
+		} else {
+
+			// 数据库插入一行数据
+			actService.addAct(users.getId(), act.getId());
+			// 向前台发送成功信息
+			MyUtil.sendString(Constant.STRING_1);
+		}
+
+	}
+
+	/**
+	 * 举报活动
+	 * 
+	 * @return
+	 */
+	public void reportAct() {
+
+		// 查询该用户是否已经举报过该活动
+		String flag = actService.findReportById(users.getId(), act.getId());
+
+		// "1"表示在数据库中查询到记录，"0"表示没有在数据库中查到记录
+
+		if ("1".equals(flag)) {
+
+			String msg = new String(
+					"The user has already reported the activity !!!");
+			MyUtil.sendString(msg);
+
+		} else if ("0".equals(flag)) {
+
+			// 向举报表插入一行数据
+			actService.reportAct(users.getId(), act.getId());
+			// 向前台发送成功信息
+			MyUtil.sendString(Constant.STRING_1);
+		}
+
+	}
+
+	/**
+	 * 发起活动
+	 * 
+	 * @return
+	 */
+	public void initAct() {
+
+		// users = actService.findUserById(3);
+		// act = actService.findActById(4);
+		// if (act == null || act.getUsers() == null
+		// || act.getUsers().getId() == null) {
+		// MyUtil.sendString(Constant.STRING_0);
+		// act = null;
+		// return;
+		// }
+
+		// act.setUsers(actService.findUserById(3));
+		// act.setTheme("gggggg");
+		// act.setAccount(12);
+		// act.setPay(25.0f);
+		// act.setDays(2);
+		// act.setContents("happy 222222");
+		// act.setCreateDate(new Date());
+		// act.setStartDate(new Date());
+		// act.setStates("1");
+
+		// 活动表插入数据
+		actService.saveAct(act);
+		// 同时向参与表加入一行数据，级联操作
+		// actService.addAct(users.getId(), act.getId());
+		MyUtil.sendString(Constant.STRING_1);
+
+	}
+
+	/**
+	 * 取消活动
+	 * 
+	 * @return
+	 */
+	public void cancelAct() {
+		// 判断是不是发起人在取消活动
+		String flag = actService.checkCancel(users.getId(), act.getId());
+		if (flag == "0") {
+			// 没查到表记录
+			String msg = new String("can not cancel");
+			MyUtil.sendString(msg);
+
+		} else if (flag == "1") {
+			// 修改字段，改变活动状态
+			actService.cancelAct(act.getId());
+			// 向前台发送成功信息
+			MyUtil.sendString(Constant.STRING_1);
+		}
+
+	}
+
+	/**
+	 * 查询该用户发起的活动，和参与的活动，按照活动发起时间排序
+	 * 
+	 * @return
+	 */
+	public void findAllAct() {
+
+		if (act == null || act.getUsers() == null
+				|| act.getUsers().getId() == null) {
+			MyUtil.sendString(Constant.STRING_0);
+			act = null;
+			return;
+		}
+
+		if (pageIndex == 0 || rowCount == 0) {
+			setPageIndex(Constant.DEFAULT_PAGE);
+			setRowCount(Constant.DEFAULT_PAGE_SIZE);
+		}
+
+		List<Act> listAct = actService.allPartici(users.getId(), pageIndex,
+				rowCount);
+
+		List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+
+		for (Act act : listAct) {
+
+			Map<String, Object> map = new HashMap<String, Object>();
+			// map.put("id", act.getId());
+			// map.put("user.id", act.getUsers().getId());
+			map.put("user.name", act.getUsers().getName());
+			map.put("create.date",
+					MyUtil.formatDate(act.getCreateDate(), "yyyy-MM-dd"));
+			map.put("theme", act.getTheme());
+			map.put("state", act.getStates());
+			listMap.add(map);
+		}
+		System.out.println(listMap);
+		MyUtil.sendString(listMap.toArray());
+	}
+
+	public IActService getActService() {
+		return actService;
+	}
+
+	public void setActService(IActService actService) {
+		this.actService = actService;
+	}
+
+	public int getPageIndex() {
+		return pageIndex;
+	}
+
+	public void setPageIndex(int pageIndex) {
+		this.pageIndex = pageIndex;
+	}
+
+	public int getRowCount() {
+		return rowCount;
+	}
+
+	public void setRowCount(int rowCount) {
+		this.rowCount = rowCount;
+	}
+
+	public IUserService getUserService() {
+		return userService;
+	}
+
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
+
+	public Act getAct() {
+		return act;
+	}
+
+	public void setAct(Act act) {
+		this.act = act;
+	}
+
+	public Users getUsers() {
+		return users;
+	}
+
+	public void setUsers(Users users) {
+		this.users = users;
+	}
+
+	public Partici getPartici() {
+		return partici;
+	}
+
+	public void setPartici(Partici partici) {
+		this.partici = partici;
+	}
+
+	public Report getReport() {
+		return report;
+	}
+
+	public void setReport(Report report) {
+		this.report = report;
+	}
+
+}

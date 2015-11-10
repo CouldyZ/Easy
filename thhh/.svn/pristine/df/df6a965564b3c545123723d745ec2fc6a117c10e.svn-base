@@ -1,0 +1,206 @@
+package com.thhh.easy.user.action;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.thhh.easy.dao.ICollectsDao;
+import com.thhh.easy.entity.Collects;
+import com.thhh.easy.entity.Image;
+import com.thhh.easy.entity.Posts;
+import com.thhh.easy.entity.Users;
+import com.thhh.easy.posts.service.IPostsService;
+import com.thhh.easy.user.service.IUserService;
+import com.thhh.easy.util.Constant;
+import com.thhh.easy.util.MyUtil;
+
+public class AndroidUserAction {
+
+	private Users user ;
+	private IUserService userService ;
+	private IPostsService postService ;
+	private Posts post ;
+	private Collects collect ;
+	private int pageIndex; // 当前页数
+	private int rowCount; // 每页显示条数
+	
+	/**
+	 * 用户登录检测
+	 */
+	public void loginCheck(){
+		user = new Users() ;
+		user.setId(1);
+		user.setName("aaa") ;
+		user.setPwd("123456") ;
+		
+		if(user == null || user.getName() == null || "".equals(user.getName())){
+			MyUtil.sendJSONObject(null) ;
+			user = null ;
+			return ;
+		}
+		Users u = userService.findUserByName(user.getName()) ;
+		if(u != null && user.getPwd().equals(u.getPwd())){
+			//用户合法，则向客户端发送用户对象
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("id", u.getId()) ;
+			map.put("name", u.getName()) ;
+			map.put("pwd",u.getPwd() ) ;
+			map.put("nickname",u.getNickname() ) ;
+			Image image = u.getImage() ;
+			if(image != null){
+				map.put("image", image.getUrls()) ;
+			}else{
+				map.put("image", null) ;
+			}
+			map.put("email",u.getEmail()) ;
+			map.put("numbers",u.getNumbers()) ;
+			map.put("depart",u.getDepart());
+			map.put("tname",u.getTname()) ;
+			map.put("gender",u.getGender()) ;
+			map.put("rp",u.getRp()) ;
+			MyUtil.sendJSONObject(map) ;
+		}else{
+			//用户不合法
+			MyUtil.sendJSONObject(null) ;
+		}
+		user = null ;
+	}
+	/**
+	 * 用户注册
+	 */
+	public void register(){
+		user.setRp(0) ;
+		if(user.getName() != null && user.getPwd() != null){
+			Users u = userService.findUserByName(user.getName()) ;
+			if(u != null){
+				//此用户名已存在
+				MyUtil.sendString(Constant.STRING_0) ;
+				return ;
+			}else{
+				userService.save(user) ;
+				MyUtil.sendString(Constant.STRING_1) ;
+			}
+		}else{
+			MyUtil.sendString(Constant.STRING_0) ;
+		}
+		user = null ;
+	}
+	/**
+	 * 查询用户的个人信息
+	 */
+	public void userInfor(){
+		//从客户端接收到用户名，在数据库中查询是否存在该用户
+		Users u=userService.findUserByName("aaa");
+		if (u!=null) {
+			MyUtil.sendJSONObject(u);
+		}else {
+			MyUtil.sendString("用户不存在");
+		}
+		
+	}
+	/**
+	 * 用户的发帖数
+	 */
+	public void findPostCount(){
+		Users u = userService.findUserByName("aaa");
+		if (getPageIndex() == 0 || getRowCount() == 0) {
+			setPageIndex(Constant.DEFAULT_PAGE);
+			setRowCount(Constant.DEFAULT_PAGE_SIZE);
+		}
+		if (u != null) {
+			int postCount = 0;
+			postCount=userService.findPostCount(u.getId());
+			List<Posts> listPost = postService.findUserPosts(pageIndex, rowCount, u.getId());
+			List<Map> list = new ArrayList<Map>();
+			for (Posts posts : listPost) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("posts", postCount);
+				list.add(MyUtil.postsToMap(posts, map));
+			}
+			MyUtil.sendJSONOArray(list.toArray());
+		}
+	}
+	/**
+	 * 用户收藏的帖子数
+	 */
+	public void findCollectCount(){
+		Users u = userService.findUserByName(user.getName());
+		if (getPageIndex() == 0 || getRowCount() == 0) {
+			setPageIndex(Constant.DEFAULT_PAGE);
+			setRowCount(Constant.DEFAULT_PAGE_SIZE);
+		}
+		if (u != null) {
+			int collectCount = 0;
+			collectCount=userService.findPostCount(u.getId());
+//			List<Collects> listCollect = collectService.findUserPosts(pageIndex, rowCount, u.getId());
+			List<Map> list = new ArrayList<Map>();
+//			for (Collects collect : listCollect) {
+//				Map<String, Object> map = new HashMap<String, Object>();
+//				map.put("posts", collectCount);
+//				list.add(MyUtil.collectsToMap(collect, map));
+//			}
+			MyUtil.sendJSONOArray(list.toArray());
+		}
+	}
+	
+	/**
+	 * 修改用户的个人信息
+	 */
+	public void update(){
+		Users u=userService.findUserById(user.getId());
+		if (u != null) {
+			userService.updateUsers(u);
+		}else {
+			MyUtil.sendString("用户不存在！！！");
+		}
+	}
+	
+	
+
+	public IUserService getUserService() {
+		return userService;
+	}
+
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
+
+	public Users getUser() {
+		return user;
+	}
+
+	public void setUser(Users user) {
+		this.user = user;
+	}
+	public IPostsService getPostService() {
+		return postService;
+	}
+	public void setPostService(IPostsService postService) {
+		this.postService = postService;
+	}
+	public Posts getPost() {
+		return post;
+	}
+	public void setPost(Posts post) {
+		this.post = post;
+	}
+	public Collects getCollect() {
+		return collect;
+	}
+	public void setCollect(Collects collect) {
+		this.collect = collect;
+	}
+	public int getPageIndex() {
+		return pageIndex;
+	}
+	public void setPageIndex(int pageIndex) {
+		this.pageIndex = pageIndex;
+	}
+	public int getRowCount() {
+		return rowCount;
+	}
+	public void setRowCount(int rowCount) {
+		this.rowCount = rowCount;
+	}
+}

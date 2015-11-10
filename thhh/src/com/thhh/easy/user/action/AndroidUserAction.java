@@ -10,11 +10,8 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.struts2.ServletActionContext;
 
-import com.thhh.easy.act.service.IActService;
-import com.thhh.easy.entity.Act;
 import com.thhh.easy.entity.Collects;
 import com.thhh.easy.entity.Image;
-import com.thhh.easy.entity.Partici;
 import com.thhh.easy.entity.Posts;
 import com.thhh.easy.entity.Users;
 import com.thhh.easy.user.service.IUserService;
@@ -23,195 +20,219 @@ import com.thhh.easy.util.MyUtil;
 
 public class AndroidUserAction {
 
-	private Users user; // 用户对象
-	private Image image; // 图片对象
-	private Act act;
-	private Partici partici;
-	private IActService actService;
-	private IUserService userService;
-	private Posts post; // 帖子对象
-	private Collects collect; // 收藏帖子对象
+	private Users user ;
+	private Image image ;
+	private IUserService userService ;
+	private Posts post ;
+	private Collects collect ;
+	private int pageIndex; // 当前页数
+	private int rowCount; // 每页显示条数
 	private String uploadFileName;
-	private File upload; // 上传对象
-
+	private File upload ;
+	
 	/**
 	 * 用户登录检测
 	 */
-	public void loginCheck() {
-//		user = new Users();
-//		 user.setName("王四") ;
-//		 user.setPwd("123456") ;
-		if (user == null || user.getName() == null || "".equals(user.getName())) {
-			MyUtil.sendString(null);
-			user = null;
-			return;
+	public void loginCheck(){
+//		user = new Users() ;
+//		user.setId(2);
+//		user.setName("aaaaaa") ;
+//		user.setPwd("123456") ;
+		if(user == null || user.getName() == null || "".equals(user.getName())){
+			MyUtil.sendString(Constant.STRING_0) ;
+			user = null ;
+			return ;
 		}
-		Users u = userService.findUserByName(user.getName());
-		if (u != null && user.getPwd().equals(u.getPwd())) {
-			// 用户合法，则向客户端发送用户对象
-			MyUtil.sendString(u);
-		} else {
-			// 用户不合法
-			MyUtil.sendString(null);
+		Users u = userService.findUserByName(user.getName()) ;
+		if(u != null && user.getPwd().equals(u.getPwd())){
+			//用户合法，则向客户端发送用户对象
+			MyUtil.sendString(u) ;
+		}else{
+			//用户不合法
+			MyUtil.sendString(Constant.STRING_0) ;
 		}
-		user = null;
+		user = null ;
 	}
-
 	/**
 	 * 用户注册
 	 */
-	public void register() {
-//		user = new Users();
-//		 user.setName("张三") ;
-//		 user.setPwd("123456") ;
-		 user.setRp(0);
-		if (user.getName() != null && user.getPwd() != null) {
-			Users u = userService.findUserByName(user.getName());
-			if (u != null) {
-				// 此用户名已存在
-//				Map<String, Object> map=new HashMap<String, Object>();
-//				map.put("state", Constant.STRING_0);
-				MyUtil.sendString(Constant.STRING_0);
-				return;
-			} else {
-				userService.save(user);
-				MyUtil.sendString(Constant.STRING_1);
+	public void register(){
+		user = new Users();
+//		user.setRp(0) ;
+//		user.setName("cccccc") ;
+//		user.setPwd("123456") ;
+		if(user.getName() != null && user.getPwd() != null){
+			Users u = userService.findUserByName(user.getName()) ;
+			if(u != null){
+				//此用户名已存在
+				MyUtil.sendString(Constant.STRING_0) ;
+				return ;
+			}else{
+				userService.save(user) ;
+				MyUtil.sendString(Constant.STRING_1) ;
 			}
-		} else {
-			MyUtil.sendString(null);
+		}else{
+			MyUtil.sendString(Constant.STRING_0) ;
 		}
-		user = null;
+		user = null ;
 	}
 	/**
-	 * 查询用户是否存在
+	 * 查询用户的个人信息
 	 */
-	public void queryUser(){
-//		user=new Users();
-//		user.setName("王五");
-//		user.setPwd("123456");
+	public void userInfor(){
+		user = new Users();
+//		user.setId(2);
+//		user.setName("aaaaaa") ;
+//		user.setPwd("123456") ;
+		
+		//从客户端接收到用户名，在数据库中查询是否存在该用户
+		Users u=userService.findUserByName(user.getName());
+		if (u!=null) {
+			int postCount;
+			postCount=userService.findPostCount(u.getId());
+			MyUtil.sendString(u) ;
+			
+		}else {
+			MyUtil.sendString(null);
+		}
+		
+	}
+	/**
+	 * 用户的发帖数
+	 */
+	public void findPostCount(){
+
+		Users u = userService.findUserByName(user.getName());
+//		user = new Users();
+//		user.setId(2);
+//		user.setName("aaaaaa") ;
+//		user.setPwd("123456") ;
+//		Users u = userService.findUserByName(user.getName());
+
+		if (getPageIndex() == 0 || getRowCount() == 0) {
+			setPageIndex(Constant.DEFAULT_PAGE);
+			setRowCount(Constant.DEFAULT_PAGE_SIZE);
+		}
+		if (u != null) {
+			int postCount = 0;
+			postCount=userService.findPostCount(u.getId());
+			List<Posts> listPost = userService.findUserPosts(u.getId());
+			List<Map> list = new ArrayList<Map>();
+			for (Posts posts : listPost) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("count", postCount);
+				map.put("posts", posts) ;
+				list.add(map);
+			}
+			MyUtil.sendString(list) ;
+//			MyUtil.sendJSONOArray(list.toArray());
+		}
+	}
+	/**
+	 * 用户收藏的帖子数
+	 */
+	public void findCollectCount(){
+		user = new Users();
+		user.setId(2);
+		user.setName("aaaaaa") ;
+		user.setPwd("123456") ;
+		Users u = userService.findUserByName(user.getName());
+		if (getPageIndex() == 0 || getRowCount() == 0) {
+			setPageIndex(Constant.DEFAULT_PAGE);
+			setRowCount(Constant.DEFAULT_PAGE_SIZE);
+		}
+		if (u != null) {
+			int collectCount = 0;
+			collectCount=userService.findCollectCount(u.getId());
+			List<Collects> listCollect = userService.findUserCollects(u.getId());
+			List<Map> list = new ArrayList<Map>();
+			for (Collects collect : listCollect) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("collects", collectCount);
+				map.put("collect",collect);
+				list.add(map) ;
+			}
+			MyUtil.sendString(list) ;
+//			MyUtil.sendJSONOArray(list.toArray());
+		}
+	}
+	
+	/**
+	 * 修改用户的个人信息
+	 */
+	public void update(){
+		user = new Users();
+//		user.setId(7);
+//		user.setName("jjjjjj") ;
+//		user.setPwd("111111") ;
+		user.setName("aaaaaa") ;
+		user.setPwd("1234567");
+		user.setNickname("小小");
 		Users u=userService.findUserByName(user.getName());
 		if (u != null) {
-			//查询成功，返回用户对象
-			MyUtil.sendString(u);
-
+//			user.setName("aaaaaa") ;
+//			user.setPwd("1234567");
+//			user.setNickname("小小");
+			Image image = new Image();
+			image.setId(1);
+			user.setImage(image);
+//			user.setRp(0);
+			userService.updateUsers(user);
+			Users user=userService.findUserByName("aaaaaa");
+			System.out.println("修改后的用户信息："+user.getName()+","+user.getPwd()+","+user.getNickname());
+			MyUtil.sendString(user);
 		}else {
 			MyUtil.sendString(null);
 		}
 	}
-
-	/**
-	 * 查询用户的详细信息
-	 */
-	@SuppressWarnings("unchecked")
-	public void userInfor() {
-//		user = new Users();
-//		user.setId(1);
-//		user.setName("王五");
-//		user.setPwd("123456");
-		// 从客户端接收到用户名，在数据库中查询是否存在该用户
-		Users u = userService.findById(user.getId());
-		if (u != null) {
-			int postCount = 0;
-			int collectCount = 0;
-			List<Posts> listPosts = userService.findUserPosts(user.getId());
-			List<Collects> listCollects = userService.findUserCollects(user
-					.getId());
-			postCount = listPosts.size();
-			collectCount = listCollects.size();
-			List<Users> list = userService.findUserById(u.getId());
-			List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
-			for (Users users : list) {
-				Map<String, Object> map = new HashMap<String, Object>();
-				map.put("post", postCount);
-				map.put("collect", collectCount);
-				map.put("users", users);
-				listMap.add(map);
-			}
-			MyUtil.sendString(listMap);
-
-		} else {
-			MyUtil.sendString(null);
-		}
-
-	}
-
-	/**
-	 * 修改用户的个人信息
-	 */
-	public void update() {
-//		user = new Users();
-//		user.setId(7);
-//		user.setName("hi");
-//		user.setPwd("123456");
-		Users u = userService.findUserByName(user.getName());
-		if (u != null) {
-//			user.setName("张霖");
-//			user.setPwd("123456");
-//			user.setNickname("小小");
-//			user.setDepart("英语");
-//			user.setRp(80);
-//			user.setEmail("xiaoxiao@163.com");
-//			user.setRp(69);
-			image = new Image();
-//			image.setUrls("thhh/resource/image/photo/photo4.png");
-			user.setImage(image);
-			userService.updateUsers(user);
-			System.out.println("修改后的用户信息：" + user.getName() + ","
-					+ user.getPwd() + "," + user.getNickname());
-			MyUtil.sendString(1);
-		} else {
-			MyUtil.sendString(0);
-		}
-	}
-
 	/**
 	 * 查看我的图片
 	 */
-	public void myImage() {
-//		user = new Users();
-//		user.setId(3);
-//		user.setName("张霖");
-//		user.setPwd("123456");
+	public void myImage(){
+		user = new Users();
+		user.setId(3);
+		user.setName("hahaha") ;
+		user.setPwd("123456") ;
 		Users u = userService.findUserByName(user.getName());
 		if (u != null) {
-			List<Image> listImage = userService.findUserImage(user.getId());
-			MyUtil.sendString(listImage);
-			
-		} else {
+			List<Image> listImage=userService.findUserImage(user.getId());
+			for (Image image : listImage) {
+				listImage.add(image);
+			}
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("listImage", listImage);
+			MyUtil.sendString(map);
+		}else {
 			MyUtil.sendString(null);
 		}
 	}
-
 	/**
 	 * 图片的上传
 	 */
-	public void upload() {
-//		user = new Users();
-//		user.setId(2);
-//		user.setName("aaaaaa");
-//		user.setPwd("123456");
+	public void upload(){
+		user = new Users();
+		user.setId(2);
+		user.setName("aaaaaa") ;
+		user.setPwd("123456") ;
 		Users u = userService.findUserByName(user.getName());
 		if (u != null) {
 			upload = new File("D:\\tupian\\gg.jpg");
-			if (upload != null) {
-				// 获得文件上传的磁盘相对路径
-				String realPath = ServletActionContext.getServletContext()
-						.getRealPath("/image/imagePerson/");
-				// 创建一个文件
-				File diskFile = new File(realPath + "//" + uploadFileName);
-
-				// 文件上传
-				try {
-					FileUtils.copyFile(upload, diskFile);// upload是源文件
+			if(upload!=null){
+				//获得文件上传的磁盘相对路径
+				 String realPath = ServletActionContext.getServletContext().getRealPath("/image/imagePerson/");
+				 //创建一个文件
+				 File diskFile = new File(realPath+"//"+uploadFileName);
+				 
+				 //文件上传
+				 try {
+					FileUtils.copyFile(upload, diskFile);//upload是源文件
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				image.setUrls("imagePerson/" + uploadFileName);// setUrls中存放：路径加文件名
-				userService.save(u);
-				MyUtil.sendString(Constant.STRING_1);
-			}else {
-				MyUtil.sendString(Constant.STRING_0);
-			}
+			image.setUrls("imagePerson/"+uploadFileName);//setUrls中存放：路径加文件名
+			userService.save(u);
+			MyUtil.sendString(u);
+			}		
 		}
 	}
 
@@ -230,60 +251,40 @@ public class AndroidUserAction {
 	public void setUser(Users user) {
 		this.user = user;
 	}
-
 	public Posts getPost() {
 		return post;
 	}
-
 	public void setPost(Posts post) {
 		this.post = post;
 	}
-
 	public Collects getCollect() {
 		return collect;
 	}
-
 	public void setCollect(Collects collect) {
 		this.collect = collect;
 	}
-
+	public int getPageIndex() {
+		return pageIndex;
+	}
+	public void setPageIndex(int pageIndex) {
+		this.pageIndex = pageIndex;
+	}
+	public int getRowCount() {
+		return rowCount;
+	}
+	public void setRowCount(int rowCount) {
+		this.rowCount = rowCount;
+	}
 	public Image getImage() {
 		return image;
 	}
-
 	public void setImage(Image image) {
 		this.image = image;
 	}
-
 	public String getUploadFileName() {
 		return uploadFileName;
 	}
-
 	public void setUploadFileName(String uploadFileName) {
 		this.uploadFileName = uploadFileName;
-	}
-
-	public Act getAct() {
-		return act;
-	}
-
-	public void setAct(Act act) {
-		this.act = act;
-	}
-
-	public Partici getPartici() {
-		return partici;
-	}
-
-	public void setPartici(Partici partici) {
-		this.partici = partici;
-	}
-
-	public IActService getActService() {
-		return actService;
-	}
-
-	public void setActService(IActService actService) {
-		this.actService = actService;
 	}
 }

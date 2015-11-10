@@ -17,7 +17,9 @@ import com.thh.easy.R;
 import com.thh.easy.adapter.GoodsRVAdapter;
 import com.thh.easy.constant.StringConstant;
 import com.thh.easy.entity.Goods;
+import com.thh.easy.entity.OrderItem;
 import com.thh.easy.util.RoundedTransformation;
+import com.thh.easy.util.SerialzableList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,6 +33,9 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.OnClick;
 
+/**
+ * 选择商品界面
+ */
 public class GoodsActivity extends BaseDrawerActivity implements GoodsRVAdapter.OnItemCountChangedListener{
 
     @Bind(R.id.rv_goods)
@@ -48,7 +53,8 @@ public class GoodsActivity extends BaseDrawerActivity implements GoodsRVAdapter.
 
     HttpTools httpTools;                        // 网络操作工具
 
-    private int goodsId = 0;
+    private int shopId = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,8 +63,8 @@ public class GoodsActivity extends BaseDrawerActivity implements GoodsRVAdapter.
         HttpTools.init(this);
         httpTools = new HttpTools(this);
         // 设置商店信息
-        goodsId = getIntent().getIntExtra("SHOP_ID",0);
-        System.out.println("goodsId!!!!!!!"+ goodsId);
+        shopId = getIntent().getIntExtra("SHOP_ID",0);
+
         setShopDetail();
 
         loadGoods();
@@ -89,7 +95,7 @@ public class GoodsActivity extends BaseDrawerActivity implements GoodsRVAdapter.
         Map<String, String> params = new HashMap<String, String>(3);
         params.put(StringConstant.CURRENT_PAGE_KEY, currentPage+"");
         params.put(StringConstant.PER_PAGE_KEY, StringConstant.PER_PAGE_COUNT + "");
-        params.put(StringConstant.GOODS_ID,goodsId+"");
+        params.put(StringConstant.GOODS_ID, shopId + "");
 
         RequestInfo info = new RequestInfo(StringConstant.SERVER_GOODS_URL, params);
         httpTools.post(info, new HttpCallback() {
@@ -141,7 +147,6 @@ public class GoodsActivity extends BaseDrawerActivity implements GoodsRVAdapter.
     Goods goods= null;
     public void onReadJson(String json) {
 
-        System.out.println("获得数据--》" + json);
         int insertPos = goodsRVAdapter.getItemCount();
         try {
             JSONArray jsonArray = new JSONArray(json);
@@ -187,15 +192,6 @@ public class GoodsActivity extends BaseDrawerActivity implements GoodsRVAdapter.
         goodsRVAdapter.setChangedListener(this);
     }
 
-    /**
-     * 下订单，到订单页面
-     */
-    @OnClick(R.id.btn_new_order)
-    void onClickToNewOrder(){
-       Intent intent = new Intent(GoodsActivity.this, OrderActivity.class);
-       // TODO 带数据到订单页面
-       startActivity(intent);
-    }
 
     /**
      * 获得shop信息
@@ -226,24 +222,83 @@ public class GoodsActivity extends BaseDrawerActivity implements GoodsRVAdapter.
 
     }
 
-    private Map<Integer, Integer> itemList = new HashMap<>(); // 商品id，商品数量
-    private Map<Integer, Float> valueList = new HashMap<>(); // 商品id，商品单项总价格
+    private Map<Integer, Integer> itemMap = new HashMap<>(); // 商品id，商品数量
+    private Map<Integer, Float> valueMap = new HashMap<>();  // 商品id，商品单项总价格
+    private Map<Integer, String> nameMap = new HashMap<>();  // 商品id，商品名
+
+    /**
+     * 清除数量为0的item
+     */
+    private void clearZeroSumItem(){
+        List<Integer> zeroList = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : itemMap.entrySet()) {
+            if(entry.getValue() == 0){
+                zeroList.add(entry.getKey());
+            }
+        }
+
+        for(Integer item : zeroList) {
+            itemMap.remove(item);
+            valueMap.remove(item);
+            nameMap.remove(item);
+        }
+
+    }
+
 
     @Override
     public void onChanged(View view, int sum, int position, float sumPrices) {
 
-        itemList.put(goodsList.get(position).getId(), sum);
-        valueList.put(goodsList.get(position).getId(), sumPrices);
-        Log.e("values :" ,"sum :" +sum+ "  position: "+ position + "  sumPrices:"+sumPrices);
+        itemMap.put(goodsList.get(position).getId(), sum);
+        valueMap.put(goodsList.get(position).getId(), sumPrices);
+        nameMap.put(goodsList.get(position).getId(), goodsList.get(position).getName());
+
+
         float sums = 0f;
-        for (Map.Entry<Integer, Float> entry : valueList.entrySet()) {
-            Log.e("entry key:", "" + entry.getKey());
-            Log.e("entry Value:", "" + entry.getValue());
-            sums +=  entry.getValue();
+        // TODO 浮点数相加会出现无数的小数位
+
+        for (Map.Entry<Integer, Float> entry : valueMap.entrySet()) {
+            sums += (entry.getValue()*1000);
         }
 
-        tvSumPrice.setText(""+sums);
+        tvSumPrice.setText(""+(sums/1000));
 
+        orderSum = sums/1000;
     }
+
+    float orderSum = 0f;
+
+    /**
+     * 下订单，到订单页面
+     */
+    @OnClick(R.id.btn_new_order)
+    void onClickToNewOrder(){
+        Intent intent = new Intent(GoodsActivity.this, OrderActivity.class);
+
+        // 传递 ，商店id, 商品项, 用户id
+
+        // 清除多余的数据
+        clearZeroSumItem();
+
+        List<OrderItem> items = new ArrayList<>();
+        for(Map.Entry<Integer, Integer> entry : itemMap.entrySet()){
+            entry.getKey();// 商店id
+            OrderItem item = new OrderItem(entry.getKey(),
+                    ""+nameMap.get(entry.getKey()),
+                    entry.getValue(), valueMap.get(entry.getKey()));
+            items.add(item);
+        }
+
+        SerialzableList list = new SerialzableList(items);
+
+        Bundle bundle = new Bundle();
+        bundle.putInt(StringConstant.SHOP_ID, shopId);
+        bundle.putFloat(StringConstant.KEY_ORDER_SUM, orderSum);
+        bundle.putSerializable(StringConstant.KEY_ORDER_ITEM_MAP, list);
+        intent.putExtras(bundle);
+
+        startActivity(intent);
+    }
+
 
 }

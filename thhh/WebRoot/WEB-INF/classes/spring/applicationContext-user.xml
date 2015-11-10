@@ -20,7 +20,6 @@
 		<property name="postsDao" ref="postsDAO"></property>
 		<property name="collectsDao" ref="collectsDAO"></property>
 		<property name="imageDao" ref="imageDAO"></property>
-		<property name="actDao" ref="actDAO"></property>
 	</bean>
 	
 	

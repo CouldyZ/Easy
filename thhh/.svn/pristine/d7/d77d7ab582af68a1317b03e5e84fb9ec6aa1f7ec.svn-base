@@ -1,0 +1,217 @@
+package com.thhh.easy.act.action;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.thhh.easy.act.service.IActService;
+import com.thhh.easy.entity.Act;
+import com.thhh.easy.user.service.IUserService;
+import com.thhh.easy.util.Constant;
+import com.thhh.easy.util.MyUtil;
+
+public class ActAction {
+
+	private IUserService userService;
+	private IActService actService;
+	private int pageIndex; // 当前页数
+	private int rowCount; // 每页显示条数
+	private int userid;
+	private int actid;
+
+	/**
+	 * [查看]该用户未参加的正在发起的活动,按照发起活动的时间降序排序
+	 */
+	public void findAct() {
+		pageIndex = 1;
+		rowCount = 10;
+		userid = 1;
+
+		// List<Act> listAct = actService.findAct(getUserid(), getPageIndex(),
+		// getRowCount());
+		List<Act> listAct = actService.findAct(1, 1, 10);
+		List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+
+		for (Act act : listAct) {
+
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("id", act.getId());
+			map.put("user.id", act.getUsers().getId());
+			map.put("user.name", act.getUsers().getName());
+			map.put("create.date",
+					MyUtil.formatDate(act.getCreateDate(), "yyyy-MM-dd"));
+			map.put("theme", act.getTheme());
+			map.put("state", act.getStates());
+			listMap.add(map);
+		}
+		System.out.println(listMap);
+		MyUtil.sendJSONOArray(listMap.toArray());
+	}
+
+	/**
+	 * 查看单个活动详情
+	 * 
+	 * @return
+	 */
+	public void findActDetail() {
+
+		actid = 1;
+		// 由前台传送的活动id查询该活动信息
+		Act act = actService.findActDetail(1);
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("account", act.getAccount());
+		map.put("days", act.getDays());
+		map.put("pay", act.getPay());
+		map.put("contents", act.getContents());
+		map.put("start.date",
+				MyUtil.formatDate(act.getStartDate(), "yyyy-MM--dd"));
+		// 将查询得到的数据传送到前台
+		MyUtil.sendJSONObject(map);
+
+	}
+
+	/**
+	 * 参加活动
+	 * 
+	 * @return
+	 */
+	public void AddAct() {
+
+		userid = 1;
+		actid = 2;
+
+		// 数据库插入一行数据
+		actService.addAct(1, 2);
+		// 向前台发送成功信息
+		MyUtil.sendString(Constant.STRING_1);
+	}
+
+	/**
+	 * 举报活动
+	 * 
+	 * @return
+	 */
+	public void ReportAct() {
+		userid = 1;
+		actid = 2;
+
+		// 查询该用户是否已经举报过该活动
+		String flag = actService.findReportById(userid);
+
+		// "1"表示在数据库中查询到记录，"0"表示没有在数据库中查到记录
+		if ("1".equals(flag)) {
+
+			String msg = new String(
+					"The user has already reported the activity !!!");
+			MyUtil.sendString(msg);
+
+		} else if ("0".equals(flag)) {
+
+			// 向举报表插入一行数据
+			actService.reportAct(getUserid(), getActid());
+			// 向前台发送成功信息
+			MyUtil.sendString(Constant.STRING_1);
+		}
+
+	}
+
+	/**
+	 * 发起活动
+	 * 
+	 * @return
+	 */
+	public void OpenAct() {
+
+	}
+
+	/**
+	 * 取消活动
+	 * 
+	 * @return
+	 */
+	public void CancelAct() {
+
+	}
+
+	/**
+	 * 查询该用户发起的活动，和参与的活动，按照活动发起时间排序
+	 * 
+	 * @return
+	 */
+	public void findAllAct() {
+		pageIndex = 1;
+		rowCount = 10;
+		userid = 1;
+
+		List<Act> listAct = actService.allPartici(getUserid(), getPageIndex(),
+				getRowCount());
+
+		List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
+
+		for (Act act : listAct) {
+
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("id", act.getId());
+			map.put("user.id", act.getUsers().getId());
+			map.put("user.name", act.getUsers().getName());
+			map.put("create.date",
+					MyUtil.formatDate(act.getCreateDate(), "yyyy-MM-dd"));
+			map.put("theme", act.getTheme());
+			map.put("state", act.getStates());
+			listMap.add(map);
+		}
+		System.out.println(listMap);
+		MyUtil.sendJSONOArray(listMap.toArray());
+	}
+
+	public IActService getActService() {
+		return actService;
+	}
+
+	public void setActService(IActService actService) {
+		this.actService = actService;
+	}
+
+	public int getPageIndex() {
+		return pageIndex;
+	}
+
+	public void setPageIndex(int pageIndex) {
+		this.pageIndex = pageIndex;
+	}
+
+	public int getRowCount() {
+		return rowCount;
+	}
+
+	public void setRowCount(int rowCount) {
+		this.rowCount = rowCount;
+	}
+
+	public int getUserid() {
+		return userid;
+	}
+
+	public void setUserid(int userid) {
+		this.userid = userid;
+	}
+
+	public int getActid() {
+		return actid;
+	}
+
+	public void setActid(int actid) {
+		this.actid = actid;
+	}
+
+	public IUserService getUserService() {
+		return userService;
+	}
+
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
+
+}

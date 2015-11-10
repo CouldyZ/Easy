@@ -6,7 +6,6 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.thhh.easy.entity.Comments;
 import com.thhh.easy.entity.Posts;
-import com.thhh.easy.entity.Users;
 import com.thhh.easy.posts.service.ICommentsService;
 import com.thhh.easy.util.Constant;
 import com.thhh.easy.util.MyUtil;
@@ -35,16 +34,7 @@ public class AndroidCommentsAction {
 			setRowCount(6);
 		}
 		List<Comments> listComments = commentsService.findCommentByPostsId(pageIndex,rowCount ,posts.getId()) ;
-		for (Comments comments : listComments) {
-			comments.setPosts(null) ;
-			Users u = new Users() ;
-			u.setId(comments.getUsers().getId()) ;
-			u.setName(comments.getUsers().getName()) ;
-			u.setNickname(comments.getUsers().getNickname()) ;
-			u.setImage(comments.getUsers().getImage()) ;
-			comments.setUsers(u) ;
-		}
-		MyUtil.sendString(listComments) ;
+		MyUtil.sendString(new Gson().toJson(listComments)) ;
 	}
 	
 	/**

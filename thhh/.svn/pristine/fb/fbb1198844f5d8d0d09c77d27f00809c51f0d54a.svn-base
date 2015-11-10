@@ -1,0 +1,102 @@
+package com.thhh.easy.entity;
+
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Image entity. @author MyEclipse Persistence Tools
+ */
+
+public class Image implements java.io.Serializable {
+
+	// Fields
+
+	private Integer id;
+	private Users users;
+	private String urls;
+	private Set goodses = new HashSet(0);
+	private Set postses = new HashSet(0);
+	private Set shops = new HashSet(0);
+	private Set userses = new HashSet(0);
+
+	// Constructors
+
+	/** default constructor */
+	public Image() {
+	}
+
+	/** minimal constructor */
+	public Image(String urls) {
+		this.urls = urls;
+	}
+
+	/** full constructor */
+	public Image(Users users, String urls, Set goodses, Set postses, Set shops,
+			Set userses) {
+		this.users = users;
+		this.urls = urls;
+		this.goodses = goodses;
+		this.postses = postses;
+		this.shops = shops;
+		this.userses = userses;
+	}
+
+	// Property accessors
+
+	public Integer getId() {
+		return this.id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Users getUsers() {
+		return this.users;
+	}
+
+	public void setUsers(Users users) {
+		this.users = users;
+	}
+
+	public String getUrls() {
+		return this.urls;
+	}
+
+	public void setUrls(String urls) {
+		this.urls = urls;
+	}
+
+	public Set getGoodses() {
+		return this.goodses;
+	}
+
+	public void setGoodses(Set goodses) {
+		this.goodses = goodses;
+	}
+
+	public Set getPostses() {
+		return this.postses;
+	}
+
+	public void setPostses(Set postses) {
+		this.postses = postses;
+	}
+
+	public Set getShops() {
+		return this.shops;
+	}
+
+	public void setShops(Set shops) {
+		this.shops = shops;
+	}
+
+	public Set getUserses() {
+		return this.userses;
+	}
+
+	public void setUserses(Set userses) {
+		this.userses = userses;
+	}
+
+}
