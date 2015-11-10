@@ -197,7 +197,7 @@ public class HotPostActivity extends BaseActivity implements PostRVAdapter.OnPos
         if(getIntent().getIntExtra(StringConstant.USER_ID, 1) == 1) {
             params.put(StringConstant.USER_ID, getIntent().getStringExtra(StringConstant.USER_ID));
         }
-        RequestInfo info = new RequestInfo(StringConstant.SERVER_NEWPOST_URL, params);
+        RequestInfo info = new RequestInfo(StringConstant.SERVER_HOTPOST_URL, params);
         httpTools.post(info, new HttpCallback() {
             @Override
             public void onStart() {

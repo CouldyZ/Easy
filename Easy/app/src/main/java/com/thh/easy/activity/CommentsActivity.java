@@ -47,44 +47,44 @@ import butterknife.OnClick;
 
 /**
  * 评论界面
+ *
  */
 public class CommentsActivity extends AppCompatActivity implements SendCommentButton.OnSendClickListener{
+
+    // TODO 测试查看评论、发表评论
 
     private static final String TAG = "CommentsActivity";
 
     public static final String COMMENT_DRAWING_START_LOCATION = "arg_drawing_start_location";
 
     @Bind(R.id.et_add_comment)
-    public EditText etAddComment;             // 评论编辑框
+    public EditText etAddComment;                  // 评论编辑框
 
     @Bind(R.id.btn_send_comments)
-    public SendCommentButton mybtnSendComment; // 评论的发送按钮
-
+    public SendCommentButton mybtnSendComment;     // 评论的发送按钮
 
     @Bind(R.id.comm_content_root)
-    LinearLayout contentRoot;                   // 评论列表的根布局
+    LinearLayout contentRoot;                      // 评论列表的根布局
 
     @Bind(R.id.rv_comments)
-    RecyclerView rvComments;                     // 评论列表
+    RecyclerView rvComments;                       // 评论列表
 
     @Bind(R.id.ll_add_comment)
-    LinearLayout llAddComment;                   // 发表评论的根布局
+    LinearLayout llAddComment;                     // 发表评论的根布局
 
 
-    private CommentRVAdapter commentsAdapter;     // rvComments的adapter
-    private int drawingStartLocation;
+    private CommentRVAdapter commentsAdapter;      // rvComments的adapter
 
     private LinearLayoutManager linearLayoutManager;
 
-    private int postID = -1;
-
     private List<Comment> commentList = new ArrayList<Comment>();
 
+
     private HttpTools httpTools;
-
+    private int postID = -1;
     private int currentPage = 1;
-
     private boolean isLoading = false;
+    private int drawingStartLocation;
 
 
     @Override
@@ -211,16 +211,10 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
                 commentList.add(comment);
             }
 
-            Log.i(TAG, "insert " + insertPos + " | size " + commentList.size());
-
-//            commentsAdapter.notifyItemChanged(0);
             commentsAdapter.notifyItemRangeInserted(insertPos, commentList.size() - insertPos);
             commentsAdapter.notifyItemRangeChanged(insertPos, commentList.size() - insertPos);
 
             currentPage ++;
-
-            Log.d(TAG, commentList.size() + " 2");
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -243,7 +237,6 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
         rvComments.setLayoutManager(linearLayoutManager);
         rvComments.setHasFixedSize(true);
 
-//        commentsAdapter = new CommentRVAdapter(this);
         rvComments.setAdapter(commentsAdapter);
         rvComments.setOverScrollMode(View.OVER_SCROLL_NEVER);
         rvComments.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -372,7 +365,7 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
             params.put(StringConstant.COMMENT_UID, u.getId()+"");
             params.put(StringConstant.COMMENT_POST_ID, postID + "");
             params.put(StringConstant.COMMENT_CONTENTS, content);
-            RequestInfo info = new RequestInfo(StringConstant.SERVER_IP, params);
+            RequestInfo info = new RequestInfo(StringConstant.SERVER_ADDCOMMENT_URL, params);
             httpTools.post(info, new HttpCallback() {
                 @Override
                 public void onStart() {

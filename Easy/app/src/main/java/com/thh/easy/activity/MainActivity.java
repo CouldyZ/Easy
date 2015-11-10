@@ -243,6 +243,7 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
      * 请求帖子数据
      */
     private void loadPosts() {
+
         if (postRVAdapter == null) {
             postRVAdapter = new PostRVAdapter(MainActivity.this, postList);
             postRVAdapter.setOnPostItemClickListener(MainActivity.this);
@@ -263,7 +264,6 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
             @Override
             public void onStart() {
                 isLoading = true;
-                Log.i("New - HttpCallback", "当前页" + currentPage);
             }
 
             @Override
@@ -275,7 +275,6 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
 
             @Override
             public void onResult(String s) {
-                Log.i("New - HttpCallback", s);
 
                 if (StringConstant.NULL_VALUE.equals(s)) {
                     Snackbar.make(clContainer, "网络貌似粗错了", Snackbar.LENGTH_SHORT).show();
@@ -286,9 +285,8 @@ public class MainActivity extends BaseDrawerActivity implements PostRVAdapter.On
                      Snackbar.make(clContainer, "什么帖子都没有呦", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-                onReadJson(s);
-                Log.d("New - HttpCallback", postRVAdapter.getItemCount() + " loadPost");
 
+                onReadJson(s);
                 currentPage++;
             }
 
