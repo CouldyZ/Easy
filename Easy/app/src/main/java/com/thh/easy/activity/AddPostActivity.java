@@ -3,6 +3,7 @@ package com.thh.easy.activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +21,7 @@ import com.android.volley.ext.HttpCallback;
 import com.android.volley.ext.tools.HttpTools;
 import com.thh.easy.R;
 import com.thh.easy.constant.StringConstant;
-import com.thh.easy.view.ChoosePhotoTypeDialog;
+import com.thh.easy.util.ImageUtils;
 import com.thh.easy.view.SendCommentButton;
 
 import org.json.JSONException;
@@ -169,24 +170,9 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
      */
     @OnClick(R.id.btn_add_picture)
     void addPicture() {
-        // TODO 从图库或者拍照获取照片
-        final ChoosePhotoTypeDialog dialog = new ChoosePhotoTypeDialog(this);
-        dialog.setTitle("上传图片");
-        dialog.setOnClickItemListener(new ChoosePhotoTypeDialog.OnClickItemListener() {
-            @Override
-            public void onClickPhoto() {
-                dialog.dismiss();
-                // 跳转到拍照界面
-                startActivity(new Intent(AddPostActivity.this, TakePhotoActivity.class));
-            }
 
-            @Override
-            public void onClickAtlas() {
-                dialog.dismiss();
-                // TODO 到图库中选择图片
-            }
-        });
-        dialog.show();
+        ImageUtils.showImagePickDialog(AddPostActivity.this);
+
     }
 
 
@@ -202,4 +188,36 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
 
         return true;
     }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case ImageUtils.REQUEST_CODE_FROM_ALBUM:
+                if(resultCode == RESULT_CANCELED) {
+                    return;
+                }
+                Uri imageUri = data.getData();
+                Bitmap imageBitmap = ImageUtils.getBitmapFromUri(imageUri, AddPostActivity.this);
+                ivPostPicture.setImageBitmap(imageBitmap);
+
+                break;
+            case ImageUtils.REQUEST_CODE_FROM_CAMERA:
+                if(resultCode == RESULT_CANCELED) {
+                    ImageUtils.deleteImageUri(this, ImageUtils.imageUriFromCamera);
+                } else {
+                    Uri imageUriCamera = ImageUtils.imageUriFromCamera;
+                    Bitmap cameraBitmap = ImageUtils.getBitmapFromUri(imageUriCamera, AddPostActivity.this);
+                    ivPostPicture.setImageBitmap(cameraBitmap);
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
 }

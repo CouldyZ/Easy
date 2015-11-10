@@ -27,7 +27,8 @@
         android:layout_marginLeft="50dp"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:background="@color/easy_pink_light"/>
+        android:scaleType="fitCenter"
+        android:background="#EEEEEE"/>
 
     <!-- 发帖根布局 -->
     <LinearLayout

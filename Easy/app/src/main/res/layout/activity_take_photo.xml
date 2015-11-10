@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!--    TODO 自定义拍照界面   -->
     <com.thh.easy.view.RevealBackgroundView
         android:id="@+id/vRevealBackground"
         android:layout_width="match_parent"
