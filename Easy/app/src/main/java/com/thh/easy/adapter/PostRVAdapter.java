@@ -14,6 +14,7 @@ import com.squareup.picasso.Picasso;
 import com.thh.easy.R;
 import com.thh.easy.constant.StringConstant;
 import com.thh.easy.entity.Post;
+import com.thh.easy.util.LogUtil;
 import com.thh.easy.util.RoundedTransformation;
 import com.thh.easy.util.Utils;
 import com.thh.easy.view.SquaredFrameLayout;
@@ -41,14 +42,11 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private OnPostItemClickListener onPostItemClickListener;
 
-    private List<Post> posts;
+    private List<Post> posts = new ArrayList<>();
 
     private List<CellPostViewHolder> holderList = new ArrayList<>();
 
     private int avatarSize;
-
-    boolean b = true;
-
 
     public PostRVAdapter(Context context, List<Post> posts) {
         this.context = context;
@@ -92,13 +90,16 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (posts.get(position).getAvatar() != null) {
 
             Picasso.with(context)
-                    .load(StringConstant.SERVER_IP + posts.get(position).getImageUrl())
+                    .load(StringConstant.SERVER_IP + posts.get(position).getAvatar())
                     .centerCrop()
                     .resize(avatarSize, avatarSize)
                     .transform(new RoundedTransformation())
                     .placeholder(R.mipmap.bili_default_avatar)
                     .into(((CellPostViewHolder) viewHolder).ibUserProtrait);
         }
+
+        LogUtil.d("头像的url："+StringConstant.SERVER_IP + posts.get(position).getAvatar());
+
 
 
         // 加载图片
@@ -116,7 +117,6 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         // 设置item里各点击事件
         setItemClickListener(holder, position);
-
         holderList.add(position, holder);
 
         animationsLocked = false;

@@ -8,7 +8,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -21,6 +20,7 @@ import com.android.volley.ext.tools.HttpTools;
 import com.thh.easy.R;
 import com.thh.easy.constant.StringConstant;
 import com.thh.easy.entity.User;
+import com.thh.easy.util.LogUtil;
 import com.thh.easy.util.StringUtil;
 import com.thh.easy.util.Utils;
 
@@ -42,19 +42,6 @@ import butterknife.OnClick;
  *  //TODO 将用户id全局化
  */
 public class LoginActivity extends AppCompatActivity {
-
-    private final static String TAG = "LoginActivity";
-
-    private int[] biliNormal = {R.mipmap.ic_22, R.mipmap.ic_33};
-    private int[] biliHide = {R.mipmap.ic_22_hide, R.mipmap.ic_33_hide};
-
-    private int[] usernameDrawable = {R.mipmap.ic_login_username_hover,
-            R.mipmap.ic_login_username_default};
-    private int[] passwordDrawable = {R.mipmap.ic_login_password_hover,
-            R.mipmap.ic_login_password_default};
-
-    private int lineColorPink = R.color.easy_pink_light;
-    private int lineColorDark = R.color.easy_dark;
 
     @Bind(R.id.iv_login_22)
     ImageView ivBili22;
@@ -89,14 +76,25 @@ public class LoginActivity extends AppCompatActivity {
     @Bind(R.id.iv_back_logo)
     ImageView ivLogo;
 
+    private int[] biliNormal = {R.mipmap.ic_22, R.mipmap.ic_33};
+    private int[] biliHide = {R.mipmap.ic_22_hide, R.mipmap.ic_33_hide};
+
+    private int[] usernameDrawable = {R.mipmap.ic_login_username_hover,
+            R.mipmap.ic_login_username_default};
+    private int[] passwordDrawable = {R.mipmap.ic_login_password_hover,
+            R.mipmap.ic_login_password_default};
+
+    private int lineColorPink = R.color.easy_pink_light;
+    private int lineColorDark = R.color.easy_dark;
+
+    private final static String TAG = "LoginActivity";
+    final int REQUEST_CODE = 666;                      // 注册页面的请求码
+
     HttpTools httpTools;
 
+    // 配置信息
     SharedPreferences sharedPreferences;
-
-    final int REQUEST_CODE = 666;
-
     String filePath = null;
-
     String avatarFileName = null;
 
     @Override
@@ -104,12 +102,40 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        loadInitData();                         // 配置初始信息
+        setPasswordListener();                  // 设置密码监听事件
+
+        // 检查联网
+        if (!Utils.checkNetConnection(getApplicationContext())) {
+            Snackbar.make(clContainer, "少年呦 你联网了嘛?", Snackbar.LENGTH_LONG).show();
+        }
+
+    }
+
+    /**
+     * 配置初始信息
+     */
+    private void loadInitData() {
         ButterKnife.bind(this);
 
+        // toolbar 设置
         tvTitle.setText("登陆");
         ivLogo.setVisibility(View.GONE);
-        sharedPreferences = getSharedPreferences("user_sp", Context.MODE_PRIVATE);
 
+        // 初始化Volley
+        HttpTools.init(getApplicationContext());
+        httpTools = new HttpTools(getApplicationContext());
+
+        // 创建头像缓存文件夹
+        filePath = getExternalFilesDir(null).getPath();
+        sharedPreferences = getSharedPreferences("user_sp", Context.MODE_PRIVATE);
+    }
+
+
+    /**
+     * 设置22,33娘遮眼睛的动作
+     */
+    private void setPasswordListener() {
         etPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -140,19 +166,15 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-
-        if (!Utils.checkNetConnection(getApplicationContext())) {
-            Snackbar.make(clContainer, "少年呦 你联网了嘛?", Snackbar.LENGTH_LONG).show();
-        }
-
-        // 初始化Volley
-        HttpTools.init(getApplicationContext());
-        httpTools = new HttpTools(getApplicationContext());
-
-        // 创建头像缓存文件夹
-        filePath = getExternalFilesDir(null).getPath();
     }
 
+
+    /**
+     *  从注册页面返回的信息
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -183,7 +205,6 @@ public class LoginActivity extends AppCompatActivity {
         // 隐藏软键盘
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        //imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
         imm.hideSoftInputFromWindow(etUsername.getWindowToken(), 0);
         imm.hideSoftInputFromWindow(etPassword.getWindowToken(), 0);
 
@@ -215,7 +236,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResult(String s) {
                         // 服务端返回Json
-                        Log.i(TAG, s);
+                       LogUtil.d(LoginActivity.this, "登陆服务器返回数据： " + s, "" + 241);
                        if ("null".equals(s)) {
                             Snackbar.make(clContainer, "少年呦 账号或密码不对", Snackbar.LENGTH_LONG).show();
                             return;
@@ -245,12 +266,16 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
 
-//        startActivity(new Intent(LoginActivity.this, MainActivity.class));
     }
 
+
+    /**
+     * 读取服务器发来的数据，解析成user
+     * @param jsonResult
+     */
     private void onReadJson(String jsonResult) {
         try {
-
+            LogUtil.i(LoginActivity.this, "开始读取json数据咧--");
             String iconUrl = null;
             JSONObject jsonObject = new JSONObject(jsonResult);
 
@@ -281,6 +306,7 @@ public class LoginActivity extends AppCompatActivity {
             if (!jsonObject.isNull("image")) {
                 avatar = jsonObject.getString("image");
                 avatarFileName = jsonObject.getString("name") + jsonObject.getInt("id") + ".png";
+
                 System.out.println("头像路径 - " + filePath + "/" + avatarFileName);
 
                 // TODO 存储用户头像
@@ -330,11 +356,12 @@ public class LoginActivity extends AppCompatActivity {
                     jsonObject.getInt("rp"),
                     avatarFileName);
 
+            LogUtil.d(LoginActivity.this, "user _id " + jsonObject.getInt("id"), ""+358);
             user.writeToCache(getApplicationContext());
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("user_login", true);
-            editor.putInt("user_id",jsonObject.getInt("id"));
+
             editor.commit();
 
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -349,8 +376,7 @@ public class LoginActivity extends AppCompatActivity {
             finish();
 
         } catch (JSONException e) {
-            Log.e(TAG, "Json解析失败");
-            e.printStackTrace();
+            LogUtil.e(LoginActivity.this, "Json解析失败  e:" + e.getMessage(), "378");
         }
     }
 }

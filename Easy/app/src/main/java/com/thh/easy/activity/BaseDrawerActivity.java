@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.thh.easy.R;
+import com.thh.easy.util.LogUtil;
+import com.thh.easy.util.Utils;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -91,7 +93,8 @@ public class BaseDrawerActivity extends BaseActivity implements NavigationView.O
         SharedPreferences sp = getSharedPreferences("user_sp", Context.MODE_PRIVATE);
         if (sp.getBoolean("user_login", false)) {
             drawerLayout.closeDrawer(Gravity.LEFT);
-            final int id = sp.getInt("user_id",1);
+            final int id = Utils.getUserId(BaseDrawerActivity.this);
+            LogUtil.d(BaseDrawerActivity.this, "从侧滑栏界面，到用户个人信息界面：  user_id :" + id);
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {

@@ -19,6 +19,7 @@ import com.thh.easy.adapter.OrderItemRVAdapter;
 import com.thh.easy.constant.StringConstant;
 import com.thh.easy.entity.OrderItem;
 import com.thh.easy.util.SerialzableList;
+import com.thh.easy.util.Utils;
 
 import org.json.JSONArray;
 
@@ -65,7 +66,7 @@ public class OrderActivity extends BaseDrawerActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
         init();
-
+        userId = Utils.getUserId(OrderActivity.this);
         getItemData();  // 获得数据
         setUpAdapter(); // 设置数据到list
 

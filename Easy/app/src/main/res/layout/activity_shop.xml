@@ -27,7 +27,6 @@
         app:tabSelectedTextColor="@color/tab_selected_textColor"
         app:tabTextColor="@color/btn_context_menu_normal"/>
 
-
     <!--可滑动的布局内容-->
     <android.support.v4.view.ViewPager
         android:id="@+id/vp_shop_views"

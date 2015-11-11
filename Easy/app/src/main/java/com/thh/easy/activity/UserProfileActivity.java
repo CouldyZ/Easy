@@ -19,6 +19,7 @@ import com.squareup.picasso.Picasso;
 import com.thh.easy.R;
 import com.thh.easy.adapter.UserProfileAdapter;
 import com.thh.easy.constant.StringConstant;
+import com.thh.easy.util.LogUtil;
 import com.thh.easy.view.RevealBackgroundView;
 
 import org.json.JSONArray;
@@ -84,7 +85,11 @@ public class UserProfileActivity extends AppCompatActivity implements RevealBack
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
         ButterKnife.bind(UserProfileActivity.this);
+
         userId = getIntent().getIntExtra(StringConstant.COMMENT_UID, 1);
+
+        LogUtil.d(UserProfileActivity.this, "进入userProfileActivty----> userID:" + userId, "93");
+
         HttpTools.init(this);
         httpTools = new HttpTools(this);
 
@@ -92,44 +97,47 @@ public class UserProfileActivity extends AppCompatActivity implements RevealBack
         setupUserProfileGrid();
         setupRevealBackground(savedInstanceState);
     }
-    int userId;
+
+    private int userId;
+
     /**
      * 加载用户信息
      */
     private void loadProfileData(){
         Map<String , String> params = new HashMap<>();
-        params.put(StringConstant.COMMENT_UID, "" + userId);
+        params.put(StringConstant.USER_ID, "" + getIntent().getIntExtra(StringConstant.COMMENT_UID, 1));
         RequestInfo info = new RequestInfo(StringConstant.SERVER_PROFILE_URL, params);
 
         httpTools.post(info, new HttpCallback() {
             @Override
             public void onStart() {
-
+                LogUtil.i(UserProfileActivity.this, "开始联网啦");
             }
 
             @Override
             public void onFinish() {
-
+                LogUtil.i(UserProfileActivity.this, "结束联网啦");
             }
 
             @Override
             public void onResult(String s) {
+                LogUtil.d(UserProfileActivity.this, "服务器返回的用户信息： " + s , "122");
                 readJson(s);
             }
 
             @Override
             public void onError(Exception e) {
-
+                LogUtil.i(UserProfileActivity.this, "联网出错啦");
             }
 
             @Override
             public void onCancelled() {
-
+                LogUtil.i(UserProfileActivity.this, "取消联网啦");
             }
 
             @Override
             public void onLoading(long l, long l1) {
-
+                LogUtil.i(UserProfileActivity.this, "正在联网呢");
             }
         });
     }
@@ -139,8 +147,7 @@ public class UserProfileActivity extends AppCompatActivity implements RevealBack
      * @param jsonResult
      */
     private void readJson(String jsonResult){
-        // TODO 解析数据，并将数据设置到界面上
-
+            LogUtil.i(UserProfileActivity.this, "开始读取json数据");
         try {
             JSONArray jsonArray = new JSONArray(jsonResult);
 
@@ -155,13 +162,12 @@ public class UserProfileActivity extends AppCompatActivity implements RevealBack
             tvEmail.setText(userObject.getString("email"));               // 用户邮箱
             tvPosts.setText(""+jsonObject.getInt("post"));                 // 发过的帖子数
             tvCollects.setText(""+jsonObject.getInt("collect"));             // 收藏的帖子数
+            tvOrgActs.setText(""+jsonObject.getInt("act"));
 
-            // TODO 设置活动数
-           // tvOrgActs.setText(jsonObject.getInt("activity"));
             // 加载头像
             if(imgUrl!=null){
                 Picasso.with(this)
-                        .load(imgUrl)
+                        .load(StringConstant.SERVER_IP + imgUrl)
                         .placeholder(R.mipmap.bili_default_avatar)
                         .into(ivUserPhoto);
             }

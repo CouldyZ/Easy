@@ -124,7 +124,6 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
 
     private void getComments () {
         if (commentsAdapter == null) {
-            Log.e(TAG, "127  commentList-> size :" + commentList.size());
             commentsAdapter = new CommentRVAdapter(this, commentList);
 //            rvComments.setAdapter(commentsAdapter);
         }
@@ -246,8 +245,6 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
 
                 int lastVisibleItems = linearLayoutManager.findLastVisibleItemPosition();
                 int totalItemCount = linearLayoutManager.getItemCount();
-
-                //Log.i (TAG, "last - " + lastVisibleItems + " totle - " + totalItemCount);
 
                 if (lastVisibleItems == totalItemCount - 1 && dy > 0) {
                     if (isLoading) {

@@ -6,31 +6,48 @@ package com.thh.easy.entity;
 public class Activities {
 
     String id;
-    User user;        // 发起人
-    String state;     // 活动状态
-    String theme;     // 主题
-    int account;      // 发起活动人数
-    String lastDay;   // 持续天数
-    String startDay;  // 开始日期
+    String userName;        // 发起名字
+    String userImage;       // 发起人头像
+    int userRP;             // 发起人rp值
 
-    String pay;       // 经费
-    String content;   // 活动内容
+    String theme;           // 主题
+    int account;            // 发起活动人数
 
-    public Activities(User user, int account, String content, String id, String lastDay,
-                      String pay, String startDay, String state, String theme) {
-        this.user = user;
-        this.account = account;
-        this.content = content;
+    String startDate;       // 开始日期
+    String endDate;         // 结束日期
+
+    String pay;             // 经费
+    String content;         // 活动内容
+
+    int particiCount;       // 已参加的人数
+    int reportCount;        // 举报人数
+
+
+    public Activities(String id, String theme,
+                          String userName, String userImage,int userRP, String endDate, String startDate) {
         this.id = id;
-        this.lastDay = lastDay;
-        this.pay = pay;
-        this.startDay = startDay;
-        this.state = state;
+        this.endDate = endDate;
+        this.startDate = startDate;
+        this.userImage = userImage;
+        this.userName = userName;
+        this.userRP = userRP;
         this.theme = theme;
     }
 
-    public Activities() {
-
+    public Activities(int account, String content, String endDate, String id, int particiCount, String pay, int reportCount, String startDate,
+                      String theme, String userImage, String userName, int userRP) {
+        this.account = account;
+        this.content = content;
+        this.endDate = endDate;
+        this.id = id;
+        this.particiCount = particiCount;
+        this.pay = pay;
+        this.reportCount = reportCount;
+        this.startDate = startDate;
+        this.theme = theme;
+        this.userImage = userImage;
+        this.userName = userName;
+        this.userRP = userRP;
     }
 
     public int getAccount() {
@@ -49,6 +66,14 @@ public class Activities {
         this.content = content;
     }
 
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
     public String getId() {
         return id;
     }
@@ -57,12 +82,12 @@ public class Activities {
         this.id = id;
     }
 
-    public String getLastDay() {
-        return lastDay;
+    public int getParticiCount() {
+        return particiCount;
     }
 
-    public void setLastDay(String lastDay) {
-        this.lastDay = lastDay;
+    public void setParticiCount(int particiCount) {
+        this.particiCount = particiCount;
     }
 
     public String getPay() {
@@ -73,20 +98,20 @@ public class Activities {
         this.pay = pay;
     }
 
-    public String getStartDay() {
-        return startDay;
+    public int getReportCount() {
+        return reportCount;
     }
 
-    public void setStartDay(String startDay) {
-        this.startDay = startDay;
+    public void setReportCount(int reportCount) {
+        this.reportCount = reportCount;
     }
 
-    public String getState() {
-        return state;
+    public String getStartDate() {
+        return startDate;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
     }
 
     public String getTheme() {
@@ -97,11 +122,27 @@ public class Activities {
         this.theme = theme;
     }
 
-    public User getUser() {
-        return user;
+    public String getUserImage() {
+        return userImage;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserImage(String userImage) {
+        this.userImage = userImage;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public int getUserRP() {
+        return userRP;
+    }
+
+    public void setUserRP(int userRP) {
+        this.userRP = userRP;
     }
 }

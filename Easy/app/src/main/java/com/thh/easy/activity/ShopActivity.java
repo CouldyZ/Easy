@@ -22,6 +22,8 @@ import com.thh.easy.adapter.ShopRVAdpter;
 import com.thh.easy.constant.StringConstant;
 import com.thh.easy.entity.Order;
 import com.thh.easy.entity.Shop;
+import com.thh.easy.util.LogUtil;
+import com.thh.easy.util.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,13 +38,11 @@ import butterknife.Bind;
 
 /**
  * 浏览商店页面
- * // TODO 测试订单页面
+ *
  */
 public class ShopActivity extends BaseDrawerActivity implements
         BaseDrawerActivity.OnStartActivityListener,
         ShopRVAdpter.OnShopItemClickListener{
-
-    private static final String TAG = "ShopActivity";
 
     @Bind(R.id.tl_shop_tabs)
     TabLayout tlShopTabs;                        // tab指示器
@@ -64,11 +64,11 @@ public class ShopActivity extends BaseDrawerActivity implements
     ShopRVAdpter shopRVAdpter;                     // rvShop的适配器
     OrderRVAdapter orderRVAdapter;                 // rvOrder的适配器
 
-    boolean isLoading = false;
     private List<Shop> shopList = new ArrayList<>();
     private List<Order> ordersList = new ArrayList<>();
-    int currentPage = 1;                        // 当前页
 
+    int currentPage = 1;                        // 当前页
+    int userId = 1;
     HttpTools httpTools;                        // 网络操作工具
 
     @Override
@@ -78,12 +78,12 @@ public class ShopActivity extends BaseDrawerActivity implements
 
         HttpTools.init(this);
         httpTools = new HttpTools(this);
-
+        userId = Utils.getUserId(ShopActivity.this);
         setOnStartActivityListener(this);
 
         loadShops();
         loadOrders();
-        Log.e("ordersList:", "size :" + ordersList.size());
+
         setUpPagerData();
         setUpTabData();
         setUpRecyclerViews();
@@ -108,14 +108,10 @@ public class ShopActivity extends BaseDrawerActivity implements
         httpTools.post(info, new HttpCallback() {
             @Override
             public void onStart() {
-                isLoading = true;
-                Log.i("New - HttpCallback", "当前页" + currentPage);
             }
 
             @Override
             public void onFinish() {
-                // 一共加载多少条
-                isLoading = false;
             }
 
             @Override
@@ -154,19 +150,17 @@ public class ShopActivity extends BaseDrawerActivity implements
         });
     }
 
+
     public void onReadShopJson(String json) {
 
         int insertPos = shopRVAdpter.getItemCount();
         try {
             JSONArray jsonArray = new JSONArray(json);
 
-            Log.i(TAG, jsonArray.length()+" onReadJson");
             Shop shop = null;
             for (int i = 0 ; i < jsonArray.length() ; i ++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 JSONObject imageObj = jsonObject.getJSONObject("image");
-
-                Log.e(TAG, imageObj.getString("urls"));
 
                 shop = new Shop(jsonObject.getInt("id"),
                         imageObj.getString("urls"),
@@ -184,11 +178,9 @@ public class ShopActivity extends BaseDrawerActivity implements
             currentPage++;
 
         } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e(TAG, "解析Json出错");
+            LogUtil.e(ShopActivity.this, "解析ShopJson出错" + e.getMessage());
         }
     }
-
 
     /**
      * 初始化viewpager数据
@@ -222,7 +214,6 @@ public class ShopActivity extends BaseDrawerActivity implements
         tlShopTabs.setTabsFromPagerAdapter(myPagerAdapter);             //给Tabs设置适配器
 
     }
-
 
     /**
      * 初始化recyleview
@@ -271,7 +262,6 @@ public class ShopActivity extends BaseDrawerActivity implements
         overridePendingTransition(0, 0);
     }
 
-
     /**
      * 商店项的点击事件,跳到商品详情界面
      * @param view
@@ -292,9 +282,6 @@ public class ShopActivity extends BaseDrawerActivity implements
 
         startActivity(intent);
     }
-
-
-    int userId = 1;  // TODO 将用户id设置为全局变量
 
 
     /**
@@ -320,6 +307,8 @@ public class ShopActivity extends BaseDrawerActivity implements
 
             @Override
             public void onResult(String s) {
+
+                LogUtil.d(ShopActivity.this, "服务器返回订单JSON信息：" + s, "325");
 
                 if (StringConstant.NULL_VALUE.equals(s)) {
                     Snackbar.make(clContainer, "网络貌似粗错了", Snackbar.LENGTH_SHORT).show();
@@ -365,37 +354,26 @@ public class ShopActivity extends BaseDrawerActivity implements
             Order order = null;
             JSONArray jsonArray = new JSONArray(json);
             Log.e("jsonArray length-->", "" + jsonArray.length());
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                order = new Order(
-                        jsonObject.getString("dates"),// 下单时间
-                        8,
-                        jsonObject.getJSONObject("shop").getInt("id"),
-                        jsonObject.getJSONObject("shop")
-                                .getJSONObject("image").getString("urls"),
-                        jsonObject.getJSONObject("shop").getString("name"),
-                        jsonObject.getInt("states"),
-                        Float.parseFloat(""+jsonObject.getDouble("amount"))
-                );
 
-                ordersList.add(order);
-            }
-
-            /*
             for (int i = 0 ; i < jsonArray.length() ; i ++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                JSONObject imageObj = jsonObject.getJSONObject("image");
-                // "count":8,"sum":312.3,
-                order = new Order(jsonObject.getString("dates"),// 下单时间
-                        jsonObject.getInt("count"),
-                          jsonObject.getInt("id"),
+
+                JSONObject imageObj = jsonObject.getJSONObject("orders")
+                        .getJSONObject("shop")
+                        .getJSONObject("image");
+
+                order = new Order(
+                          jsonObject.getJSONObject("orders").getString("dates"),// 下单时间
+                          jsonObject.getInt("count"),
+                          jsonObject.getJSONObject("orders").getInt("id"),
                           imageObj.getString("urls"),
-                          jsonObject.getString("name"),
-                          jsonObject.getInt("state"),
+                          jsonObject.getJSONObject("orders")
+                                .getJSONObject("shop").getString("name"),
+                          jsonObject.getJSONObject("orders").getInt("states"),
                           Float.parseFloat(""+jsonObject.getDouble("sum"))
                         );
                 ordersList.add(order);
-            }*/
+            }
 
             orderRVAdapter.notifyItemRangeInserted(insertPos, ordersList.size() - insertPos);
             orderRVAdapter.notifyItemRangeChanged(insertPos, ordersList.size() - insertPos);
@@ -404,7 +382,7 @@ public class ShopActivity extends BaseDrawerActivity implements
 
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.e(TAG, " 解析onReadOrderJson出错");
+            LogUtil.e(ShopActivity.this, " 解析onReadOrderJson出错");
         }
     }
 
