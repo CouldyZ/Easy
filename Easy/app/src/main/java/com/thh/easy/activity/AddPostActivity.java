@@ -28,7 +28,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -173,13 +172,13 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
     @OnClick(R.id.btn_add_picture)
     void addPicture() {
         ImageUtils.showImagePickDialog(AddPostActivity.this);
-        try {
+        /*try {
             imageFile = ImageUtils.saveFile(AddPostActivity.this, bitmap,
                     "post_" + Utils.getUserId(AddPostActivity.this)+".jpg");
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(AddPostActivity.this, "保存文件失败", Toast.LENGTH_LONG).show();
-        }
+        }*/
 
 
     }

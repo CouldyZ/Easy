@@ -1,6 +1,8 @@
 package com.thh.easy.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -15,6 +17,7 @@ import android.view.View;
 import com.android.volley.ext.HttpCallback;
 import com.android.volley.ext.RequestInfo;
 import com.android.volley.ext.tools.HttpTools;
+import com.squareup.picasso.Picasso;
 import com.thh.easy.R;
 import com.thh.easy.adapter.MyPagerAdapter;
 import com.thh.easy.adapter.OrderRVAdapter;
@@ -22,13 +25,17 @@ import com.thh.easy.adapter.ShopRVAdpter;
 import com.thh.easy.constant.StringConstant;
 import com.thh.easy.entity.Order;
 import com.thh.easy.entity.Shop;
+import com.thh.easy.entity.User;
+import com.thh.easy.util.FileUtil;
 import com.thh.easy.util.LogUtil;
+import com.thh.easy.util.RoundedTransformation;
 import com.thh.easy.util.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,6 +86,9 @@ public class ShopActivity extends BaseDrawerActivity implements
         HttpTools.init(this);
         httpTools = new HttpTools(this);
         userId = Utils.getUserId(ShopActivity.this);
+
+        setUserSp();
+
         setOnStartActivityListener(this);
 
         loadShops();
@@ -275,7 +285,7 @@ public class ShopActivity extends BaseDrawerActivity implements
         intent.putExtra("SHOP_ID", shop.getId());
 
         intent.putExtra("SHOP_NAME", "" + shop.getName());
-        intent.putExtra("SHOP_URL", ""+shop.getUrl());
+        intent.putExtra("SHOP_URL", "" + shop.getUrl());
 
         intent.putExtra("SHOP_SHORTCUT", shop.getShortcut());
         intent.putExtra("SHOP_ADDRESS", shop.getAddress());
@@ -385,5 +395,56 @@ public class ShopActivity extends BaseDrawerActivity implements
             LogUtil.e(ShopActivity.this, " 解析onReadOrderJson出错");
         }
     }
+
+    /**
+     * 设置用户配置信息
+     */
+    private void setUserSp() {
+
+        // 验证用户之前是否登录
+        sp = getSharedPreferences("user_sp", Context.MODE_PRIVATE);
+
+        if (sp.getBoolean("user_login", false)) {
+            u = (User) FileUtil.readObject(this, "user");
+            if (u == null)
+                return;
+            setUserInfo(u);
+        }
+
+    }
+
+    SharedPreferences sp;
+    User u;
+
+    /**
+     * 设置用户信息
+     * @param u
+     */
+    private void setUserInfo (User u) {
+        username.setText(u.getUsername());
+
+        if ("0".equals(u.getGender())) {
+            gender.setBackgroundResource(R.mipmap.ic_user_female);
+        }
+        else if ("1".equals(u.getGender())) {
+            gender.setBackgroundResource(R.mipmap.ic_user_male);
+        }
+        else {
+            gender.setBackgroundResource(R.mipmap.ic_user_sox);
+        }
+
+        if (u.getAvatarFilePath() != null) {
+            File avatar = new File (u.getAvatarFilePath());
+            LogUtil.d(ShopActivity.this, "头像url :" + u.getAvatarFilePath());
+            Picasso.with(getApplicationContext())
+                    .load(avatar)
+                    .centerCrop()
+                    .resize(avatarSize, avatarSize)
+                    .transform(new RoundedTransformation())
+                    .into(ivMenuUserProfilePhoto);
+        }
+    }
+
+
 
 }

@@ -137,10 +137,8 @@ public class OrgActActivity extends AppCompatActivity implements TextWatcher , B
                 if("1".equals(s)){
                     Snackbar.make(clContainer, "发起活动成功", Snackbar.LENGTH_SHORT).show();
                     startActivity(new Intent(OrgActActivity.this, ActActivity.class));
-                    return;
                 } else {
                     Snackbar.make(clContainer, "发起活动失败", Snackbar.LENGTH_SHORT).show();
-                    return;
                 }
 
 
@@ -149,6 +147,7 @@ public class OrgActActivity extends AppCompatActivity implements TextWatcher , B
 
             @Override
             public void onError(Exception e) {
+                Snackbar.make(clContainer, "网络貌似粗错了", Snackbar.LENGTH_SHORT).show();
             }
 
             @Override
