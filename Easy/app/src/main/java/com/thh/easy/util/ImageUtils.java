@@ -90,12 +90,12 @@ public class ImageUtils {
 	/**
 	 * 将图片保存到SD中
 	 */
-	public static void saveFile(Context context, Bitmap bm, String fileName) throws IOException {
+	public static File saveFile(Context context, Bitmap bm, String fileName) throws IOException {
 		// 未安装SD卡时不做保存
 		String storageState = Environment.getExternalStorageState();
 		if(!storageState.equals(Environment.MEDIA_MOUNTED)) {
 			Toast.makeText(context, "未检测到SD卡", Toast.LENGTH_SHORT).show();
-			return;
+			return null;
 		}
 		
 		// 图片文件保存路径
@@ -115,6 +115,7 @@ public class ImageUtils {
 		bm.compress(Bitmap.CompressFormat.JPEG, 100, bos);
 		bos.flush();
 		bos.close();
+		return  myCaptureFile;
 	}
 	
 	/**

@@ -10,9 +10,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.thh.easy.R;
+import com.thh.easy.constant.StringConstant;
 import com.thh.easy.entity.Activities;
+import com.thh.easy.util.LogUtil;
+import com.thh.easy.util.RoundedTransformation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -29,20 +34,21 @@ public class ActRVAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         private Context context;
         private int lastAnimatedPosition = -1;
 
-   //     private List<Activities> actLists = new ArrayList<>();
+       private List<Activities> actLists = new ArrayList<>();
 
         private int avatarSize;
 
         public ActRVAdapter(Context context, List<Activities> actLists) {
                 this.context = context;
                 avatarSize = context.getResources().getDimensionPixelSize(R.dimen.comment_avatar_size);
-            //    this.actLists = actLists;
+               this.actLists = actLists;
         }
 
         @Override
         public int getItemCount() {
-                return 7;
-//                return actLists.size();
+              //  return 7;
+            LogUtil.d("list.size:" + actLists.size());
+                return actLists.size();
         }
 
         @Override
@@ -61,23 +67,28 @@ public class ActRVAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 holder.btnCheckAct.setOnClickListener(this);
                 holder.btnCheckAct.setTag(position);
 
-//                Activities activities = actLists.get(position);
-//                holder.tvActOrgTheme.setText(activities.getTheme());              // 设置主题
-//                holder.tvOrgUserName.setText(activities.getUser().getUsername()); // 设置发起人名字
-//                holder.tvOrgUserRP.setText(activities.getUser().getJiecao());     // 设置节操值
-//                holder.tvActOrgTheme.setText(activities.getStartDay());           // 设置起始日期
-//
-//                // 加载头像
-//                if (activities.getUser().getAvatarFilePath() != null)
-//                {
-//                        Picasso.with(context)
-//                                .load(StringConstant.SERVER_IP +"/"+ activities.getUser().getAvatarFilePath())
-//                                .centerCrop()
-//                                .resize(avatarSize, avatarSize)
-//                                .transform(new RoundedTransformation())
-//                                .placeholder(R.mipmap.bili_default_avatar)
-//                                .into(((CellActViewHolder) viewHolder).ivActOrgUserAvatar);
-//                }
+                LogUtil.d("list.size:" + actLists.size());
+
+                Activities activities = actLists.get(position);
+                holder.tvActOrgTheme.setText(activities.getTheme());              // 设置主题
+                holder.tvOrgUserName.setText(activities.getUserName()); // 设置发起人名字
+                holder.tvOrgUserRP.setText("rp : "+activities.getUserRP());     // 设置节操值
+                holder.tvActOrgTime.setText(activities.getEndDate() +
+                        "~" + activities.getStartDate());           // 设置起始日期
+                LogUtil.d("activities.getTheme()" + activities.getTheme());
+
+                // 加载头像
+                if (activities.getUserImage() != null)
+                {
+                        Picasso.with(context)
+                                .load(StringConstant.SERVER_IP + activities.getUserImage())
+                                .centerCrop()
+                                .resize(avatarSize, avatarSize)
+                                .transform(new RoundedTransformation())
+                                .placeholder(R.mipmap.bili_default_avatar)
+                                .into(((CellActViewHolder) viewHolder).ivActOrgUserAvatar);
+                }
+
 
 
                 // runEnterAnimation(viewHolder.itemView, position);
@@ -136,7 +147,7 @@ public class ActRVAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 int viewId = v.getId();
                 switch (viewId){
                         case R.id.btn_check_act:      // 点击进去看看
-                                onActItemClickListener.onCheckDetail(v, (int)v.getTag());
+                                onActItemClickListener.onCheckDetail(v, (int)v.getTag(),this.flag);
                                 break;
                         default:
                                 break;
@@ -145,12 +156,14 @@ public class ActRVAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         OnActItemClickListener onActItemClickListener;
 
-        public void setOnActItemClickListener(OnActItemClickListener onActItemClickListener){
+        public void setOnActItemClickListener(OnActItemClickListener onActItemClickListener, int flag){
                 this.onActItemClickListener = onActItemClickListener;
+            this.flag = flag;
         }
 
         public interface OnActItemClickListener{
-                void onCheckDetail(View view, int position);
+                void onCheckDetail(View view, int position, int flag);
         }
 
+        int flag = 0;
 }

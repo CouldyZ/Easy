@@ -66,6 +66,7 @@
             android:gravity="center_vertical"
             android:background="#a3a0a0"
             android:layout_gravity="center_horizontal|bottom">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -82,9 +83,11 @@
             <!-- 确定预定的按钮 -->
             <Button
                 android:id="@+id/btn_order_ensure"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:minWidth="100dp"
                 android:layout_height="wrap_content"
-                android:text="确定预定"
+                android:layout_weight="1"
+                android:text="预定"
                 android:background="#06b34f"
                 android:textColor="#fff"
                 android:layout_marginLeft="218dp"/>

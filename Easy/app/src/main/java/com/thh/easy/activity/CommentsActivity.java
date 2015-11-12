@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
@@ -18,17 +17,17 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.android.volley.ext.HttpCallback;
 import com.android.volley.ext.RequestInfo;
 import com.android.volley.ext.tools.HttpTools;
-import com.thh.easy.constant.StringConstant;
 import com.thh.easy.R;
 import com.thh.easy.adapter.CommentRVAdapter;
+import com.thh.easy.constant.StringConstant;
 import com.thh.easy.entity.Comment;
 import com.thh.easy.entity.User;
 import com.thh.easy.util.FileUtil;
+import com.thh.easy.util.LogUtil;
 import com.thh.easy.util.Utils;
 import com.thh.easy.view.SendCommentButton;
 
@@ -47,11 +46,9 @@ import butterknife.OnClick;
 
 /**
  * 评论界面
- *
+ *  // TODO 添加评论有BUG， 添加的位置间有间隙啊
  */
 public class CommentsActivity extends AppCompatActivity implements SendCommentButton.OnSendClickListener{
-
-    // TODO 测试查看评论、发表评论
 
     private static final String TAG = "CommentsActivity";
 
@@ -91,23 +88,19 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
-
-        postID = getIntent().getIntExtra("postID", -1);
-
+        setUpToolbar();
         HttpTools.init(getApplicationContext());
         httpTools = new HttpTools(getApplicationContext());
 
+        postID = getIntent().getIntExtra("postID", -1);
+        LogUtil.d(CommentsActivity.this, "进入留言界面啦  ~~~   postID:" + postID);
+
         getComments();
-
-        setUpToolbar();
         setupComments();
-
         setupSendCommentButton();
 
         // 获得原帖子界面的点击评论的位置
-        // TODO 发送、获得位置
         drawingStartLocation =  getIntent().getIntExtra(COMMENT_DRAWING_START_LOCATION, 0);
-
         if (savedInstanceState == null) {
             contentRoot.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -125,15 +118,17 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
     private void getComments () {
         if (commentsAdapter == null) {
             commentsAdapter = new CommentRVAdapter(this, commentList);
-//            rvComments.setAdapter(commentsAdapter);
         }
 
         isLoading = true;
 
+
+        // pageIndex=1&rowCount=6&posts.id=1
         Map<String, String> params = new HashMap<>(3);
         params.put(StringConstant.POSTID, postID + "");
         params.put(StringConstant.CURRENT_PAGE_KEY, currentPage+"");
         params.put(StringConstant.PER_PAGE_KEY, 10+"");
+
         RequestInfo info = new RequestInfo(StringConstant.SERVER_COMMENT_URL, params);
         httpTools.post(info, new HttpCallback() {
             @Override
@@ -148,13 +143,19 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
 
             @Override
             public void onResult(String s) {
+
+                LogUtil.d(CommentsActivity.this, "获得留言数据：" + s);
+
                 if ("0".equals(s)) {
                     Snackbar.make(rvComments, "还没有留言 你要抢个沙发嘛", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
-                if ("[]".equals(s))
+                if ("[]".equals(s)){
+                    Snackbar.make(rvComments, "还没有留言 你要抢个沙发嘛", Snackbar.LENGTH_SHORT).show();
                     return;
+                }
+
 
                 onReadJson(s);
             }
@@ -178,13 +179,16 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
 
     /**
      * 读取json数据
-     * // TODO 精简数据
+     *
      * @param json
      */
     private void onReadJson(String json) {
 
         int insertPos = commentsAdapter.getItemCount();
 
+        if(commentsAdapter== null){
+            commentsAdapter = new CommentRVAdapter(CommentsActivity.this, commentList);
+        }
         try {
             JSONArray jsonArray = new JSONArray(json);
 
@@ -195,17 +199,18 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
                 JSONObject jsonItem = jsonArray.getJSONObject(i);
                 Comment comment = null;
 
-                String avatar = null;
+                String avatar = "";
 
-                if (!jsonItem.isNull(jsonItem.getJSONObject("users").getJSONObject("image").getString("urls"))) {
-                    avatar = new StringBuffer(StringConstant.SERVER_IP).append(jsonItem.getJSONObject("users").getJSONObject("image").getString("urls")).toString();
-                }
+                avatar =  StringConstant.SERVER_IP + jsonItem.getJSONObject("users").getJSONObject("image").getString("urls");
+
+                LogUtil.d(CommentsActivity.this, "留言头像：" + avatar);
 
                 comment = new Comment(
                         avatar,
-                        jsonItem.getString("dates"),
                         jsonItem.getString("contents"),
-                        jsonItem.getJSONObject("user").getInt("id"));
+                        jsonItem.getString("dates"),
+                        jsonItem.getJSONObject("users").getString("name"),
+                        jsonItem.getJSONObject("users").getInt("id"));
 
                 commentList.add(comment);
             }
@@ -215,7 +220,7 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
 
             currentPage ++;
         } catch (JSONException e) {
-            e.printStackTrace();
+            LogUtil.e(CommentsActivity.this, "解析json 出错 " + e.getMessage());
         }
     }
 
@@ -248,11 +253,10 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
 
                 if (lastVisibleItems == totalItemCount - 1 && dy > 0) {
                     if (isLoading) {
-                        Log.d(TAG, "ignore manually update!");
+                        LogUtil.d(CommentsActivity.this, "ignore manually update!");
                     } else {
-                        // loadPosts中控制isLoading
                         getComments();
-                        Log.i(TAG, "new comment");
+                        LogUtil.d(CommentsActivity.this, "new comment");
                         isLoading = false;
                     }
                 }
@@ -266,8 +270,8 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
             }
         });
 
-        // commentsAdapter.notifyItemRangeChanged(0, commentList.size());
-        Log.d(TAG, commentList.size() + " 1");
+        commentsAdapter.notifyItemRangeChanged(0, commentList.size());
+        LogUtil.d(CommentsActivity.this, commentList.size() + " 1");
     }
 
 
@@ -308,7 +312,6 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
      * 设置内容动画
      */
     private void animateContent() {
-//        commentsAdapter.updateItems();
         llAddComment.animate().translationY(0)
                 .setInterpolator(new DecelerateInterpolator())
                 .setDuration(200)
@@ -342,26 +345,27 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
     @Override
     public void onSendClickListener(View v) {
         if (validateComment()) {
-//            commentsAdapter.addItem();
             commentsAdapter.setAnimationsLocked(false);
             commentsAdapter.setDelayEnterAnimation(false);
             rvComments.smoothScrollBy(0, rvComments.getChildAt(0).getHeight() * commentsAdapter.getItemCount());
 
-            // TODO 发送评论
-            User u = (User) FileUtil.readObject(getApplicationContext(), "user");
+
+            final  User u = (User) FileUtil.readObject(getApplicationContext(), "user");
+            final int userId = Utils.getUserId(getApplicationContext());
             if (u == null)
-                Toast.makeText(getApplicationContext(), "岂可修!要先登陆啊", Toast.LENGTH_SHORT).show();
-
-            String content = null;
+                Snackbar.make(rvComments, "岂可修!要先登陆啊", Snackbar.LENGTH_SHORT).show();
             if ("".equals(etAddComment.getEditableText().toString()))
-                Toast.makeText(getApplicationContext(), "不写点啥嘛", Toast.LENGTH_SHORT).show();
+                Snackbar.make(rvComments, "不写点啥嘛", Snackbar.LENGTH_SHORT).show();
 
-            content = etAddComment.getEditableText().toString();
+            final String content = etAddComment.getEditableText().toString();
 
             Map<String, String> params = new HashMap<>(3);
-            params.put(StringConstant.COMMENT_UID, u.getId()+"");
+            params.put(StringConstant.COMMENT_SEND_ID, "" + userId);
             params.put(StringConstant.COMMENT_POST_ID, postID + "");
             params.put(StringConstant.COMMENT_CONTENTS, content);
+
+            LogUtil.d(CommentsActivity.this, "");
+
             RequestInfo info = new RequestInfo(StringConstant.SERVER_ADDCOMMENT_URL, params);
             httpTools.post(info, new HttpCallback() {
                 @Override
@@ -375,13 +379,30 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
                 @Override
                 public void onResult(String s) {
                     if ("1".equals(s)) {
-                        Toast.makeText(CommentsActivity.this, "评论成功", Toast.LENGTH_SHORT).show();
+
+                        Snackbar.make(rvComments, "评论成功", Snackbar.LENGTH_SHORT).show();
+
+                        Comment comment = new Comment(
+                                u.getAvatarFilePath(),
+                                content,
+                                "",
+                                u.getUsername(),
+                                userId);
+
+                        commentList.add(comment);
+
+                        commentsAdapter.notifyItemRangeInserted(0, 1);
+                        commentsAdapter.notifyItemRangeChanged(0, 1);
+
+                    }else{
+                        Snackbar.make(rvComments, "评论失败", Snackbar.LENGTH_SHORT).show();
                     }
+                    mybtnSendComment.setCurrentState(SendCommentButton.STATE_DONE);
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    Toast.makeText(CommentsActivity.this, "骚年 你评论失败啦", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(rvComments, "骚年 你评论失败啦", Snackbar.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -394,7 +415,7 @@ public class CommentsActivity extends AppCompatActivity implements SendCommentBu
             });
 
             etAddComment.setText(null);
-            mybtnSendComment.setCurrentState(SendCommentButton.STATE_DONE);
+
         }
     }
 

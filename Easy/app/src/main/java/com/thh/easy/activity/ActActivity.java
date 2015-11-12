@@ -6,9 +6,9 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Toast;
 
 import com.android.volley.ext.HttpCallback;
 import com.android.volley.ext.RequestInfo;
@@ -20,6 +20,10 @@ import com.thh.easy.constant.StringConstant;
 import com.thh.easy.entity.Activities;
 import com.thh.easy.util.LogUtil;
 import com.thh.easy.util.Utils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +37,7 @@ import butterknife.OnClick;
  * 活动界面
  *
  */
-public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivity.OnStartActivityListener ,ActRVAdapter.OnActItemClickListener{
+public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivity.OnStartActivityListener ,ActRVAdapter.OnActItemClickListener {
 
     @Bind(R.id.tl_activity_tabs)
     TabLayout tlActTabs;                            // tab指示器
@@ -46,14 +50,15 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
 
     String[] mTabTitles;                            // tabs上的文字
     List<View> mViewList = new ArrayList<>();       // viewpager包括的两个view对象
-    View llOrgView,llJoinView;                      // viewPager中的两个view
+    View llOrgView, llJoinView;                      // viewPager中的两个view
 
-    RecyclerView rvOrgActivity,rvJoinActivity;      // view里面对应的列表
+    RecyclerView rvOrgActivity, rvJoinActivity;      // view里面对应的列表
     ActRVAdapter rvOrgActAdapter, rvJoinActAdapter; // viewpager两个view里面的recyclerview适配器
 
     HttpTools httpTools;
 
     int userId = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,155 +70,127 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
         httpTools = new HttpTools(getApplicationContext());
         userId = Utils.getUserId(ActActivity.this);
 
+        if(userId == 0){
+            Toast.makeText(ActActivity.this, "请先登录", Toast.LENGTH_LONG).show();
+        }
+
+        loadOrgActivity();
+        loadJoinActivity();
+
         setUpPagerData();
         setUpTabData();
         setUpRecyclerViews();
 
-        loadOrgActivity();
+
     }
 
-
-
-    /**
-     * 查看未参加，正在组织的活动
-     * http://localhost:8080/thhh/act/act_findAct.action?pageIndex=1&rowCount=6&users.id=1
-     */
 
     int currentPage = 1;                        // 当前页
     private List<Activities> actLists = new ArrayList<>(); //正在组织的活动
     private List<Activities> joinLists = new ArrayList<>(); // 已经参加的活动柜
 
+
     /**
      * 应用加载正在组织活动信息
      */
     private void loadOrgActivity() {
-        if(rvOrgActAdapter == null) {
+        if (rvOrgActAdapter == null) {
             rvOrgActAdapter = new ActRVAdapter(ActActivity.this, actLists);
         }
 
-        // 向服务器发送数据
-        Map<String, String> params = new HashMap<String, String>(3);
-        params.put(StringConstant.CURRENT_PAGE_KEY, currentPage+"");
-        params.put(StringConstant.PER_PAGE_KEY, StringConstant.PER_PAGE_COUNT + "");
-        params.put(StringConstant.COMMENT_UID,"" + userId);
-        RequestInfo info = new RequestInfo(StringConstant.SERVER_ORGING_ACT_URL, params);
-        httpTools.post(info, new HttpCallback() {
-            @Override
-            public void onStart() {
-            }
+        // 向服务器发送数据 pageIndex=1&rowCount=6&users.id=1
+           Map<String, String> params = new HashMap<String, String>(3);
+            params.put(StringConstant.CURRENT_PAGE_KEY, currentPage + "");
+            params.put(StringConstant.PER_PAGE_KEY, StringConstant.PER_PAGE_COUNT + "");
+            params.put(StringConstant.COMMENT_UID, "" + userId);
 
-            @Override
-            public void onFinish() {
-            }
-
-            @Override
-            public void onResult(String s) {
-
-                LogUtil.i(ActActivity.this, "服务器返回数据啦：　ｓ：" + s);
-
-                if (StringConstant.NULL_VALUE.equals(s)) {
-                   // Snackbar.make(clContainer, "网络貌似粗错了", Snackbar.LENGTH_SHORT).show();
-                    return;
+            RequestInfo info = new RequestInfo(StringConstant.SERVER_ORGING_ACT_URL, params);
+            httpTools.post(info, new HttpCallback() {
+                @Override
+                public void onStart() {
                 }
 
-                if ("[]".equals(s)) {
-                    // Snackbar.make(clContainer, "什么帖子都没有呦", Snackbar.LENGTH_SHORT).show();
-                    return;
-                }
-                onReadJson(s);
-               // Log.d("New - HttpCallback", postRVAdapter.getItemCount() + " loadPost");
-
-                currentPage++;
-            }
-
-            @Override
-            public void onError(Exception e) {
-            }
-
-            @Override
-            public void onCancelled() {
-               // srContainer.setRefreshing(false);
-            }
-
-            @Override
-            public void onLoading(long l, long l1) {
-
-            }
-        });
-    }
-
-
-    private void loadMyActivity() {
-        // 向服务器发送数据
-        Map<String, String> params = new HashMap<String, String>(3);
-        params.put(StringConstant.CURRENT_PAGE_KEY, currentPage+"");
-        params.put(StringConstant.PER_PAGE_KEY, StringConstant.PER_PAGE_COUNT + "");
-        params.put(StringConstant.COMMENT_UID,"0");
-        RequestInfo info = new RequestInfo(StringConstant.SERVER_NEWPOST_URL, params);
-        httpTools.post(info, new HttpCallback() {
-            @Override
-            public void onStart() {
-                //  isLoading = true;
-                Log.i("New - HttpCallback", "当前页" + currentPage);
-            }
-
-            @Override
-            public void onFinish() {
-                // 一共加载多少条
-//                isLoading = false;
-//                srContainer.setRefreshing(false);
-            }
-
-            @Override
-            public void onResult(String s) {
-                Log.i("New - HttpCallback", s);
-
-                if (StringConstant.NULL_VALUE.equals(s)) {
-                    // Snackbar.make(clContainer, "网络貌似粗错了", Snackbar.LENGTH_SHORT).show();
-                    return;
+                @Override
+                public void onFinish() {
                 }
 
-                if ("[]".equals(s)) {
-                    // Snackbar.make(clContainer, "什么帖子都没有呦", Snackbar.LENGTH_SHORT).show();
-                    return;
+                @Override
+                public void onResult(String s) {
+
+                    LogUtil.i(ActActivity.this, "服务器返回数据啦：　ｓ：" + s);
+
+                    if (StringConstant.NULL_VALUE.equals(s)) {
+                        Toast.makeText(ActActivity.this, "网络貌似粗错了", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if ("[]".equals(s)) {
+                        Toast.makeText(ActActivity.this, "并没有什么正在组织的活动", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    onReadOrgJson(s);
+
+                    currentPage++;
                 }
-                onReadJson(s);
-                // Log.d("New - HttpCallback", postRVAdapter.getItemCount() + " loadPost");
 
-                currentPage++;
-            }
+                @Override
+                public void onError(Exception e) {
+                }
 
-            @Override
-            public void onError(Exception e) {
-            }
+                @Override
+                public void onCancelled() {
+                }
 
-            @Override
-            public void onCancelled() {
-                // srContainer.setRefreshing(false);
-            }
+                @Override
+                public void onLoading(long l, long l1) {
 
-            @Override
-            public void onLoading(long l, long l1) {
-
-            }
-        });
+                }
+            });
     }
 
+    public void onReadOrgJson(String json) {
 
-    public void onReadJson(String json) {
+        int insertPos = rvOrgActAdapter.getItemCount();
+        try {
+            Activities activities = null;
+            JSONArray jsonArray = new JSONArray(json);
 
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String userImage = "";
+                if(jsonObject.getString("user_img") != null)
+                {
+                    userImage = jsonObject.getString("user_img");
+                }
+
+                LogUtil.d(ActActivity.this, "查看所有的活动： 发起人的头像url : " + userImage);
+
+                activities = new Activities(
+                        jsonObject.getString("user.id"),
+                        jsonObject.getString("theme"),
+                        jsonObject.getString("user.name"),
+                        userImage,
+                        jsonObject.getInt("user.rp"),
+                        jsonObject.getString("start_date"),
+                        jsonObject.getString("end_date"));
+                activities.setId(""+jsonObject.getInt("act.id"));
+                activities.setUid(jsonObject.getInt("user.id"));
+                actLists.add(activities);
+            }
+        if (rvOrgActAdapter == null) {
+            rvOrgActAdapter = new ActRVAdapter(ActActivity.this, actLists);
+        }
+            LogUtil.d(ActActivity.this, "orgList.size:" + actLists.size());
+            rvOrgActAdapter.notifyItemRangeInserted(insertPos, actLists.size() - insertPos);
+            rvOrgActAdapter.notifyItemRangeChanged(insertPos, actLists.size() - insertPos);
+
+            currentPage++;
+
+        } catch (JSONException e) {
+            LogUtil.e(ActActivity.this, " 解析onReadORGJson出错" + e.getMessage());
+        }
     }
-
-
-    /**
-     * 点击跳转到发起活动的界面
-     */
-    @OnClick(R.id.fab_org_act)
-    void startOrgActivity() {
-        // TODO 考虑是否添加动画效果
-        startActivity(new Intent(this, OrgActActivity.class));
-    }
-
 
     @Override
     public void onBackPressed() {
@@ -257,10 +234,18 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
      * @param position
      */
     @Override
-    public void onCheckDetail(View view, int position) {
+    public void onCheckDetail(View view, int position, int flag) {
 
-        // TODO 带参跳转， 网络数据获取
+        String actId= "";
+        if(flag == 0){
+            actId = actLists.get(position).getId();
+        } else {
+            actId = joinLists.get(position).getId();
+        }
+
         Intent intent = new Intent(this, ActDetailActivity.class);
+        intent.putExtra(StringConstant.ACT_ID, actId);
+
         startActivity(intent);
     }
 
@@ -269,6 +254,7 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
      * 初始化viewpager数据
      */
     private void setUpPagerData() {
+        LogUtil.i(ActActivity.this, "into setUppagerData");
         mInflater = LayoutInflater.from(this);
         mTabTitles = new String[]{"正在组织","已经参加"}; // tab上的文字
 
@@ -288,7 +274,7 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
      * 设置Tab数据
      */
     private void setUpTabData() {
-
+        LogUtil.i(ActActivity.this, "into setUpTabData");
         tlActTabs.setTabMode(TabLayout.MODE_FIXED);                 //设置tab模式，当前为系统默认模式
         tlActTabs.addTab(tlActTabs.newTab().setText(mTabTitles[0]));//添加tab选项卡
         tlActTabs.addTab(tlActTabs.newTab().setText(mTabTitles[1]));
@@ -301,23 +287,133 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
 
     /**
      * 初始化recyleview
-     *  数据需根据ActRVAdapter修改
+     *
      */
     public void setUpRecyclerViews() {
-
+        LogUtil.i(ActActivity.this, "into setUpRecyclerViews");
         LinearLayoutManager orgLinearLayoutManager = new LinearLayoutManager(this);
         rvOrgActivity.setLayoutManager(orgLinearLayoutManager);
         rvOrgActivity.setHasFixedSize(true);
-
-        // rvOrgActAdapter = new ActRVAdapter(this, actLists);
         rvOrgActivity.setAdapter(rvOrgActAdapter);
+        rvOrgActAdapter.setOnActItemClickListener(this, 0);
 
         LinearLayoutManager joinLinearLayoutManager = new LinearLayoutManager(this);
         rvJoinActivity.setLayoutManager(joinLinearLayoutManager);
         rvJoinActivity.setHasFixedSize(true);
-
-        //  rvJoinActAdapter = new ActRVAdapter(this, joinLists);
         rvJoinActivity.setAdapter(rvJoinActAdapter);
-
+        rvJoinActAdapter.setOnActItemClickListener(this, 1);
     }
+
+
+
+
+    /**
+     * 应用加载参加过、组织过的活动信息
+     */
+    private void loadJoinActivity() {
+
+        if (rvJoinActAdapter == null) {
+            rvJoinActAdapter = new ActRVAdapter(ActActivity.this, joinLists);
+        }
+
+        // 向服务器发送数据 pageIndex=1&rowCount=6&users.id=1
+        Map<String, String> params = new HashMap<>(3);
+        params.put(StringConstant.CURRENT_PAGE_KEY, currentPage + "");
+        params.put(StringConstant.PER_PAGE_KEY, StringConstant.PER_PAGE_COUNT + "");
+        params.put(StringConstant.COMMENT_UID, "" + userId);
+
+        RequestInfo info = new RequestInfo(StringConstant.SERVER_MY_All_ACT_URL, params);
+        httpTools.post(info, new HttpCallback() {
+            @Override
+            public void onStart() {
+            }
+
+            @Override
+            public void onFinish() {
+            }
+
+            @Override
+            public void onResult(String s) {
+
+                LogUtil.i(ActActivity.this, "参加过、组织过的活动信息 服务器返回数据啦：　ｓ：" + s);
+
+                if (StringConstant.NULL_VALUE.equals(s)) {
+                    Toast.makeText(ActActivity.this, "网络貌似粗错了", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if ("[]".equals(s)) {
+                    Toast.makeText(ActActivity.this, "并没有什么正在组织的活动", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                  onReadJoinJson(s);
+
+               currentPage++;
+            }
+
+            @Override
+            public void onError(Exception e) {
+            }
+
+            @Override
+            public void onCancelled() {
+            }
+
+            @Override
+            public void onLoading(long l, long l1) {
+
+            }
+        });
+    }
+
+    public void onReadJoinJson(String json) {
+
+        int insertPos = rvJoinActAdapter.getItemCount();
+        try {
+
+            Activities activities = null;
+            JSONArray jsonArray = new JSONArray(json);
+
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                String userImage = "";
+                if(jsonObject.getString("user_img") != null)
+                {
+                    userImage = jsonObject.getString("user_img");
+                }
+
+                LogUtil.d(ActActivity.this, "发起人的头像url : " + userImage);
+
+                activities = new Activities(
+                        jsonObject.getString("user.id"),
+                        jsonObject.getString("theme"),
+                        jsonObject.getString("user.name"),
+                        userImage,
+                        jsonObject.getInt("user.rp"),
+                        jsonObject.getString("start_date"),
+                        jsonObject.getString("end_date"));
+                activities.setId(""+jsonObject.getInt("act.id"));
+                activities.setUid(jsonObject.getInt("user.id"));
+                joinLists.add(activities);
+            }
+
+        if (rvJoinActAdapter == null) {
+            rvJoinActAdapter = new ActRVAdapter(ActActivity.this, joinLists);
+        }
+
+        LogUtil.d(ActActivity.this, "actLists.size:" + joinLists.size());
+        rvJoinActAdapter.notifyItemRangeInserted(insertPos, joinLists.size() - insertPos);
+        rvJoinActAdapter.notifyItemRangeChanged(insertPos, joinLists.size() - insertPos);
+
+        currentPage++;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            LogUtil.e(ActActivity.this, " 解析onReadORGJson出错");
+        }
+    }
+
+
 }

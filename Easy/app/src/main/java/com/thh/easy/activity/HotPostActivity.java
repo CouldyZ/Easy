@@ -266,12 +266,11 @@ public class HotPostActivity extends BaseActivity implements PostRVAdapter.OnPos
                 String imageUrl = null;
                 if (!postObj.isNull("image")) {
                     imageUrl = postObj.getJSONObject("image").getString("urls");
-//                    Log.i(TAG, "装逼如风 常伴吾身"+i);
                 }
 
                 String avatar = null;
                 if (!postObj.getJSONObject("users").isNull("image"))
-                    avatar = postObj.getJSONObject("users").getString("image");
+                    avatar = postObj.getJSONObject("users").getJSONObject("image").getString("urls");
 
                 post = new Post(postObj.getInt("id"),
                         userObj.getInt("id"),

@@ -9,9 +9,202 @@
         layout="@layout/easytoolbar" />
 
     <TextView
-        android:text="活动详情页面"
+        android:id="@+id/tv_act_detail_theme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="?attr/actionBarSize"/>
+        android:text="活动主题"
+        android:textStyle="bold"
+        android:textSize="24dp"
+        android:textColor="@color/easy_primary_text"
+        android:layout_marginTop="78dp"
+        android:layout_centerHorizontal="true"/>
+
+    <LinearLayout
+        android:id="@+id/ll_report"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/tv_act_detail_theme"
+        android:layout_below="@+id/tv_act_detail_theme"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+        <!-- 举报活动  -->
+        <ImageButton
+            android:id="@+id/ib_report_act"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/icon_warning"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/report_text"
+            android:text="举报"
+            android:layout_marginLeft="10dp"
+            />
+    </LinearLayout>
+
+
+    <!-- 活动 内容 -->
+    <TextView
+        android:id="@+id/tv_act_detail_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="活动内容"
+        android:layout_below="@+id/ll_report"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="16dp"/>
+
+    <!-- 发起人 -->
+    <LinearLayout
+        android:id="@+id/ll_org_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/tv_act_detail_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="发起人  ： "/>
+
+            <ImageView
+                android:id="@+id/iv_org_user_image"
+                android:layout_width="@dimen/comment_avatar_size"
+                android:layout_height="@dimen/comment_avatar_size"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_comment_avatar"
+                android:src="@mipmap/bili_default_avatar"/>
+
+            <TextView
+                android:id="@+id/iv_act_detail_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="张三"
+                android:layout_marginLeft="2dp"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_gravity="center_vertical"
+                android:textColor="#2d5b81"/>
+
+    </LinearLayout>
+
+
+    <!-- 活动时间 -->
+    <LinearLayout
+        android:id="@+id/ll_org_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_below="@+id/ll_org_user">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="活动时间  ： "/>
+
+        <TextView
+            android:id="@+id/tv_act_detail_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2015-01-22 ~ 2015-01-25"/>
+
+    </LinearLayout>
+
+
+    <!-- 预计参加人数 -->
+    <LinearLayout
+        android:id="@+id/ll_org_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_below="@+id/ll_org_time">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="预计活动人数  ： "/>
+
+        <TextView
+            android:id="@+id/tv_act_detail_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30"/>
+
+    </LinearLayout>
+
+
+    <!-- 已参加人数 -->
+    <LinearLayout
+        android:id="@+id/ll_org_partici"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_below="@+id/ll_org_count">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="已参加人数  ： "/>
+
+        <TextView
+            android:id="@+id/tv_act_detail_joined"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="23 "/>
+
+    </LinearLayout>
+
+    <!-- 活动费用 -->
+    <LinearLayout
+        android:id="@+id/ll_org_pay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_below="@+id/ll_org_partici">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="活动费用  ： ¥"/>
+
+        <TextView
+            android:id="@+id/tv_act_detail_pay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="100"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/ll_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+        <!-- 参加活动 -->
+        <Button
+            android:id="@+id/btn_join_act"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="参加活动"
+            android:layout_marginBottom="16dp"
+            android:textColor="#fff"
+            android:layout_margin="16dp"
+            android:background="@drawable/pink_btn_pressed"/>
+    </LinearLayout>
+
 
 </RelativeLayout>

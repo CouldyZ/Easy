@@ -6,10 +6,10 @@ package com.thh.easy.entity;
 public class Comment {
 
     private int uid;
-    private String name;
-    private String content;
-    private String avatar;
-    private String date;
+    private String name;   //用户名
+    private String content; // 内容
+    private String avatar; // 头像
+    private String date;   // 时间
 
     public Comment() {
     }
@@ -17,7 +17,6 @@ public class Comment {
 
     public Comment(int uid, String content, String avatar) {
         this.uid = uid;
-        this.name = name;
         this.content = content;
         this.avatar = avatar;
     }
@@ -26,6 +25,14 @@ public class Comment {
         this.avatar = avatar;
         this.content = content;
         this.date = date;
+        this.uid = uid;
+    }
+
+    public Comment(String avatar, String content, String date, String name, int uid) {
+        this.avatar = avatar;
+        this.content = content;
+        this.date = date;
+        this.name = name;
         this.uid = uid;
     }
 

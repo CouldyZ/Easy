@@ -24,6 +24,7 @@ public class Post {
     private int like;
 
     private int likeflag;
+    private int collectflag;
 
     public Post() {
     }
@@ -131,5 +132,13 @@ public class Post {
 
     public void setLikeflag(int likeflag) {
         this.likeflag = likeflag;
+    }
+
+    public int getCollectflag() {
+        return collectflag;
+    }
+
+    public void setCollectflag(int collectflag) {
+        this.collectflag = collectflag;
     }
 }

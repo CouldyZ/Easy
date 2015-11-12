@@ -32,6 +32,11 @@ public class StringConstant {
     public final static String SERVER_PROFILE_URL = SERVER_IP +
             "/thhh/user/android_userInfor.action";
 
+    // 修改个人头像
+    public final static String ALTER_AVATER_URL = SERVER_IP +
+            "/thhh/user/android_updatePhoto.action";
+
+
     public final static String USER_ID = "user.id";
     public final static String USER_NAME = "user.name";
     public final static String USER_PWD = "user.pwd";
@@ -65,16 +70,20 @@ public class StringConstant {
             "/thhh/posts/android_posts_addLikes.action";
 
     // 收藏
-    public final static String SERVER_STORE_URL = SERVER_IP +
-            "/thhh/posts/android_comments_addCollects.action";
-
+    public final static String SERVER_COLLECT_URL = SERVER_IP +
+            "/thhh/posts/android_posts_addCollects.action";
 
     public final static String POSTID = "posts.id";
     public final static String COMMENT_UID = "users.id";
+    public final static String COMMENT_SEND_ID = "comments.users.id";
     public final static String COMMENT_POST_ID = "comments.posts.id";
     public final static String COMMENT_CONTENTS = "comments.contents";
-    public final static String LIKE_UID = "likes.user.id";
+    public final static String LIKE_UID = "likes.users.id";
     public final static String LIKE_POST_ID = "likes.posts.id";
+
+    public final static String COLLECT_USER_ID ="collects.users.id";
+    public final static String COLLECT_POST_ID ="collects.posts.id";
+
 
 
 
@@ -105,18 +114,21 @@ public class StringConstant {
     public final static String ORDER_TAKE_TIME = "orders.take";
 
 
+    // 发起活动
+    public final static String SERVER_ORG_URL = SERVER_IP +
+            "/thhh/act/act_initAct.action";
 
     // 查看正在组织的活动
     public final static String SERVER_ORGING_ACT_URL = SERVER_IP +
-            "/thhh/act/act_findAct.action?";
+            "/thhh/act/act_findAct.action";
 
     // 参加活动
     public final static String SERVER_JOIN_ACT_URL = SERVER_IP +
-            "/thhh/act/act_addAct.action?";
+            "/thhh/act/act_addAct.action";
 
     // 举报活动
     public final static String SERVER_REPORT_ACT_URL = SERVER_IP +
-            "/thhh/act/act_reportAct.action?";
+            "/thhh/act/act_reportAct.action";
 
     // 取消活动
     public final static String SERVER_CANCLE_ACT_URL = SERVER_IP +
@@ -124,8 +136,15 @@ public class StringConstant {
 
     // 查看我的活动
     public final static String SERVER_MY_All_ACT_URL = SERVER_IP +
-            "/thhh/act/act_findAllAct.action?";
+            "/thhh/act/act_findAllAct.action";
+
+    // 查看活动详情
+    public final static String SERVER__ACT_DETAIL_URL= SERVER_IP +
+            "/thhh/act/act_findActDetail.action";
+
 
     public final static String ACT_ID = "act.id";
+    public final static String ACT_USER_RP = "act.users.rp";
+
 
 }

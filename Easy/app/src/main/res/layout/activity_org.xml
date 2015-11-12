@@ -32,7 +32,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/easy_primary"
-            android:inputType="textPassword"
             android:hint="活动内容"/>
 
     </android.support.design.widget.TextInputLayout>
@@ -47,10 +46,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/easy_primary"
-            android:inputType="textPassword"
-            android:hint="活动时间"/>
+            android:hint="活动开始时间"/>
 
     </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
+
+        <EditText
+            android:id="@+id/et_org_act_end_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/easy_primary"
+            android:hint="活动天数"/>
+
+    </android.support.design.widget.TextInputLayout>
+
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"

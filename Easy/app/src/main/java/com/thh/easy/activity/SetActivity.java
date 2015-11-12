@@ -45,8 +45,6 @@ public class SetActivity extends BaseDrawerActivity implements BaseDrawerActivit
      */
     @OnClick(R.id.btn_set_comfirm)
     void onClickExit(){
-       // System.exit(0);
-      // BaseActivity.exit();
-        BaseDrawerActivity.exit();
+        startActivity(new Intent(SetActivity.this, LoginActivity.class));
     }
 }

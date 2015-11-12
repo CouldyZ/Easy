@@ -2,6 +2,8 @@ package com.thh.easy.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.ext.HttpCallback;
 import com.android.volley.ext.RequestInfo;
@@ -19,13 +22,18 @@ import com.squareup.picasso.Picasso;
 import com.thh.easy.R;
 import com.thh.easy.adapter.UserProfileAdapter;
 import com.thh.easy.constant.StringConstant;
+import com.thh.easy.util.ImageUtils;
 import com.thh.easy.util.LogUtil;
+import com.thh.easy.util.RoundedTransformation;
+import com.thh.easy.util.Utils;
 import com.thh.easy.view.RevealBackgroundView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +46,8 @@ import butterknife.OnClick;
  *         个人信息
  *         我的图集
  *
- *  //TODO 从点击的位置，添加用户信息进来，用户id，这边查询用户所有信息
+ *  //TODO 测试更改头像
+ *  //TODO 增加图片
  * @author cloud
  * @time 2015 10 24
  *
@@ -47,6 +56,7 @@ public class UserProfileActivity extends AppCompatActivity implements RevealBack
 
     public static final String ARG_REVEAL_START_LOCATION = "reveal_start_location";
     public static final String TAG = "UserProfileActivity";
+
 
     @Bind(R.id.iv_user_profile_photo)
     ImageView ivUserPhoto;           // 用户头像
@@ -58,7 +68,7 @@ public class UserProfileActivity extends AppCompatActivity implements RevealBack
     TextView tvUserRP;               // 用户节操值
 
     @Bind(R.id.tv_profile_user_email)
-    TextView tvEmail;             // 用户简介
+    TextView tvEmail;                 // 用户简介
 
     @Bind(R.id.tv_profile_post_num)
     TextView tvPosts;                // 发过的帖子数
@@ -73,12 +83,17 @@ public class UserProfileActivity extends AppCompatActivity implements RevealBack
     RevealBackgroundView vRevealBackground; // 展开动画背景
 
     @Bind(R.id.rvUserProfile)
-    RecyclerView rvUserProfile; // 图集
+    RecyclerView rvUserProfile;                   // 图集
     private UserProfileAdapter userPhotosAdapter; // 图集adapter
 
 
-
+    private int avatarSize;
     HttpTools httpTools;
+
+    // 保存头像的文件
+    File imageFile;
+    private Bitmap bitmap;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +102,9 @@ public class UserProfileActivity extends AppCompatActivity implements RevealBack
         ButterKnife.bind(UserProfileActivity.this);
 
         userId = getIntent().getIntExtra(StringConstant.COMMENT_UID, 1);
+
+        avatarSize = UserProfileActivity.this
+                .getResources().getDimensionPixelSize(R.dimen.comment_avatar_size);
 
         LogUtil.d(UserProfileActivity.this, "进入userProfileActivty----> userID:" + userId, "93");
 
@@ -168,6 +186,9 @@ public class UserProfileActivity extends AppCompatActivity implements RevealBack
             if(imgUrl!=null){
                 Picasso.with(this)
                         .load(StringConstant.SERVER_IP + imgUrl)
+                        .centerCrop()
+                        .resize(avatarSize, avatarSize)
+                        .transform(new RoundedTransformation())
                         .placeholder(R.mipmap.bili_default_avatar)
                         .into(ivUserPhoto);
             }
@@ -264,6 +285,98 @@ public class UserProfileActivity extends AppCompatActivity implements RevealBack
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case ImageUtils.REQUEST_CODE_FROM_ALBUM:
+                if(resultCode == RESULT_CANCELED) {
+                    return;
+                }
+                Uri imageUri = data.getData();
+                bitmap = ImageUtils.getBitmapFromUri(imageUri, UserProfileActivity.this);
+                ivUserPhoto.setImageBitmap(bitmap);
+
+                break;
+            case ImageUtils.REQUEST_CODE_FROM_CAMERA:
+                if(resultCode == RESULT_CANCELED) {
+                    ImageUtils.deleteImageUri(this, ImageUtils.imageUriFromCamera);
+                } else {
+                    Uri imageUriCamera = ImageUtils.imageUriFromCamera;
+                    bitmap = ImageUtils.getBitmapFromUri(imageUriCamera, UserProfileActivity.this);
+                    ivUserPhoto.setImageBitmap(bitmap);
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+
+
+    @OnClick(R.id.iv_user_profile_photo)
+    void onChangeAvater(){
+        ImageUtils.showImagePickDialog(UserProfileActivity.this);
+
+        try {
+            imageFile = ImageUtils.saveFile(UserProfileActivity.this, bitmap,
+                    "alter_avater" + Utils.getUserId(UserProfileActivity.this)+".jpg");
+            sendAlterAvater();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(UserProfileActivity.this, "保存文件失败", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * 请求数据
+     */
+    private void sendAlterAvater() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("user.id", imageFile);
+        params.put(StringConstant.USER_ID, Utils.getUserId(UserProfileActivity.this));
+
+        httpTools.upload(StringConstant.ALTER_AVATER_URL, params, new HttpCallback() {
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+
+            @Override
+            public void onResult(String s) {
+                Log.e("服务器返回更改头像结果数据-->", s);
+
+                if ("1".equals(s)) {
+                    Toast.makeText(UserProfileActivity.this, "修改头像成功", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(UserProfileActivity.this, "修改头像失败", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+
+            @Override
+            public void onCancelled() {
+
+            }
+
+            @Override
+            public void onLoading(long l, long l1) {
+
+            }
+        });
     }
 
 }

@@ -4,12 +4,13 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.ext.HttpCallback;
 import com.android.volley.ext.RequestInfo;
@@ -36,8 +37,6 @@ import butterknife.OnClick;
  */
 public class OrderActivity extends BaseDrawerActivity {
 
-    private static final String TAG = "OrderActivity";
-
     @Bind(R.id.tv_order_take_time)
     TextView tvOrderTakeTime;                             // 拿货时间
 
@@ -46,6 +45,9 @@ public class OrderActivity extends BaseDrawerActivity {
 
     @Bind(R.id.tv_order_sum)
     TextView tvOrderSum;                                  // 订单小结
+
+    @Bind(R.id.ll_order_bottom)
+    LinearLayout ll_bottom;
 
     private OrderItemRVAdapter orderItemRVAdapter;        // 订单项列表的适配器
     private List<OrderItem> itemList = new ArrayList<>(); // 订单项数据
@@ -59,7 +61,6 @@ public class OrderActivity extends BaseDrawerActivity {
     List<Map<String, Object>> listOrderItem
             = new ArrayList<>();                          // 订单详情列表
 
-    private int resultState = 0;                          // 服务器返回的状态码
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,10 +68,14 @@ public class OrderActivity extends BaseDrawerActivity {
         setContentView(R.layout.activity_order);
         init();
         userId = Utils.getUserId(OrderActivity.this);
+
+
         getItemData();  // 获得数据
         setUpAdapter(); // 设置数据到list
 
         tvOrderSum.setText("" + sumPrice); // 设置总价
+
+
     }
 
     /**
@@ -170,17 +175,18 @@ public class OrderActivity extends BaseDrawerActivity {
     @OnClick(R.id.btn_order_ensure)
     void onClickEnsureOrder(){
 
+        if (userId == 0) {
+            Snackbar.make(ll_bottom, "先登陆呗", Snackbar.LENGTH_SHORT).show();
+        }
+
         if(TextUtils.isEmpty(takeTime)){
-            Toast.makeText(OrderActivity.this, "请选择取货时间", Toast.LENGTH_LONG).show();
+            Snackbar.make(ll_bottom, "请选择取货时间", Snackbar.LENGTH_SHORT).show();
             return;
         }
 
         postItem();              // 向数据库插入数据
 
-        if(resultState == 1){    // 如果成功就返回商店界面
-            startActivity(new Intent(this, ShopActivity.class));
-            finish();
-        }
+
 
     }
 
@@ -214,20 +220,20 @@ public class OrderActivity extends BaseDrawerActivity {
                                 public void onResult(String s) {
 
                                     if (StringConstant.NULL_VALUE.equals(s)) {
-                                        Toast.makeText(getApplicationContext(), "服务器出错", Toast.LENGTH_LONG).show();
-                                        resultState = -1;
+                                        Snackbar.make(ll_bottom, "服务器出错", Snackbar.LENGTH_SHORT).show();
                                         return;
                                     }
 
                                     if (StringConstant.SUCCESS.equals(s)) {
-                                        Toast.makeText(getApplicationContext(), "预定成功", Toast.LENGTH_LONG).show();
-                                        resultState = 1;
+                                        Snackbar.make(ll_bottom, "预定成功", Snackbar.LENGTH_SHORT).show();
+                                            // 如果成功就返回商店界面
+                                        startActivity(new Intent(OrderActivity.this, ShopActivity.class));
+                                        finish();
                                         return;
                                     }
 
                                     if (StringConstant.FAIL.equals(s)) {
-                                        Toast.makeText(getApplicationContext(), "预定失败", Toast.LENGTH_LONG).show();
-                                        resultState = 0;
+                                        Snackbar.make(ll_bottom, "预定失败", Snackbar.LENGTH_SHORT).show();
                                         return;
                                     }
                                 }

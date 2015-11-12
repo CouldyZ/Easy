@@ -18,7 +18,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.android.volley.ext.HttpCallback;
 import com.android.volley.ext.RequestInfo;
@@ -75,7 +74,7 @@ public class MainActivity extends BaseDrawerActivity implements
     private MenuItem inboxMenuItem;             // toolbar上的meun
 
     private PostRVAdapter postRVAdapter;        // rvPost的适配器
-    List<Post> postList = new ArrayList<Post>();   // 最新帖子的数据集合
+    List<Post> postList = new ArrayList<>();    // 最新帖子的数据集合
     LinearLayoutManager linearLayoutManager;    // recyclerview的布局方式-线性
 
     boolean isLoading = false;
@@ -206,6 +205,7 @@ public class MainActivity extends BaseDrawerActivity implements
 
         if (u.getAvatarFilePath() != null) {
             File avatar = new File (u.getAvatarFilePath());
+            LogUtil.d(MainActivity.this, "头像url :" + u.getAvatarFilePath());
             Picasso.with(getApplicationContext())
                     .load(avatar)
                     .centerCrop()
@@ -269,7 +269,7 @@ public class MainActivity extends BaseDrawerActivity implements
 
         // 如果登陆了，就把数据设置进去
         if(u!= null){
-            params.put(StringConstant.USER_ID, u.getId()+"");
+            params.put(StringConstant.COMMENT_UID, u.getId()+"");
         }
 
         RequestInfo info = new RequestInfo(StringConstant.SERVER_NEWPOST_URL, params);
@@ -351,6 +351,7 @@ public class MainActivity extends BaseDrawerActivity implements
                         avatar,
                         jsonObject.getInt("likes"),
                         jsonObject.getInt("isLike"));
+                post.setCollectflag(jsonObject.getInt("collect"));
                 postList.add(post);
             }
 
@@ -422,6 +423,7 @@ public class MainActivity extends BaseDrawerActivity implements
      *  floatingActionButton 进入动画
      */
     private static final int ANIM_DURATION_FAB = 400;
+
     private void startContentAnimation() {
         btnCreate.animate()
                 .translationY(0)
@@ -437,7 +439,6 @@ public class MainActivity extends BaseDrawerActivity implements
             Snackbar.make(clContainer, "少年呦 你联网了嘛", Snackbar.LENGTH_SHORT).show();
         }
 
-//        loadPosts();
         rvPost.setAdapter(postRVAdapter);
         rvPost.scrollToPosition(0);
         isLoading = false;
@@ -503,6 +504,7 @@ public class MainActivity extends BaseDrawerActivity implements
         Map<String, String> params = new HashMap<>(2);
         params.put(StringConstant.LIKE_UID, u.getId()+"");
         params.put(StringConstant.LIKE_POST_ID, postList.get(position).getId() + "");
+
         RequestInfo info = new RequestInfo(StringConstant.SERVER_LIKE_URL, params);
         httpTools.post(info, new HttpCallback() {
             @Override
@@ -515,10 +517,21 @@ public class MainActivity extends BaseDrawerActivity implements
 
             @Override
             public void onResult(String s) {
-                if ("1".equals(s))
+                if ("1".equals(s)){
+                    Snackbar.make(clContainer, "点了个赞", Snackbar.LENGTH_SHORT).show();
                     postRVAdapter.onClickLike(position, PostRVAdapter.LIKE);
-                else if ("0".equals(s))
+                }
+
+
+                else if ("0".equals(s)){
+                    Snackbar.make(clContainer, "赞失败了诶", Snackbar.LENGTH_SHORT).show();
+                }
+
+                else if("2".equals(s)){
+                    Snackbar.make(clContainer, "取消点赞", Snackbar.LENGTH_SHORT).show();
                     postRVAdapter.onClickLike(position, PostRVAdapter.CANCEL_LIKE);
+                }
+
             }
 
             @Override
@@ -536,14 +549,60 @@ public class MainActivity extends BaseDrawerActivity implements
     }
 
     /**
-     * 更多（menu）
+     * 收藏帖子
      * @param v
      * @param position
      */
     @Override
-    public void onMoreClick(View v, int position) {
-        // TODO 弹出menu
-        Toast.makeText(MainActivity.this, "更多", Toast.LENGTH_LONG).show();
+    public void onMoreClick(View v, final int position) {
+
+        User u = (User) FileUtil.readObject(getApplicationContext(), "user");
+        if (u == null) {
+            Snackbar.make(clContainer, "岂可修! 要先登陆啊", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+
+        Map<String, String> params = new HashMap<>(2);
+        params.put(StringConstant.COLLECT_USER_ID, u.getId()+"");
+        params.put(StringConstant.COLLECT_POST_ID, postList.get(position).getId() + "");
+
+        // collects.posts.id=2&collects.users.id=1
+        RequestInfo info = new RequestInfo(StringConstant.SERVER_COLLECT_URL, params);
+        httpTools.post(info, new HttpCallback() {
+            @Override
+            public void onStart() {
+            }
+
+            @Override
+            public void onFinish() {
+            }
+
+            @Override
+            public void onResult(String s) {
+                if ("1".equals(s)){
+                    Snackbar.make(clContainer, "收藏成功", Snackbar.LENGTH_SHORT).show();
+                    postRVAdapter.onClickCollect(position, PostRVAdapter.LIKE);
+                } else if ("0".equals(s)){
+                    Snackbar.make(clContainer, "收藏失败", Snackbar.LENGTH_SHORT).show();
+                } else if("2".equals(s)){
+                    Snackbar.make(clContainer, "取消收藏", Snackbar.LENGTH_SHORT).show();
+                    postRVAdapter.onClickCollect(position, PostRVAdapter.CANCEL_LIKE);
+                }
+
+            }
+
+            @Override
+            public void onError(Exception e) {
+            }
+
+            @Override
+            public void onCancelled() {
+            }
+
+            @Override
+            public void onLoading(long l, long l1) {
+            }
+        });
     }
 
 

@@ -5,8 +5,6 @@
     android:layout_height="match_parent"
     tools:context="com.thh.easy.activity.HotPostActivity">
 
-    <!--<include
-        layout="@layout/back_toolbar" />-->
     <include
         android:id="@+id/main_toolbar"
         layout="@layout/easytoolbar" />

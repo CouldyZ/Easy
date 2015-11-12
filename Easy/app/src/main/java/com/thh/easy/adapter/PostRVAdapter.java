@@ -86,6 +86,11 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         else if (posts.get(position).getLikeflag() == 0)
             ((CellPostViewHolder) viewHolder).ibLike.setImageResource(R.mipmap.ic_like_grey);
 
+        if(posts.get(position).getCollectflag() == 1)
+            ((CellPostViewHolder) viewHolder).ibMore.setImageResource(R.mipmap.ic_my_favorites);
+        else if(posts.get(position).getCollectflag() == 0)
+            ((CellPostViewHolder) viewHolder).ibMore.setImageResource(R.mipmap.ic_post_collect);
+
         // 加载头像
         if (posts.get(position).getAvatar() != null) {
 
@@ -98,7 +103,7 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     .into(((CellPostViewHolder) viewHolder).ibUserProtrait);
         }
 
-        LogUtil.d("头像的url："+StringConstant.SERVER_IP + posts.get(position).getAvatar());
+        LogUtil.d("头像的url：" + StringConstant.SERVER_IP + posts.get(position).getAvatar());
 
 
 
@@ -142,7 +147,7 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.ibLike.setOnClickListener(this);
         holder.ibLike.setTag(position);
 
-        // 绑定点击赞事件
+        // 绑定点收藏事件
         holder.ibMore.setOnClickListener(this);
         holder.ibMore.setTag(position);
     }
@@ -210,16 +215,28 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void onClickLike(int position, int flag) {
         if (flag == LIKE) {
             posts.get(position).setLike(posts.get(position).getLike() + 1);
+            posts.get(position).setLikeflag(1);
             holderList.get(position).ibLike.setImageResource(R.mipmap.ic_heart_red);
 
         }
         else if (flag == CANCEL_LIKE) {
+            posts.get(position).setLikeflag(0);
             posts.get(position).setLike(posts.get(position).getLike() - 1);
             holderList.get(position).ibLike.setImageResource(R.mipmap.ic_like_grey);
         }
-
-        notifyItemChanged(position);
     }
+
+    public void onClickCollect(int position, int flag) {
+
+        if (flag == LIKE) {
+            posts.get(position).setCollectflag(1);
+            holderList.get(position).ibMore.setImageResource(R.mipmap.ic_my_favorites);
+        } else if (flag == CANCEL_LIKE) {
+            posts.get(position).setCollectflag(0);
+            holderList.get(position).ibMore.setImageResource(R.mipmap.ic_post_collect);
+        }
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -248,10 +265,6 @@ public class PostRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             }
         }
-    }
-
-    public List<Post> getPosts() {
-        return posts;
     }
 
     public interface OnPostItemClickListener {

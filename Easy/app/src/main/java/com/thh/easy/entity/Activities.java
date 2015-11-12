@@ -6,6 +6,7 @@ package com.thh.easy.entity;
 public class Activities {
 
     String id;
+    int uid;                // 发起人id
     String userName;        // 发起名字
     String userImage;       // 发起人头像
     int userRP;             // 发起人rp值
@@ -21,6 +22,9 @@ public class Activities {
 
     int particiCount;       // 已参加的人数
     int reportCount;        // 举报人数
+
+    public Activities() {
+    }
 
 
     public Activities(String id, String theme,
@@ -144,5 +148,13 @@ public class Activities {
 
     public void setUserRP(int userRP) {
         this.userRP = userRP;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
     }
 }

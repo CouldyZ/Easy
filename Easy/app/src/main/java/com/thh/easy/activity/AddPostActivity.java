@@ -2,7 +2,6 @@ package com.thh.easy.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,12 +21,14 @@ import com.android.volley.ext.tools.HttpTools;
 import com.thh.easy.R;
 import com.thh.easy.constant.StringConstant;
 import com.thh.easy.util.ImageUtils;
+import com.thh.easy.util.Utils;
 import com.thh.easy.view.SendCommentButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,6 +57,7 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
     @Bind(R.id.btn_send_post)
     SendCommentButton mybtnSendPost;      // 发布帖子按钮
 
+    int userId = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +66,7 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
         httpTools = new HttpTools(this);
         setUpToolbar();
         mybtnSendPost.setOnSendClickListener(this);  // 绑定发送事件
+        userId = Utils.getUserId(AddPostActivity.this);
     }
 
     /**
@@ -97,13 +100,12 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
         if(validateComment()) {
             // TODO 发布新帖子
             String postContent = etAddPostContent.getText().toString();
-            Bitmap postImage = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_22);
-            int userId = 1;
 
             String s = Environment.getExternalStorageDirectory().getPath() ;
             File f = new File(s+"/abc.jpg");
 
             Map<String, Object> params = new HashMap<>();
+           // params.put("postsImg", imageFile);
             params.put("postsImg", f);
             params.put("posts.contents", postContent);
 
@@ -125,7 +127,7 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
                 @Override
                 public void onResult(String s) {
                     Log.e("Result:::-->", s);
-                    // readJson(s);
+                    readJson(s);
                 }
 
                 @Override
@@ -170,11 +172,19 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
      */
     @OnClick(R.id.btn_add_picture)
     void addPicture() {
-
         ImageUtils.showImagePickDialog(AddPostActivity.this);
+        try {
+            imageFile = ImageUtils.saveFile(AddPostActivity.this, bitmap,
+                    "post_" + Utils.getUserId(AddPostActivity.this)+".jpg");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(AddPostActivity.this, "保存文件失败", Toast.LENGTH_LONG).show();
+        }
+
 
     }
 
+    private File imageFile;
 
     /**
      * 如果填写的帖子为空，评论按钮会闪动
@@ -201,8 +211,8 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
                     return;
                 }
                 Uri imageUri = data.getData();
-                Bitmap imageBitmap = ImageUtils.getBitmapFromUri(imageUri, AddPostActivity.this);
-                ivPostPicture.setImageBitmap(imageBitmap);
+                bitmap = ImageUtils.getBitmapFromUri(imageUri, AddPostActivity.this);
+                ivPostPicture.setImageBitmap(bitmap);
 
                 break;
             case ImageUtils.REQUEST_CODE_FROM_CAMERA:
@@ -210,8 +220,8 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
                     ImageUtils.deleteImageUri(this, ImageUtils.imageUriFromCamera);
                 } else {
                     Uri imageUriCamera = ImageUtils.imageUriFromCamera;
-                    Bitmap cameraBitmap = ImageUtils.getBitmapFromUri(imageUriCamera, AddPostActivity.this);
-                    ivPostPicture.setImageBitmap(cameraBitmap);
+                    bitmap = ImageUtils.getBitmapFromUri(imageUriCamera, AddPostActivity.this);
+                    ivPostPicture.setImageBitmap(bitmap);
                 }
                 break;
 
@@ -220,4 +230,5 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
         }
     }
 
+    private Bitmap bitmap;
 }

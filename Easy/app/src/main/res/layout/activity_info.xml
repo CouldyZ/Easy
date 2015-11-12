@@ -41,7 +41,7 @@
             android:layout_centerHorizontal="true" />
 
         <TextView
-            android:text="开发人员：张仁礼、苏小红、徐薇、陈楷元、张云"
+            android:text="开发人员：苏小红、张仁礼、徐微、陈楷元、张云"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"

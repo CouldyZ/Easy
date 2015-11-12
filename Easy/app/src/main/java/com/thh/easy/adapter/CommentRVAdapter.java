@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.thh.easy.R;
 import com.thh.easy.entity.Comment;
+import com.thh.easy.util.RoundedTransformation;
 
 import java.util.List;
 
@@ -60,12 +61,16 @@ public class CommentRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         Log.e("CommentRVAdapter", "评论内容："+ commentList.get(position).getContent());
         Log.e("CommentRVAdapter", "评论头像："+ commentList.get(position).getAvatar());
+
         // 填充评论内容数据
         holder.tvComment.setText(commentList.get(position).getContent());
 
-        if (commentList.get(position).getAvatar() != null && commentList.get(position).getAvatar().contains("http://"))
+        if (commentList.get(position).getAvatar().length() > 30)
             Picasso.with(context)
                     .load(commentList.get(position).getAvatar())
+                    .centerCrop()
+                    .resize(avatarSize, avatarSize)
+                    .transform(new RoundedTransformation())
                     .placeholder(R.mipmap.bili_default_avatar)
                     .into(holder.ivUserAvatar);
 
