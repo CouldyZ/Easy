@@ -63,6 +63,11 @@ public class ActDetailActivity extends BaseDrawerActivity {
     LinearLayout ll_container;       // snakerbar
 
 
+    HttpTools httpTools;
+    int userId = 0;
+    String actId = "0";
+    int orgUserId = 0;
+
     /**
      * 设置数据
      */
@@ -91,10 +96,8 @@ public class ActDetailActivity extends BaseDrawerActivity {
 
 
     }
-    HttpTools httpTools;
-    int userId = 0;
-    String actId = "0";
-    int orgUserId = 0;
+
+
 
 
     @Override
@@ -198,6 +201,8 @@ public class ActDetailActivity extends BaseDrawerActivity {
             activities.setReportCount(jsonObject.getInt("reportCount"));
             activities.setStartDate(jsonObject.getString("start_date"));
             activities.setEndDate(jsonObject.getString("end_date"));
+
+            // TODO 如果活动界面用户没有头像，会报错诶
             activities.setUserImage(jsonObject.getString("user_img"));
             activities.setPay("" + jsonObject.getDouble("pay"));
             setViewData(activities);
@@ -227,7 +232,6 @@ public class ActDetailActivity extends BaseDrawerActivity {
         Map<String, String> params = new HashMap<String, String>(1);
         params.put(StringConstant.ACT_ID, "" + actId);
         params.put(StringConstant.COMMENT_UID, ""+
-                // + 3);
                 userId);
 
         RequestInfo info = new RequestInfo(StringConstant.SERVER_JOIN_ACT_URL, params);

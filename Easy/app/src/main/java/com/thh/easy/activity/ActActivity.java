@@ -47,20 +47,20 @@ import butterknife.OnClick;
 public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivity.OnStartActivityListener ,ActRVAdapter.OnActItemClickListener {
 
     @Bind(R.id.tl_activity_tabs)
-    TabLayout tlActTabs;                            // tab指示器
+    TabLayout tlActTabs;                             // tab指示器
 
     @Bind(R.id.vp_activity_views)
-    ViewPager vpActViewPager;                       // activity内容
-    MyPagerAdapter myPagerAdapter;                  // viewpager 适配器
+    ViewPager vpActViewPager;                        // activity内容
+    MyPagerAdapter myPagerAdapter;                   // viewpager 适配器
 
-    LayoutInflater mInflater;                       // 视图加载
+    LayoutInflater mInflater;                        // 视图加载
 
-    String[] mTabTitles;                            // tabs上的文字
-    List<View> mViewList = new ArrayList<>();       // viewpager包括的两个view对象
+    String[] mTabTitles;                             // tabs上的文字
+    List<View> mViewList = new ArrayList<>();        // viewpager包括的两个view对象
     View llOrgView, llJoinView;                      // viewPager中的两个view
 
     RecyclerView rvOrgActivity, rvJoinActivity;      // view里面对应的列表
-    ActRVAdapter rvOrgActAdapter, rvJoinActAdapter; // viewpager两个view里面的recyclerview适配器
+    ActRVAdapter rvOrgActAdapter, rvJoinActAdapter;  // viewpager两个view里面的recyclerview适配器
 
     HttpTools httpTools;
 
@@ -93,8 +93,8 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
     }
 
 
-    int currentPage = 1;                        // 当前页
-    private List<Activities> actLists = new ArrayList<>(); //正在组织的活动
+    int currentPage = 1;                                    // 当前页
+    private List<Activities> actLists = new ArrayList<>();  //正在组织的活动
     private List<Activities> joinLists = new ArrayList<>(); // 已经参加的活动柜
 
 
@@ -106,8 +106,8 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
             rvOrgActAdapter = new ActRVAdapter(ActActivity.this, actLists);
         }
 
-        // 向服务器发送数据 pageIndex=1&rowCount=6&users.id=1
-           Map<String, String> params = new HashMap<String, String>(3);
+           // 向服务器发送数据 pageIndex=1&rowCount=6&users.id=1
+            Map<String, String> params = new HashMap<String, String>(3);
             params.put(StringConstant.CURRENT_PAGE_KEY, currentPage + "");
             params.put(StringConstant.PER_PAGE_KEY, StringConstant.PER_PAGE_COUNT + "");
             params.put(StringConstant.COMMENT_UID, "" + userId);
@@ -161,34 +161,36 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
 
         int insertPos = rvOrgActAdapter.getItemCount();
         try {
-            Activities activities = null;
-            JSONArray jsonArray = new JSONArray(json);
 
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                String userImage = "";
-                if(jsonObject.getString("user_img") != null)
-                {
-                    userImage = jsonObject.getString("user_img");
+                Activities activities = null;
+                JSONArray jsonArray = new JSONArray(json);
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String userImage = "";
+
+                    if(jsonObject.getString("user_img") != null) {
+                        userImage = jsonObject.getString("user_img");
+                    }
+
+                    LogUtil.d(ActActivity.this, "查看所有的活动： 发起人的头像url : " + userImage);
+
+                    activities = new Activities(
+                            jsonObject.getString("user.id"),
+                            jsonObject.getString("theme"),
+                            jsonObject.getString("user.name"),
+                            userImage,
+                            jsonObject.getInt("user.rp"),
+                            jsonObject.getString("start_date"),
+                            jsonObject.getString("end_date"));
+                    activities.setId(""+jsonObject.getInt("act.id"));
+                    actLists.add(activities);
                 }
 
-                LogUtil.d(ActActivity.this, "查看所有的活动： 发起人的头像url : " + userImage);
-
-                activities = new Activities(
-                        jsonObject.getString("user.id"),
-                        jsonObject.getString("theme"),
-                        jsonObject.getString("user.name"),
-                        userImage,
-                        jsonObject.getInt("user.rp"),
-                        jsonObject.getString("start_date"),
-                        jsonObject.getString("end_date"));
-                activities.setId(""+jsonObject.getInt("act.id"));
-                activities.setUid(jsonObject.getInt("user.id"));
-                actLists.add(activities);
+            if (rvOrgActAdapter == null) {
+                rvOrgActAdapter = new ActRVAdapter(ActActivity.this, actLists);
             }
-        if (rvOrgActAdapter == null) {
-            rvOrgActAdapter = new ActRVAdapter(ActActivity.this, actLists);
-        }
+
             LogUtil.d(ActActivity.this, "orgList.size:" + actLists.size());
             rvOrgActAdapter.notifyItemRangeInserted(insertPos, actLists.size() - insertPos);
             rvOrgActAdapter.notifyItemRangeChanged(insertPos, actLists.size() - insertPos);
@@ -264,7 +266,7 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
     private void setUpPagerData() {
         LogUtil.i(ActActivity.this, "into setUppagerData");
         mInflater = LayoutInflater.from(this);
-        mTabTitles = new String[]{"正在组织","已经参加"}; // tab上的文字
+        mTabTitles = new String[]{"正在组织","已经参加"};                     // tab上的文字
 
         // 正在组织
         llOrgView = mInflater.inflate(R.layout.act_org_view, null);
@@ -299,6 +301,7 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
      */
     public void setUpRecyclerViews() {
         LogUtil.i(ActActivity.this, "into setUpRecyclerViews");
+
         LinearLayoutManager orgLinearLayoutManager = new LinearLayoutManager(this);
         rvOrgActivity.setLayoutManager(orgLinearLayoutManager);
         rvOrgActivity.setHasFixedSize(true);

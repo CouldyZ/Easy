@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -37,15 +36,12 @@ import butterknife.OnClick;
 
 /**
  * 发帖界面
- * // TODO 将发送的图片改变文件名 : user.id.png/jpg
+ *  // TODO 将发送的图片改变文件名 : user.id.png/jpg
  */
 public class AddPostActivity extends AppCompatActivity implements  SendCommentButton.OnSendClickListener{
 
     @Bind(R.id.take_photo_toolbar)
     Toolbar postToolbar;
-
-    @Bind(R.id.btn_add_picture)
-    Button btnAddPicture;                // 添加图片的按钮
 
     @Bind(R.id.post_picture)
     ImageView ivPostPicture;              // 添加图片的缩略图
@@ -61,10 +57,18 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_post);
+        loadInitData();
+        mybtnSendPost.setOnSendClickListener(this);  // 绑定发送事件
+
+    }
+
+    /**
+     * 初始化必要信息
+     */
+    private void loadInitData() {
         HttpTools.init(this);
         httpTools = new HttpTools(this);
         setUpToolbar();
-        mybtnSendPost.setOnSendClickListener(this);  // 绑定发送事件
         userId = Utils.getUserId(AddPostActivity.this);
     }
 
@@ -182,8 +186,6 @@ public class AddPostActivity extends AppCompatActivity implements  SendCommentBu
 
 
     }
-
-    private File imageFile;
 
     /**
      * 如果填写的帖子为空，评论按钮会闪动
