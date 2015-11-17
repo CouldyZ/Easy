@@ -42,7 +42,7 @@ import butterknife.OnClick;
 
 /**
  * 活动界面
- *
+ *  // TODO 将侧滑栏的用户信息设置成全局的，不该设在这六个acitvity里面
  */
 public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivity.OnStartActivityListener ,ActRVAdapter.OnActItemClickListener {
 
@@ -425,6 +425,7 @@ public class ActActivity extends BaseDrawerActivity implements BaseDrawerActivit
             LogUtil.e(ActActivity.this, " 解析onReadORGJson出错");
         }
     }
+
 
     /**
      * 设置用户配置信息

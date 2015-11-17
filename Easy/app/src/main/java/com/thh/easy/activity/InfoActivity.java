@@ -17,6 +17,7 @@ import java.io.File;
 /**
  * 关于界面：
  *  icon + 项目名 + 版本号 + 小组成员
+ *  // TODO 将侧滑栏的用户信息设置成全局的，不该设在这六个acitvity里面
  */
 public class InfoActivity extends BaseDrawerActivity implements BaseDrawerActivity.OnStartActivityListener{
 

@@ -18,5 +18,6 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <!-- 定义通用的 style-->
 
 </resources>

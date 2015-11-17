@@ -47,6 +47,7 @@ import butterknife.OnClick;
 /**
  * 评论界面
  *  // TODO 添加评论有BUG， 添加的位置间有间隙啊
+ *
  */
 public class CommentsActivity extends AppCompatActivity implements SendCommentButton.OnSendClickListener{
 

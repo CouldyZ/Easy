@@ -9,6 +9,7 @@
   <color name="easy_icons">#FFFFFF</color>
   <color name="easy_divider">#B6B6B6</color>
 
+  <!-- TODO 颜色定义一律换成 pink_primary 这种 -->
   <color name="easy_background">#f2f2f2</color>
   <color name="easy_pink_light">#fb7299</color>
   <color name="easy_pink_dark">#c43961</color>

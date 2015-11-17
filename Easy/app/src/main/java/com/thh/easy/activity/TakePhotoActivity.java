@@ -16,6 +16,7 @@ import butterknife.Bind;
 
 /**
  * 拍照界面
+ * // TODO 将图片传回服务器
  */
 public class TakePhotoActivity extends BaseActivity implements RevealBackgroundView.OnStateChangeListener {
 

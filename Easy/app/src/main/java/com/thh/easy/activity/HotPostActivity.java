@@ -42,6 +42,7 @@ import butterknife.ButterKnife;
 /**
  *   主界面:
  *         显示帖子
+ *
  */
 public class HotPostActivity extends BaseActivity implements PostRVAdapter.OnPostItemClickListener, BaseDrawerActivity.OnStartActivityListener {
 

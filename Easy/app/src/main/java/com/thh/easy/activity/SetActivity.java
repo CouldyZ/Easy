@@ -16,6 +16,11 @@ import java.io.File;
 
 import butterknife.OnClick;
 
+/**
+ * 设置界面
+ *  // TODO 实现设置功能
+ * // TODO 将侧滑栏的用户信息设置成全局的，不该设在这六个acitvity里面
+ */
 public class SetActivity extends BaseDrawerActivity implements BaseDrawerActivity.OnStartActivityListener{
 
     @Override
